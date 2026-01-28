@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import AdminImageUploader from "../components/AdminImageUploader";
 
 export default function RoomEdit({ slug }) {
   const [room, setRoom] = useState(null);
   const [err, setErr] = useState("");
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setErr("");
     try {
       const r = await fetch(`/api/rooms/${slug}`);
@@ -15,9 +15,9 @@ export default function RoomEdit({ slug }) {
     } catch (e) {
       setErr(e.message);
     }
-  };
+  }, [slug]);
 
-  useEffect(() => { load(); }, [slug]);
+  useEffect(() => { load(); }, [slug, load]);
 
   if (!room) return <div className="p-4">{err || "Loading…"}</div>;
 

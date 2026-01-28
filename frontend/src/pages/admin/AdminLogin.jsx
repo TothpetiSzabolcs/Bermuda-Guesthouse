@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 
 export default function AdminLogin() {
@@ -8,8 +8,7 @@ export default function AdminLogin() {
   const [err, setErr] = useState("");
   const { login } = useAdminAuth();
   const nav = useNavigate();
-  const loc = useLocation();
-  const from = loc.state?.from?.pathname || "/admin";
+
 
   const onSubmit = async (e) => {
     e.preventDefault();

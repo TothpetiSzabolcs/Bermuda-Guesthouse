@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { translations } from "./translations.js";
-
-const LangContext = createContext();
+import { LangContext } from "./LangContext";
 
 const getInitialLang = () => {
   const saved = localStorage.getItem("lang");
@@ -33,4 +32,4 @@ export const LanguageProvider = ({ children }) => {
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 };
 
-export const useI18n = () => useContext(LangContext);
+

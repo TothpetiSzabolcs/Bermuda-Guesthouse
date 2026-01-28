@@ -81,15 +81,7 @@ export default function AdminGallery() {
     return cld(doc.url, "f_auto,q_auto,c_fill,g_center,w_400,h_240");
   };
 
-  // nagy kép/videó forrás
-  const getFull = (doc) => {
-    if (!doc) return null;
-    if (doc.resourceType === "video") {
-      // player-hez az eredeti videó URL (Cloudinary streamelhető)
-      return doc.url;
-    }
-    return cld(doc.url, "f_auto,q_auto,w_1600");
-  };
+
 
   // feltöltés (kép+videó)
   const upload = async (e) => {

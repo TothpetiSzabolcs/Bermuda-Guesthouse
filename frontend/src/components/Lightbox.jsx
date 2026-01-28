@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 function fsElement() {
   return (
@@ -40,7 +40,7 @@ export default function Lightbox({
 
   const item = items[index];
   const isVideo = item?.resourceType === "video";
-  const [isFs, setIsFs] = useState(!!fsElement());
+  const [, setIsFs] = useState(!!fsElement());
 
   // Fullscreen változás figyelése: FS-ben play, kilépéskor pause
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function Lightbox({
       if (containerRef.current && !fsElement()) {
         try {
           await requestFs(containerRef.current);
-        } catch (_) {
+        } catch {
           // ha nincs FS API engedély, legalább próbáljuk lejátszani
         }
       }
@@ -82,9 +82,12 @@ export default function Lightbox({
         await v.play().catch(() => {});
       }
     })();
-    // csak akkor fusson, ha új elemre kattintottunk
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, isVideo]);
+
+  const handleClose = useCallback(async () => {
+    onClose();
+    if (fsElement()) await exitFs().catch(() => {});
+  }, [onClose]);
 
   // ESC/nyilak
   useEffect(() => {
@@ -95,12 +98,7 @@ export default function Lightbox({
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [onPrev, onNext]);
-
-  const handleClose = async () => {
-    onClose();
-    if (fsElement()) await exitFs().catch(() => {});
-  };
+  }, [onPrev, onNext, handleClose]);
 
   return (
     <div

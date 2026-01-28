@@ -109,7 +109,8 @@ export default function Experiences() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {CARDS.map(({ key, icon: Icon, coverId, toPrimary, toSecondary }) => {
+          {CARDS.map((card) => {
+            const { key, icon: Icon, coverId, toPrimary, toSecondary } = card;
             const copy = t.items[key];
             // Cloudinary borító (középre vágva, nagy felbontás)
             const bg = coverId
