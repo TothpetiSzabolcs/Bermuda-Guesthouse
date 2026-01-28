@@ -7,6 +7,7 @@ import { cld } from "../utils/cloudinary";
 import { Link } from "react-router-dom";
 import { MdOutlineBathroom } from "react-icons/md";
 import { FaKitchenSet } from "react-icons/fa6";
+import BookingForm from "./BookingForm";
 
 const Rooms = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
