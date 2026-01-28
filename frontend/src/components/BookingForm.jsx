@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/LanguageProvider";
 
 const BookingForm = ({ room, onClose }) => {
@@ -356,22 +357,50 @@ const BookingForm = ({ room, onClose }) => {
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              disabled={isSubmitting}
-            >
-              {COPY.cancelButton}
-            </button>
-            <button
-              type="submit"
-              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:bg-green-400"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (COPY.hu ? "Küldés..." : "Sending...") : COPY.submitButton}
-            </button>
+          <div className="space-y-4">
+            <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+              <p className="font-medium mb-2">
+                {COPY.hu ? "Foglalás elküldésével elfogadom:" : "By submitting booking, I agree to:"}
+              </p>
+              <div className="space-y-1">
+                <Link
+                  to="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-700 hover:text-green-800 underline block"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {COPY.hu ? "Adatkezelési tájékoztató" : "Privacy Policy"}
+                </Link>
+                <Link
+                  to="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-700 hover:text-green-800 underline block"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {COPY.hu ? "Általános Szerződési Feltételek és Lemondási feltételek" : "Terms and Conditions"}
+                </Link>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                disabled={isSubmitting}
+              >
+                {COPY.cancelButton}
+              </button>
+              <button
+                type="submit"
+                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:bg-green-400"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (COPY.hu ? "Küldés..." : "Sending...") : COPY.submitButton}
+              </button>
+            </div>
           </div>
         </form>
       </div>
