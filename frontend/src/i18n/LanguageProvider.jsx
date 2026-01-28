@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { translations } from "./translations.js";
 import { LangContext } from "./LangContext";
 
@@ -32,12 +32,6 @@ export const LanguageProvider = ({ children }) => {
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 };
 
-export const useI18n = () => {
-  const context = useContext(LangContext);
-  if (!context) {
-    throw new Error("useI18n must be used within a LanguageProvider");
-  }
-  return context;
-};
+
 
 

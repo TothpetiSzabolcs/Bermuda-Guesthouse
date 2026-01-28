@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useI18n } from "../i18n/LanguageProvider";
+import { useI18n } from "../i18n/useI18n";
 import logo from "../assets/BV_logo.png";
 import { Link, useLocation } from "react-router-dom";
 
@@ -71,10 +71,10 @@ const Header = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Felső sor */}
         <div className="flex h-16 items-center justify-between">
-          {/* Logó + márka */}
+{/* Logó + márka */}
           <div className="flex items-center gap-2">
-            <img src={logo} alt="Bermuda Vendégház" className="w-20 h-15" />
-            <span className="text-lg font-bold text-gray-900">Bermuda Vendégház</span>
+            <img src={logo} alt={t('common.adminTitle')} className="w-20 h-15" />
+            <span className="text-lg font-bold text-gray-900">{t('common.adminTitle')}</span>
           </div>
 
           {/* Desktop nav */}
@@ -114,7 +114,7 @@ const Header = () => {
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600"
-            aria-label="Menü"
+            aria-label={t('common.menu')}
             aria-expanded={open}
           >
             <span className="relative block h-6 w-8">

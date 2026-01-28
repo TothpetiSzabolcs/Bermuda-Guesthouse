@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useI18n } from "../i18n/LanguageProvider";
+import { useI18n } from "../i18n/useI18n";
 
 const Footer = () => {
   const { lang } = useI18n();

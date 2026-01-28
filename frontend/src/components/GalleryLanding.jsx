@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useI18n } from "../i18n/LanguageProvider";
+import { useI18n } from "../i18n/useI18n";
 import { useGalleryCovers } from "../hooks/useGalleryCovers";
 import { cld } from "../utils/cloudinary";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import bg from "../assets/welcome_screen_bg.jpg";
 import { Link } from "react-router-dom";
-import { useI18n } from "../i18n/LanguageProvider";
+import { useI18n } from "../i18n/useI18n";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 
 const HeroSection = () => {

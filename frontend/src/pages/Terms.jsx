@@ -2,164 +2,150 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
 import Footer from "../components/Footer";
+import { useI18n } from "../i18n/useI18n";
 
 const Terms = () => {
+  const { t } = useI18n();
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="pt-20 pb-12 px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">
-            Általános Szerződési Feltételek és Lemondási Feltételek
+            {t('terms.title')}
           </h1>
           
           <div className="prose prose-gray max-w-none space-y-6">
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                1. A szolgáltató megnevezése és elérhetőségei
+                {t('terms.sections.provider.title')}
               </h2>
-              <p className="text-gray-700">
-                <strong>Bermuda Vendégház</strong><br />
-                Email: info@bermuda-vendeghaz.hu<br />
-                Weboldal: www.bermuda-vendeghaz.hu
+              <p className="text-gray-700 whitespace-pre-line">
+                {t('terms.sections.provider.content')}
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                2. A szállás szolgáltatásainak leírása
+                {t('terms.sections.services.title')}
               </h2>
               <p className="text-gray-700">
-                A Bermuda Vendégház szállás szolgáltatást nyújt a weboldalunkon keresztül történő 
-                foglalás alapján. A foglalás elektronikus úton jön létre a vendég és a szolgáltató között.
+                {t('terms.sections.services.content')}
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                3. Árak és fizetési feltételek
+                {t('terms.sections.prices.title')}
               </h2>
               <p className="text-gray-700 mb-2">
-                <strong>Árak:</strong> A weboldalon feltüntetett árak érvényesek. Az ár tartalmazza 
-                a szállás díját, nem tartalmazza a helyi idegenforgalmi adót (IAFA), amelynek összege 
-                18 éven felüli vendégek esetén éjelenként 450 Ft.
+                <strong>{t('terms.sections.prices.prices')}</strong>
               </p>
               <p className="text-gray-700">
-                <strong>Fizetés:</strong> A fizetés készpénzben történik a szálláshelyen érkezéskor.
+                <strong>{t('terms.sections.prices.payment')}</strong>
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                4. Foglalás menete
+                {t('terms.sections.bookingProcess.title')}
               </h2>
               <ol className="list-decimal pl-6 text-gray-700 space-y-1">
-                <li>Vendég kitölti a foglalási űrlapot a weboldalon</li>
-                <li>Rendszerünk automatikus visszaigazolást küld a foglalás fogadásáról</li>
-                <li>Szolgáltató 24 órán belül visszaigazolja a foglalást és küldi a foglalási kódot</li>
-                <li>A foglalás a szolgáltató visszaigazolásával lép hatályba</li>
+                {t('terms.sections.bookingProcess.steps', { returnArray: true }).map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
               </ol>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                5. Lemondási feltételek
+                {t('terms.sections.cancellation.title')}
               </h2>
               <p className="text-gray-700 mb-2">
-                <strong>Ingyenes lemondás:</strong>
+                <strong>{t('terms.sections.cancellation.freeLabel')}</strong>
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-1">
-                <li>Érkezés előtt 14 nappal vagy korábban: ingyenes</li>
-                <li>Érkezés előtt 7-13 nappal: 50% az első éjszaka ára</li>
-                <li>Érkezés előtt 3-6 nappal: 70% az első éjszaka ára</li>
-                <li>Érkezés előtt 0-2 nappal vagy meg nem jelenés: 100% az első éjszaka ára</li>
+                {t('terms.sections.cancellation.rules', { returnArray: true }).map((rule, index) => (
+                  <li key={index}>{rule}</li>
+                ))}
               </ul>
               <p className="text-gray-700 mt-2">
-                A lemondást írásban (emailben) kell megtenni a szolgáltató felé.
+                {t('terms.sections.cancellation.notice')}
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                6. Vendég kötelezettségei
+                {t('terms.sections.guestObligations.title')}
               </h2>
               <ul className="list-disc pl-6 text-gray-700 space-y-1">
-                <li>A szálláshely rendjének és nyugalmának megőrzése</li>
-                <li>A szobák és felszerelés rendeltetésszerű használata</li>
-                <li>Károkozás esetén a kár megtérítése</li>
-                <li>Érkezéskor a fennmaradó összeg kifizetése</li>
-                <li>Helyi idegenforgalmi adó fizetése</li>
+                {t('terms.sections.guestObligations.items', { returnArray: true }).map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                7. Szolgáltató kötelezettségei
+                {t('terms.sections.providerObligations.title')}
               </h2>
               <ul className="list-disc pl-6 text-gray-700 space-y-1">
-                <li>A lefoglalt szoba biztosítása a megadott időszakra</li>
-                <li>Tiszta, rendben tartott szállás biztosítása</li>
-                <li>A weboldalon feltüntetett szolgáltatások nyújtása</li>
-                <li>A vendég jogainak és biztonságának tiszteletben tartása</li>
+                {t('terms.sections.providerObligations.items', { returnArray: true }).map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                8. Erővis majorok
+                {t('terms.sections.forceMajeure.title')}
               </h2>
               <p className="text-gray-700">
-                Ha a szolgáltatót előre nem látható külső ok (természeti katasztrófa, járvány, 
-                háborús helyzet, stb.) akadályozza a szerződés teljesítésében, köteles a vendéget 
-                haladéktalanul értesíteni és lehetőség szerint másik szállást biztosítani, vagy 
-                a foglalási díjat visszatéríteni.
+                {t('terms.sections.forceMajeure.content')}
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                9. Szállásra vonatkozó házirend
+                {t('terms.sections.houseRules.title')}
               </h2>
               <p className="text-gray-700 mb-2">
-                <strong>Bejelentkezés:</strong> 14:00-tól<br />
-                <strong>Kijelentkezés:</strong> 10:00-ig
+                <strong>{t('terms.sections.houseRules.checkin')}</strong><br />
+                <strong>{t('terms.sections.houseRules.checkout')}</strong>
               </p>
               <p className="text-gray-700 mb-2">
-                <strong>Házirend:</strong>
+                <strong>{t('terms.sections.houseRules.rulesTitle')}</strong>
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-1">
-                <li>A szálláshelyen tilos a dohányzás a szobákban</li>
-                <li>Rendellenkedések (hangos zene, buli) 22:00 és 8:00 között nem megengedettek</li>
-                <li>Házállatot nem tudunk fogadni</li>
-                <li>Fokozottan figyeljük a környezeti zajszintet</li>
+                {t('terms.sections.houseRules.rules', { returnArray: true }).map((rule, index) => (
+                  <li key={index}>{rule}</li>
+                ))}
               </ul>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                10. Panaszkezelés
+                {t('terms.sections.complaints.title')}
               </h2>
               <p className="text-gray-700">
-                Bármilyen panasz esetén kérjük, először a szolgáltatónk jelezzék problémájukat. 
-                Ha a panasz nem rendeződik, lehetőség van a fogyasztóvédelmi hatóságnál 
-                vagy bíróságon érvényesíteni jogaikat.
+                {t('terms.sections.complaints.content')}
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                11. Vegyes rendelkezések
+                {t('terms.sections.miscellaneous.title')}
               </h2>
               <p className="text-gray-700">
-                A jelen ÁSZF-ben nem szabályozott kérdésekre a magyar jogszabályok, különösen 
-                a Polgári Törvénykönyv és a turisztikai törvény rendelkezései az irányadóak.
+                {t('terms.sections.miscellaneous.content')}
               </p>
             </section>
 
             <div className="pt-6 border-t">
               <p className="text-sm text-gray-600">
-                Hatályba lépés dátuma: 2026. január 28.<br />
-                E szerződési feltételeket a szolgáltató fenntartja magának a jogot, hogy megváltoztassa.
+                {t('terms.effectiveDate')}<br />
+                {t('terms.disclaimer')}
               </p>
             </div>
           </div>
@@ -172,7 +158,7 @@ const Terms = () => {
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
               </svg>
-              Vissza a főoldalra
+              {t('terms.backToHome')}
             </Link>
           </div>
         </div>

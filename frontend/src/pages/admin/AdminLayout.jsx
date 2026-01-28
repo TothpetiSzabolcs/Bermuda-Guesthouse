@@ -1,21 +1,23 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
+import { useI18n } from "../../i18n/useI18n";
 
 export default function AdminLayout() {
   const { user, logout } = useAdminAuth();
+  const { t } = useI18n();
   const nav = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="h-14 bg-white border-b flex items-center justify-between px-4">
-        <div className="font-semibold">Bermuda Admin</div>
+<header className="h-14 bg-white border-b flex items-center justify-between px-4">
+        <div className="font-semibold">{t('admin.layout.title')}</div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-gray-600">{user?.username}</span>
           <button
             onClick={async () => { await logout(); nav("/admin/login"); }}
             className="text-sm px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black"
           >
-            Kilépés
+            {t('admin.layout.logout')}
           </button>
         </div>
       </header>
@@ -25,13 +27,13 @@ export default function AdminLayout() {
           <nav className="p-3 flex flex-col gap-1">
             <NavLink to="/admin" end className={({isActive}) =>
               `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
-            }>Dashboard</NavLink>
+            }>{t('admin.nav.dashboard')}</NavLink>
             <NavLink to="/admin/gallery" className={({isActive}) =>
               `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
-            }>Galéria</NavLink>
+            }>{t('admin.nav.gallery')}</NavLink>
             <NavLink to="/admin/rooms" className={({isActive}) =>
               `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
-            }>Szobák</NavLink>
+            }>{t('admin.nav.rooms')}</NavLink>
           </nav>
         </aside>
 

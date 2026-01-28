@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useGallery } from "../hooks/useGallery";
 import { useGalleryCovers } from "../hooks/useGalleryCovers";
-import { useI18n } from "../i18n/LanguageProvider";
+import { useI18n } from "../i18n/useI18n";
 import { cld } from "../utils/cloudinary";
 import Lightbox from "../components/Lightbox";
 import { FaPlay } from "react-icons/fa";
