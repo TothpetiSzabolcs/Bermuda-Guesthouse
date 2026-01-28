@@ -1,0 +1,48 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+**/*.log
+**/logs/
+
+# Node
+**/node_modules/
+
+# Build / cache
+**/dist/
+**/build/
+**/.vite/
+**/.cache/
+**/.turbo/
+**/.parcel-cache/
+
+# Tests
+**/coverage/
+
+# Env files (soha ne commitold)
+**/.env
+**/.env.local
+**/.env.*.local
+!**/.env.example   # minta mehet repo-ba
+
+# Uploads (ha lenne lokális)
+**/uploads/
+tmp/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Debug / npm stuff
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# TypeScript build info (ha van TS)
+**/*.tsbuildinfo
+
+.ralph-tui/
+prd.json
+
