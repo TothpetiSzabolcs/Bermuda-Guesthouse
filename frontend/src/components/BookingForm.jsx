@@ -10,7 +10,8 @@ const BookingForm = ({ room, onClose }) => {
     checkIn: "",
     checkOut: "",
     guests: 1,
-    message: ""
+    message: "",
+    acceptTerms: false
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +33,7 @@ const BookingForm = ({ room, onClose }) => {
       invalidEmail: "Érvényes email címet adj meg",
       invalidDate: "Érvényes dátumot adj meg",
       invalidGuests: "Legalább 1 vendég szükséges",
+      acceptTermsRequired: "A foglaláshoz el kell fogadni az ÁSZF-t és adatkezelési tájékoztatót",
       success: "Foglalási igény elküldve! Hamarosan visszajelzünk.",
       error: "Hiba történt. Kérjük, próbáld újra később."
     },
@@ -50,6 +52,7 @@ const BookingForm = ({ room, onClose }) => {
       invalidEmail: "Please enter a valid email",
       invalidDate: "Please enter a valid date",
       invalidGuests: "At least 1 guest is required",
+      acceptTermsRequired: "You must accept the Terms and Privacy Policy to book",
       success: "Booking request sent! We'll get back to you soon.",
       error: "An error occurred. Please try again later."
     },
@@ -68,6 +71,7 @@ const BookingForm = ({ room, onClose }) => {
       invalidEmail: "Bitte gültige Email eingeben",
       invalidDate: "Bitte gültiges Datum eingeben",
       invalidGuests: "Mindestens 1 Gast erforderlich",
+      acceptTermsRequired: "Sie müssen die AGB und Datenschutzerklärung akzeptieren",
       success: "Buchungsanfrage gesendet! Wir melden uns bald bei Ihnen.",
       error: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
     }
@@ -109,6 +113,10 @@ const BookingForm = ({ room, onClose }) => {
 
     if (!formData.guests || formData.guests < 1) {
       newErrors.guests = COPY.invalidGuests;
+    }
+
+    if (!formData.acceptTerms) {
+      newErrors.acceptTerms = COPY.acceptTermsRequired;
     }
 
     setErrors(newErrors);
@@ -171,11 +179,11 @@ const BookingForm = ({ room, onClose }) => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === "guests" ? parseInt(value) || 1 : value
+      [name]: type === "checkbox" ? checked : (name === "guests" ? parseInt(value) || 1 : value)
     }));
     
     if (errors[name]) {
@@ -342,47 +350,63 @@ const BookingForm = ({ room, onClose }) => {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {COPY.messageLabel}
-            </label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              rows="3"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              disabled={isSubmitting}
-              placeholder={COPY.hu ? "Esetleges megjegyzések..." : "Any special requests..."}
-            />
-          </div>
+           <div>
+             <label className="block text-sm font-medium text-gray-700 mb-1">
+               {COPY.messageLabel}
+             </label>
+             <textarea
+               name="message"
+               value={formData.message}
+               onChange={handleChange}
+               rows="3"
+               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+               disabled={isSubmitting}
+               placeholder={COPY.hu ? "Esetleges megjegyzések..." : "Any special requests..."}
+             />
+           </div>
 
-          <div className="space-y-4">
-            <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-              <p className="font-medium mb-2">
-                {COPY.hu ? "Foglalás elküldésével elfogadom:" : "By submitting booking, I agree to:"}
-              </p>
-              <div className="space-y-1">
-                <Link
-                  to="/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-700 hover:text-green-800 underline block"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {COPY.hu ? "Adatkezelési tájékoztató" : "Privacy Policy"}
-                </Link>
-                <Link
-                  to="/terms"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-700 hover:text-green-800 underline block"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {COPY.hu ? "Általános Szerződési Feltételek és Lemondási feltételek" : "Terms and Conditions"}
-                </Link>
-              </div>
-            </div>
+           <div>
+             <div className="flex items-start">
+               <input
+                 type="checkbox"
+                 name="acceptTerms"
+                 checked={formData.acceptTerms}
+                 onChange={handleChange}
+                 className={`mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 ${
+                   errors.acceptTerms ? "border-red-500" : ""
+                 }`}
+                 disabled={isSubmitting}
+               />
+               <label className="ml-2 text-sm text-gray-700">
+                 {COPY.hu ? "Elolvastam és elfogadom az " : "I have read and accept the "}
+                 <Link
+                   to="/privacy"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-green-700 hover:text-green-800 underline"
+                   onClick={(e) => e.stopPropagation()}
+                 >
+                   {COPY.hu ? "Adatkezelési tájékoztatót" : "Privacy Policy"}
+                 </Link>
+                 {COPY.hu ? " és az " : " and the "}
+                 <Link
+                   to="/terms"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-green-700 hover:text-green-800 underline"
+                   onClick={(e) => e.stopPropagation()}
+                 >
+                   {COPY.hu ? "Általános Szerződési Feltételeket" : "Terms and Conditions"}
+                 </Link>
+                 {COPY.hu ? "." : "."}
+               </label>
+             </div>
+             {errors.acceptTerms && (
+               <p className="mt-1 text-sm text-red-600">{errors.acceptTerms}</p>
+             )}
+           </div>
+
+           <div className="space-y-4">
             
             <div className="flex gap-3">
               <button
