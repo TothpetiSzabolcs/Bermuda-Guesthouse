@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "lint": "eslint .",
     "dev": "nodemon server.js"
   },
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "eslint": "^9.39.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "vitest": "^4.0.18"
   }
 }
