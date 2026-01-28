@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { useI18n } from "../i18n/useI18n";
 import logo from "../assets/BV_logo.png";
 import { Link, useLocation } from "react-router-dom";
+import Modal from "./Modal";
+import BookingForm from "./BookingForm";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const { lang, setLang, t } = useI18n();
   const { pathname } = useLocation();
   const isHome = pathname === "/" || pathname === "/home";
@@ -101,12 +104,12 @@ const Header = () => {
               <option value="en">EN</option>
               <option value="de">DE</option>
             </select>
-            <Link
-              to="/booking"
+            <button
+              onClick={() => setBookingModalOpen(true)}
               className="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium"
             >
               {t("nav.book")}
-            </Link>
+            </button>
           </div>
 
           {/* Mobil menü gomb */}
@@ -152,17 +155,31 @@ const Header = () => {
                 )
               )}
 
-              <Link
-                to="/booking"
-                onClick={() => setOpen(false)}
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setBookingModalOpen(true);
+                }}
                 className="mt-2 block w-full text-left bg-green-700 text-white px-3 py-2 rounded-lg hover:bg-green-800 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-green-500/50"
               >
                 {t("nav.book")}
-              </Link>
+              </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Booking Modal */}
+      <Modal
+        isOpen={bookingModalOpen}
+        onClose={() => setBookingModalOpen(false)}
+        title={t("nav.book")}
+      >
+        <BookingForm
+          room={{ name: "Általános foglalás", capacity: 10 }}
+          onClose={() => setBookingModalOpen(false)}
+        />
+      </Modal>
     </header>
   );
 };

@@ -196,239 +196,233 @@ const BookingForm = ({ room, onClose }) => {
 
   if (submitStatus?.type === "success") {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{COPY.success}</h3>
-            <p className="text-gray-600 mb-4">
-              {COPY.hu ? `Foglalási kód: ${submitStatus.data.code}` : `Booking code: ${submitStatus.data.code}`}
-            </p>
-            <button
-              onClick={onClose}
-              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              {COPY.hu ? "Bezárás" : "Close"}
-            </button>
-          </div>
+      <div className="text-center py-8">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+          </svg>
         </div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">{COPY.success}</h3>
+        <p className="text-gray-600 mb-6 text-lg">
+          {COPY.hu ? `Foglalási kód: ${submitStatus.data.code}` : `Booking code: ${submitStatus.data.code}`}
+        </p>
+        <button
+          onClick={onClose}
+          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+        >
+          {COPY.hu ? "Bezárás" : "Close"}
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">{COPY.title}</h3>
+    <>
+      {/* Room Information */}
+      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {COPY.roomLabel}
+        </label>
+        <div className="text-lg font-medium text-gray-900">{room.name}</div>
+      </div>
+
+      {/* Error Message */}
+      {submitStatus?.type === "error" && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+          {submitStatus.message}
+        </div>
+      )}
+
+      {/* Booking Form */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="name">
+            {COPY.nameLabel} *
+          </label>
+          <input
+            id="name"
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors ${
+              errors.name ? "border-red-500" : "border-gray-300"
+            }`}
+            disabled={isSubmitting}
+            required
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="email">
+            {COPY.emailLabel} *
+          </label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            }`}
+            disabled={isSubmitting}
+            required
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="checkIn">
+              {COPY.checkInLabel} *
+            </label>
+            <input
+              id="checkIn"
+              type="date"
+              name="checkIn"
+              value={formData.checkIn}
+              onChange={handleChange}
+              min={new Date().toISOString().split('T')[0]}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors ${
+                errors.checkIn ? "border-red-500" : "border-gray-300"
+              }`}
+              disabled={isSubmitting}
+              required
+            />
+            {errors.checkIn && (
+              <p className="mt-1 text-sm text-red-600">{errors.checkIn}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="checkOut">
+              {COPY.checkOutLabel} *
+            </label>
+            <input
+              id="checkOut"
+              type="date"
+              name="checkOut"
+              value={formData.checkOut}
+              onChange={handleChange}
+              min={formData.checkIn || new Date().toISOString().split('T')[0]}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors ${
+                errors.checkOut ? "border-red-500" : "border-gray-300"
+              }`}
+              disabled={isSubmitting}
+              required
+            />
+            {errors.checkOut && (
+              <p className="mt-1 text-sm text-red-600">{errors.checkOut}</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="guests">
+            {COPY.guestsLabel} *
+          </label>
+          <input
+            id="guests"
+            type="number"
+            name="guests"
+            value={formData.guests}
+            onChange={handleChange}
+            min="1"
+            max={room.capacity || room.guests || 10}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors ${
+              errors.guests ? "border-red-500" : "border-gray-300"
+            }`}
+            disabled={isSubmitting}
+            required
+          />
+          {errors.guests && (
+            <p className="mt-1 text-sm text-red-600">{errors.guests}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="message">
+            {COPY.messageLabel}
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            rows="3"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors resize-none"
+            disabled={isSubmitting}
+            placeholder={COPY.hu ? "Esetleges megjegyzések..." : "Any special requests..."}
+          />
+        </div>
+
+        <div>
+          <div className="flex items-start">
+            <input
+              id="acceptTerms"
+              type="checkbox"
+              name="acceptTerms"
+              checked={formData.acceptTerms}
+              onChange={handleChange}
+              className={`mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 ${
+                errors.acceptTerms ? "border-red-500" : ""
+              }`}
+              disabled={isSubmitting}
+            />
+            <label htmlFor="acceptTerms" className="ml-3 text-sm text-gray-700 leading-relaxed">
+              {COPY.hu ? "Elolvastam és elfogadom az " : "I have read and accept the "}
+              <Link
+                to="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-700 hover:text-green-800 underline font-medium"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {COPY.hu ? "Adatkezelési tájékoztatót" : "Privacy Policy"}
+              </Link>
+              {COPY.hu ? " és az " : " and the "}
+              <Link
+                to="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-700 hover:text-green-800 underline font-medium"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {COPY.hu ? "Általános Szerződési Feltételeket" : "Terms and Conditions"}
+              </Link>
+              {COPY.hu ? "." : "."}
+            </label>
+          </div>
+          {errors.acceptTerms && (
+            <p className="mt-1 text-sm text-red-600">{errors.acceptTerms}</p>
+          )}
+        </div>
+
+        <div className="flex gap-3 pt-2">
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
+            {COPY.cancelButton}
+          </button>
+          <button
+            type="submit"
+            className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-green-400 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (COPY.hu ? "Küldés..." : "Sending...") : COPY.submitButton}
           </button>
         </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {COPY.roomLabel}
-          </label>
-          <div className="text-gray-900">{room.name}</div>
-        </div>
-
-        {submitStatus?.type === "error" && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
-            {submitStatus.message}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {COPY.nameLabel} *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              }`}
-              disabled={isSubmitting}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {COPY.emailLabel} *
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              }`}
-              disabled={isSubmitting}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {COPY.checkInLabel} *
-              </label>
-              <input
-                type="date"
-                name="checkIn"
-                value={formData.checkIn}
-                onChange={handleChange}
-                min={new Date().toISOString().split('T')[0]}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.checkIn ? "border-red-500" : "border-gray-300"
-                }`}
-                disabled={isSubmitting}
-              />
-              {errors.checkIn && (
-                <p className="mt-1 text-sm text-red-600">{errors.checkIn}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {COPY.checkOutLabel} *
-              </label>
-              <input
-                type="date"
-                name="checkOut"
-                value={formData.checkOut}
-                onChange={handleChange}
-                min={formData.checkIn || new Date().toISOString().split('T')[0]}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.checkOut ? "border-red-500" : "border-gray-300"
-                }`}
-                disabled={isSubmitting}
-              />
-              {errors.checkOut && (
-                <p className="mt-1 text-sm text-red-600">{errors.checkOut}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {COPY.guestsLabel} *
-            </label>
-            <input
-              type="number"
-              name="guests"
-              value={formData.guests}
-              onChange={handleChange}
-              min="1"
-              max={room.capacity || room.guests || 10}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                errors.guests ? "border-red-500" : "border-gray-300"
-              }`}
-              disabled={isSubmitting}
-            />
-            {errors.guests && (
-              <p className="mt-1 text-sm text-red-600">{errors.guests}</p>
-            )}
-          </div>
-
-           <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">
-               {COPY.messageLabel}
-             </label>
-             <textarea
-               name="message"
-               value={formData.message}
-               onChange={handleChange}
-               rows="3"
-               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-               disabled={isSubmitting}
-               placeholder={COPY.hu ? "Esetleges megjegyzések..." : "Any special requests..."}
-             />
-           </div>
-
-           <div>
-             <div className="flex items-start">
-               <input
-                 type="checkbox"
-                 name="acceptTerms"
-                 checked={formData.acceptTerms}
-                 onChange={handleChange}
-                 className={`mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 ${
-                   errors.acceptTerms ? "border-red-500" : ""
-                 }`}
-                 disabled={isSubmitting}
-               />
-               <label className="ml-2 text-sm text-gray-700">
-                 {COPY.hu ? "Elolvastam és elfogadom az " : "I have read and accept the "}
-                 <Link
-                   to="/privacy"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className="text-green-700 hover:text-green-800 underline"
-                   onClick={(e) => e.stopPropagation()}
-                 >
-                   {COPY.hu ? "Adatkezelési tájékoztatót" : "Privacy Policy"}
-                 </Link>
-                 {COPY.hu ? " és az " : " and the "}
-                 <Link
-                   to="/terms"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className="text-green-700 hover:text-green-800 underline"
-                   onClick={(e) => e.stopPropagation()}
-                 >
-                   {COPY.hu ? "Általános Szerződési Feltételeket" : "Terms and Conditions"}
-                 </Link>
-                 {COPY.hu ? "." : "."}
-               </label>
-             </div>
-             {errors.acceptTerms && (
-               <p className="mt-1 text-sm text-red-600">{errors.acceptTerms}</p>
-             )}
-           </div>
-
-           <div className="space-y-4">
-            
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                disabled={isSubmitting}
-              >
-                {COPY.cancelButton}
-              </button>
-              <button
-                type="submit"
-                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:bg-green-400"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (COPY.hu ? "Küldés..." : "Sending...") : COPY.submitButton}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </>
   );
 };
 
