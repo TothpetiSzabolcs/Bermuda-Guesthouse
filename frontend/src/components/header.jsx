@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useI18n } from "../i18n/useI18n";
 import logo from "../assets/BV_logo.png";
 import { Link, useLocation } from "react-router-dom";
@@ -8,9 +8,25 @@ import BookingForm from "./BookingForm";
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { lang, setLang, t } = useI18n();
   const { pathname } = useLocation();
-  const isHome = pathname === "/" || pathname === "/home";
+const isHome = pathname === "/" || pathname === "/home";
+
+  // Scroll detection for header transparency
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 30;
+      setScrolled(isScrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   // Menü: hash = oldalon belüli szekció
   const navItems = [
@@ -69,36 +85,50 @@ const Header = () => {
     );
   };
 
-  return (
-    <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm shadow-sm z-50">
+return (
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isHome && !scrolled 
+        ? 'bg-transparent' 
+        : 'bg-white/90 backdrop-blur-sm shadow-sm'
+    }`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Felső sor */}
         <div className="flex h-16 items-center justify-between">
 {/* Logó + márka */}
           <div className="flex items-center gap-2">
             <img src={logo} alt={t('common.adminTitle')} className="w-20 h-15" />
-            <span className="text-lg font-bold text-gray-900">{t('common.adminTitle')}</span>
+            <span className={`text-lg font-bold transition-colors duration-300 ${
+              isHome && !scrolled ? 'text-white drop-shadow-lg' : 'text-gray-900'
+            }`}>{t('common.adminTitle')}</span>
           </div>
 
-          {/* Desktop nav */}
+{/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) =>
               renderNav(
                 item,
-                "relative group px-3 py-2 text-sm font-medium text-gray-700 hover:text-green-700 transition-colors",
+                `relative group px-3 py-2 text-sm font-medium transition-colors duration-300 ${
+                  isHome && !scrolled
+                    ? 'text-white hover:text-emerald-300 drop-shadow-lg'
+                    : 'text-gray-700 hover:text-green-700'
+                }`,
                 undefined,
                 isHome
               )
             )}
           </nav>
 
-          {/* Desktop CTA + nyelv */}
+{/* Desktop CTA + nyelv */}
           <div className="hidden md:flex items-center gap-3">
             <select
               aria-label={t("common.language")}
               value={lang}
               onChange={(e) => setLang(e.target.value)}
-              className="rounded-md border border-gray-300 bg-white/80 px-3 py-2 text-sm text-gray-800 hover:bg-white focus:outline-none focus:ring-2 focus:ring-green-600"
+              className={`rounded-md border px-3 py-2 text-sm transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600 ${
+                isHome && !scrolled
+                  ? 'border-white/30 bg-white/10 text-white hover:bg-white/20'
+                  : 'border-gray-300 bg-white/80 text-gray-800 hover:bg-white'
+              }`}
             >
               <option value="hu">HU</option>
               <option value="en">EN</option>
@@ -106,17 +136,25 @@ const Header = () => {
             </select>
             <button
               onClick={() => setBookingModalOpen(true)}
-              className="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium"
+              className={`px-6 py-2 rounded-lg transition-colors text-sm font-medium ${
+                isHome && !scrolled
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-green-700 text-white hover:bg-green-800'
+              }`}
             >
               {t("nav.book")}
             </button>
           </div>
 
-          {/* Mobil menü gomb */}
+{/* Mobil menü gomb */}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600"
+            className={`md:hidden inline-flex items-center justify-center p-2 rounded-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600 ${
+              isHome && !scrolled
+                ? 'text-white hover:text-emerald-300'
+                : 'text-gray-700 hover:text-gray-900'
+            }`}
             aria-label={t('common.menu')}
             aria-expanded={open}
           >
@@ -128,13 +166,19 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobil nav */}
+{/* Mobil nav */}
         {open && (
-          <div className="md:hidden border-t bg-white">
+          <div className={`md:hidden border-t transition-colors duration-300 ${
+            isHome && !scrolled
+              ? 'bg-white/95 backdrop-blur-sm'
+              : 'bg-white'
+          }`}>
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {/* Nyelvválasztó */}
+{/* Nyelvválasztó */}
               <div className="flex items-center gap-2 px-3 py-2">
-                <label className="text-sm text-gray-600">{t("common.language")}:</label>
+                <label className={`text-sm transition-colors duration-300 ${
+                  isHome && !scrolled ? 'text-gray-800' : 'text-gray-600'
+                }`}>{t("common.language")}:</label>
                 <select
                   value={lang}
                   onChange={(e) => setLang(e.target.value)}
@@ -146,10 +190,14 @@ const Header = () => {
                 </select>
               </div>
 
-              {navItems.map((item) =>
+{navItems.map((item) =>
                 renderNav(
                   item,
-                  "block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-green-700 hover:bg-gray-50 transition-colors rounded-md",
+                  `block w-full text-left px-3 py-2 text-base font-medium transition-colors rounded-md ${
+                    isHome && !scrolled
+                      ? 'text-gray-800 hover:text-green-700 hover:bg-gray-50'
+                      : 'text-gray-700 hover:text-green-700 hover:bg-gray-50'
+                  }`,
                   () => setOpen(false),
                   isHome
                 )
