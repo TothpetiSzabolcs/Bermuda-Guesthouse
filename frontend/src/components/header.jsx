@@ -12,11 +12,20 @@ const Header = () => {
   const { pathname } = useLocation();
 const isHome = pathname === "/" || pathname === "/home";
 
-  // Scroll detection for header transparency
+  // Scroll detection for header transparency with performance optimization
   useEffect(() => {
+    let ticking = false;
+    const threshold = 30;
+
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 30;
-      setScrolled(isScrolled);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const isScrolled = window.scrollY > threshold;
+          setScrolled(isScrolled);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -123,15 +132,15 @@ return (
               aria-label={t("common.language")}
               value={lang}
               onChange={(e) => setLang(e.target.value)}
-              className={`rounded-md border px-3 py-2 text-sm transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600 ${
+              className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600 min-w-[4rem] ${
                 isHome && !scrolled
-                  ? 'border-white/30 bg-white/10 text-white hover:bg-white/20'
-                  : 'border-gray-300 bg-white/80 text-gray-800 hover:bg-white'
+                  ? 'border-white/40 bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+                  : 'border-gray-300 bg-white text-gray-800 hover:bg-gray-50'
               }`}
             >
-              <option value="hu">HU</option>
-              <option value="en">EN</option>
-              <option value="de">DE</option>
+              <option value="hu" className="font-medium">🇭🇺 HU</option>
+              <option value="en" className="font-medium">🇬🇧 EN</option>
+              <option value="de" className="font-medium">🇩🇪 DE</option>
             </select>
             <button
               onClick={() => setBookingModalOpen(true)}
@@ -181,11 +190,11 @@ return (
                 <select
                   value={lang}
                   onChange={(e) => setLang(e.target.value)}
-                  className="rounded-md border border-gray-300 bg-white/80 px-2 py-1 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-600"
+                  className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-600 min-w-[4rem]"
                 >
-                  <option value="hu">HU</option>
-                  <option value="en">EN</option>
-                  <option value="de">DE</option>
+                  <option value="hu" className="font-medium">🇭🇺 HU</option>
+                  <option value="en" className="font-medium">🇬🇧 EN</option>
+                  <option value="de" className="font-medium">🇩🇪 DE</option>
                 </select>
               </div>
 
