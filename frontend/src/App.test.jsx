@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { describe, it, expect } from 'vitest'
 import App from './App.jsx'
 import { LanguageProvider } from './i18n/LanguageProvider'
@@ -7,21 +8,25 @@ import { LanguageProvider } from './i18n/LanguageProvider'
 describe('App Component', () => {
   it('renders without crashing', () => {
     render(
-      <BrowserRouter>
-        <LanguageProvider>
-          <App />
-        </LanguageProvider>
-      </BrowserRouter>
+      <HelmetProvider>
+        <BrowserRouter>
+          <LanguageProvider>
+            <App />
+          </LanguageProvider>
+        </BrowserRouter>
+      </HelmetProvider>
     )
   })
 
   it('contains router structure', () => {
     render(
-      <BrowserRouter>
-        <LanguageProvider>
-          <App />
-        </LanguageProvider>
-      </BrowserRouter>
+      <HelmetProvider>
+        <BrowserRouter>
+          <LanguageProvider>
+            <App />
+          </LanguageProvider>
+        </BrowserRouter>
+      </HelmetProvider>
     )
     
     // The app should render routes structure

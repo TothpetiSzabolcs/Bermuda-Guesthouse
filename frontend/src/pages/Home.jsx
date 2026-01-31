@@ -1,13 +1,13 @@
-import React from 'react'
-import Header from '../components/header'
-import Footer from '../components/Footer'
-import HeroSection from '../components/heroSection'
-import Rooms from '../components/Rooms'
-import Experiences from '../components/Experiences'
-import Gallery from '../components/gallery'
+import React from "react";
+import Header from "../components/header";
+import Footer from "../components/Footer";
+import HeroSection from "../components/heroSection";
+import Rooms from "../components/Rooms";
+import Experiences from "../components/Experiences";
+import Gallery from "../components/services";
+import SEO from "../components/SEO";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
 
 const Home = () => {
   const location = useLocation();
@@ -28,15 +28,18 @@ const Home = () => {
   }, [location.search, navigate]);
 
   return (
-    <div>
-      <Header />
-      <HeroSection />
-      <Experiences />
-      <Rooms />
-      <Gallery />
-      <Footer />
-    </div>
-  )
-}
+    <>
+      <SEO />
+      <div>
+        <Header />
+        <HeroSection />
+        <Experiences />
+        <Rooms />
+        <Gallery />
+        <Footer />
+      </div>
+    </>
+  );
+};
 
-export default Home
+export default Home;
