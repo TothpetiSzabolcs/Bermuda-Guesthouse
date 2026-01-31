@@ -13,10 +13,34 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Bermuda Vendégház</h3>
             <p className="text-sm leading-relaxed">
-              {lang === "hu" && "Kényelmes szállás a Balaton közelében. Modern felszereltség, barátságous környezet, felejthetetlen élmények."}
+              {lang === "hu" && "Kényelmes szállás a Balaton közelében. Modern felszereltség, barátságos környezet, felejthetetlen élmények."}
               {lang === "en" && "Comfortable accommodation near Lake Balaton. Modern amenities, friendly atmosphere, unforgettable experiences."}
               {lang === "de" && "Bequeme Unterkunft nahe dem Balaton. Moderne Ausstattung, freundliche Atmosphäre, unvergessliche Erlebnisse."}
             </p>
+            <div className="mt-4 space-y-2 text-sm">
+              <p className="hover:text-emerald-400 transition-colors">
+                <strong>{lang === "hu" && "Cím:"}
+                {lang === "en" && "Address:"}
+                {lang === "de" && "Adresse:"}</strong> Somogy megye, Vése Zrínyi utca 1.
+              </p>
+              <p className="hover:text-emerald-400 transition-colors">
+                <strong>{lang === "hu" && "Telefon:"}
+                {lang === "en" && "Phone:"}
+                {lang === "de" && "Telefon:"}</strong> 
+                <a href="tel:+36302615608" className="hover:text-emerald-400 transition-colors"> 06/30 261 5608</a>
+              </p>
+              <p className="hover:text-emerald-400 transition-colors">
+                <strong>{lang === "hu" && "Email:"}
+                {lang === "en" && "Email:"}
+                {lang === "de" && "Email:"}</strong> 
+                <a href="mailto:bermudavendeghazvese@gmail.com" className="hover:text-emerald-400 transition-colors"> bermudavendeghazvese@gmail.com</a>
+              </p>
+              <p className="hover:text-emerald-400 transition-colors">
+                <strong>{lang === "hu" && "NTAK Szám:"}
+                {lang === "en" && "NTAK Number:"}
+                {lang === "de" && "NTAK Nummer:"}</strong> MA24095212
+              </p>
+            </div>
           </div>
 
           {/* Quick Links */}
@@ -110,11 +134,7 @@ const Footer = () => {
               {lang === "en" && " All rights reserved."}
               {lang === "de" && " Alle Rechte vorbehalten."}
             </p>
-            <p className="mt-2 md:mt-0">
-              {lang === "hu" && "Email: info@bermuda-vendeghaz.hu"}
-              {lang === "en" && "Email: info@bermuda-vendeghaz.hu"}
-              {lang === "de" && "Email: info@bermuda-vendeghaz.hu"}
-            </p>
+
           </div>
         </div>
       </div>
