@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   FiUsers,
   FiWifi,
@@ -21,6 +21,7 @@ const AUTOPLAY_INTERVAL = 5000;
 
 const RoomDetail = () => {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t, lang } = useI18n();
 
@@ -28,6 +29,7 @@ const RoomDetail = () => {
 
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [activeImg, setActiveImg] = useState(0);
+  const [queryParamApplied, setQueryParamApplied] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   
@@ -72,9 +74,26 @@ const RoomDetail = () => {
   
   const hasMany = images.length > 1;
 
-  // slug váltáskor vissza az első képre
+  // Apply query parameter for initial image index (only once, before user interaction)
+  useEffect(() => {
+    if (queryParamApplied || loading || images.length === 0) return;
+    
+    const imgParam = searchParams.get('img');
+    if (imgParam !== null) {
+      const parsedIndex = parseInt(imgParam, 10);
+      if (!isNaN(parsedIndex)) {
+        // Clamp index between 0 and images.length - 1
+        const clampedIndex = Math.max(0, Math.min(parsedIndex, images.length - 1));
+        setActiveImg(clampedIndex);
+        setQueryParamApplied(true);
+      }
+    }
+  }, [images.length, loading, queryParamApplied, searchParams]);
+
+  // slug váltáskor vissza az első képre és reset query param state
   useEffect(() => {
     setActiveImg(0);
+    setQueryParamApplied(false);
   }, [images.length]);
 
   // Autoplay helper functions

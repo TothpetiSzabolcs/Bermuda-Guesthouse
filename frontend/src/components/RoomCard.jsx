@@ -144,7 +144,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
 
         <div className="flex space-x-3">
           <Link
-            to={`/rooms/${room.slug || room.id || room._id}`}
+            to={`/rooms/${room.slug || room.id || room._id}?img=${currentImageIndex}`}
             className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-lg font-medium transition-colors duration-200 text-center"
           >
             {t("common.viewDetails") || "Megtekintés"}
