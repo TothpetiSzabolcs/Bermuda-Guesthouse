@@ -10,13 +10,12 @@ import AdminGallery from "./pages/admin/AdminGallery";
 import AdminRooms from "./pages/admin/AdminRooms";
 import RoomDetail from "./components/RoomDetail";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
-// opcionális: HashScroller ha használod a #rooms/#hero görgetést
-// import HashScroller from "./components/HashScroller";
+import HashScroller from "./components/HashScroller";
 
 export default function App() {
   return (
     <>
-      {/* <HashScroller /> */}
+      <HashScroller />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<GalleryPage />} />

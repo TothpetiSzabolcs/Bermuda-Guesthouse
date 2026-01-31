@@ -30,7 +30,7 @@ const HeroSection = () => {
     <div id="hero" className="relative h-screen w-full overflow-hidden">
       <img
         src={bg}
-        alt="background"
+        alt={t("hero.bgAlt") || "Bermanda Vendégház - háttérkép"}
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-black/50" />
