@@ -47,7 +47,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
               srcSet={`${img400} 400w, ${img600} 600w, ${img800} 800w`}
               sizes="(max-width: 640px) 400px, (max-width: 1024px) 600px, 800px"
               alt={currentImage?.alt || room.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hover:scale-105 transition-all duration-500"
               loading="lazy"
               decoding="async"
             />
