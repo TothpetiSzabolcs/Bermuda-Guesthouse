@@ -7,6 +7,7 @@ import {
   FiArrowLeft,
   FiChevronLeft,
   FiChevronRight,
+  FiTag,
 } from "react-icons/fi";
 import { MdTv, MdOutlineBathroom } from "react-icons/md";
 import { FaKitchenSet } from "react-icons/fa6";
@@ -102,9 +103,9 @@ const RoomDetail = () => {
     
     clearInterval(autoplayTimerRef.current);
     autoplayTimerRef.current = setInterval(() => {
-      goNext();
+      setActiveImg((i) => (i + 1) % images.length);
     }, AUTOPLAY_INTERVAL);
-  }, [hasMany, isHovered, goNext]);
+  }, [hasMany, isHovered, images.length]);
 
   const stopAutoplay = useCallback(() => {
     if (autoplayTimerRef.current) {
@@ -119,6 +120,18 @@ const RoomDetail = () => {
       startAutoplay();
     }
   }, [stopAutoplay, startAutoplay, isHovered]);
+
+  const goPrev = useCallback(() => {
+    if (!hasMany) return;
+    setActiveImg((i) => (i - 1 + images.length) % images.length);
+    resetAutoplay();
+  }, [hasMany, images.length, resetAutoplay]);
+
+  const goNext = useCallback(() => {
+    if (!hasMany) return;
+    setActiveImg((i) => (i + 1) % images.length);
+    resetAutoplay();
+  }, [hasMany, images.length, resetAutoplay]);
 
   // Cleanup effect for component unmount
   useEffect(() => {
@@ -161,18 +174,6 @@ const RoomDetail = () => {
       stopAutoplay();
     };
   }, [hasMany, isHovered, startAutoplay, stopAutoplay]);
-
-  const goPrev = useCallback(() => {
-    if (!hasMany) return;
-    setActiveImg((i) => (i - 1 + images.length) % images.length);
-    resetAutoplay();
-  }, [hasMany, images.length, resetAutoplay]);
-
-  const goNext = useCallback(() => {
-    if (!hasMany) return;
-    setActiveImg((i) => (i + 1) % images.length);
-    resetAutoplay();
-  }, [hasMany, images.length, resetAutoplay]);
 
   // Swipe gesture handlers
   const minSwipeDistance = 40;
@@ -340,11 +341,10 @@ const RoomDetail = () => {
               )}
 
               {/* Price badge */}
-              {typeof room.price === "number" && (
-                <div className="absolute top-6 right-6 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium">
-                  ${room.price}/{t("common.pricePerNight")}
-                </div>
-              )}
+              <div className="absolute top-6 right-6 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center">
+                <FiTag className="w-4 h-4 mr-1" />
+                9000 Ft / {t("common.pricePerPersonPerNight")}
+              </div>
             </div>
 
             {/* Content section */}

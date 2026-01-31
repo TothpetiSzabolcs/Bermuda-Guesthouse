@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { FiUsers, FiWifi, FiCoffee } from "react-icons/fi";
+import { FiUsers, FiWifi, FiCoffee, FiTag } from "react-icons/fi";
 import { MdTv, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { MdOutlineBathroom } from "react-icons/md";
@@ -97,11 +97,10 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
         )}
 
         {/* ár badge (ha van ár) */}
-        {typeof room.price === "number" && (
-          <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-            ${room.price}/{t("common.pricePerNight")}
-          </div>
-        )}
+        <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
+          <FiTag className="w-4 h-4 mr-1" />
+          9000 Ft / {t("common.pricePerPersonPerNight")}
+        </div>
       </div>
 
       <div className="p-6">
