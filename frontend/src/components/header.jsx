@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useI18n } from "../i18n/useI18n";
 import logo from "../assets/BV_logo.png";
 import { Link, useLocation } from "react-router-dom";
-import Modal from "./Modal";
-import BookingForm from "./BookingForm";
+import BookingModal from "./BookingModal";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -218,16 +217,11 @@ return (
       </div>
 
       {/* Booking Modal */}
-      <Modal
+      <BookingModal
         isOpen={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
-        title={t("nav.book")}
-      >
-        <BookingForm
-          room={{ name: "Általános foglalás", capacity: 10 }}
-          onClose={() => setBookingModalOpen(false)}
-        />
-      </Modal>
+        mode="picker"
+      />
     </header>
   );
 };

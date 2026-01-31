@@ -142,6 +142,10 @@ export const translations = {
       checkOut: "Távozás",
       guests: "Vendégek",
       submit: "Foglalás indítása",
+      picker: {
+        title: "Válasszon szobát",
+        backToPicker: "Vissza a szobaválasztóhoz"
+      }
     },
 
     terms: {
@@ -528,6 +532,10 @@ export const translations = {
       checkOut: "Check-out",
       guests: "Guests",
       submit: "Start Booking",
+      picker: {
+        title: "Choose a Room",
+        backToPicker: "Back to Room Selection"
+      }
     },
 
     terms: {
@@ -914,6 +922,10 @@ export const translations = {
       checkOut: "Abreise",
       guests: "Gäste",
       submit: "Buchung starten",
+      picker: {
+        title: "Zimmer wählen",
+        backToPicker: "Zurück zur Zimmerauswahl"
+      }
     },
 
     terms: {
