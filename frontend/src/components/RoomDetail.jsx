@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   FiUsers,
@@ -16,6 +16,9 @@ import { cld } from "../utils/cloudinary";
 import BookingModal from "./BookingModal";
 import SEO from "../components/SEO";
 
+// Autoplay interval constant (5 seconds)
+const AUTOPLAY_INTERVAL = 5000;
+
 const RoomDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -27,6 +30,10 @@ const RoomDetail = () => {
   const [activeImg, setActiveImg] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  
+  // Autoplay state
+  const [isHovered, setIsHovered] = useState(false);
+  const autoplayTimerRef = useRef(null);
 
 
   useEffect(() => {
@@ -70,15 +77,83 @@ const RoomDetail = () => {
     setActiveImg(0);
   }, [images.length]);
 
+  // Autoplay helper functions
+  const startAutoplay = useCallback(() => {
+    if (!hasMany || isHovered || document.visibilityState !== 'visible') return;
+    
+    clearInterval(autoplayTimerRef.current);
+    autoplayTimerRef.current = setInterval(() => {
+      goNext();
+    }, AUTOPLAY_INTERVAL);
+  }, [hasMany, isHovered, goNext]);
+
+  const stopAutoplay = useCallback(() => {
+    if (autoplayTimerRef.current) {
+      clearInterval(autoplayTimerRef.current);
+      autoplayTimerRef.current = null;
+    }
+  }, []);
+
+  const resetAutoplay = useCallback(() => {
+    stopAutoplay();
+    if (!isHovered && document.visibilityState === 'visible') {
+      startAutoplay();
+    }
+  }, [stopAutoplay, startAutoplay, isHovered]);
+
+  // Cleanup effect for component unmount
+  useEffect(() => {
+    return () => {
+      stopAutoplay();
+    };
+  }, [stopAutoplay]);
+
+  // Visibility API effect
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !isHovered && hasMany) {
+        startAutoplay();
+      } else {
+        stopAutoplay();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isHovered, hasMany, startAutoplay, stopAutoplay]);
+
+  // Main autoplay effect
+  useEffect(() => {
+    if (!hasMany) {
+      stopAutoplay();
+      return;
+    }
+
+    if (!isHovered && document.visibilityState === 'visible') {
+      startAutoplay();
+    } else {
+      stopAutoplay();
+    }
+
+    return () => {
+      stopAutoplay();
+    };
+  }, [hasMany, isHovered, startAutoplay, stopAutoplay]);
+
   const goPrev = useCallback(() => {
     if (!hasMany) return;
     setActiveImg((i) => (i - 1 + images.length) % images.length);
-  }, [hasMany, images.length]);
+    resetAutoplay();
+  }, [hasMany, images.length, resetAutoplay]);
 
   const goNext = useCallback(() => {
     if (!hasMany) return;
     setActiveImg((i) => (i + 1) % images.length);
-  }, [hasMany, images.length]);
+    resetAutoplay();
+  }, [hasMany, images.length, resetAutoplay]);
 
   // Swipe gesture handlers
   const minSwipeDistance = 40;
@@ -105,6 +180,9 @@ const RoomDetail = () => {
     if (isRightSwipe) {
       goPrev();
     }
+    
+    // Reset autoplay on any swipe action
+    resetAutoplay();
   };
 
   // Billentyű lapozás (← →)
@@ -196,6 +274,8 @@ const RoomDetail = () => {
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
             >
               {heroRaw ? (
                 <>
