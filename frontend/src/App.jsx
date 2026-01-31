@@ -11,12 +11,14 @@ import AdminRooms from "./pages/admin/AdminRooms";
 import RoomDetail from "./components/RoomDetail";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 import HashScroller from "./components/HashScroller";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
     <>
       <HashScroller />
       <Routes>
+        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/gallery/:category" element={<GalleryPage />} />

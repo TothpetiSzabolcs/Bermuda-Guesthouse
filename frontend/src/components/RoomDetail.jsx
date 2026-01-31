@@ -8,15 +8,22 @@ import { useRooms } from "../hooks/useRooms";
 import { useI18n } from "../i18n/useI18n";
 import { cld } from "../utils/cloudinary";
 import BookingModal from "./BookingModal";
+import SEO from "../components/SEO";
 
 const RoomDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { t, lang } = useI18n();
-  const { data: rooms, loading, error } = useRooms("bermuda-vendeghaz", { lang });
+  const {
+    data: rooms,
+    loading,
+    error,
+  } = useRooms("bermuda-vendeghaz", { lang });
   const [selectedRoom, setSelectedRoom] = useState(null);
-  
-  const room = rooms?.find(r => r.slug === slug || r.id === slug || r._id === slug);
+
+  const room = rooms?.find(
+    (r) => r.slug === slug || r.id === slug || r._id === slug,
+  );
 
   useEffect(() => {
     if (rooms && !room) {
@@ -48,7 +55,7 @@ const RoomDetail = () => {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-red-600">{t("common.error")}</p>
-          <Link 
+          <Link
             to="/"
             className="mt-4 inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
           >
@@ -59,7 +66,6 @@ const RoomDetail = () => {
     );
   }
 
-
   const imgSrcRaw = room.image || room.images?.[0]?.url || null;
   const img1200 = cld(imgSrcRaw, "f_auto,q_auto,w_1200");
   const img800 = cld(imgSrcRaw, "f_auto,q_auto,w_800");
@@ -69,10 +75,21 @@ const RoomDetail = () => {
 
   return (
     <>
+      <SEO
+        title={`${room.name} – ${t("nav.rooms")} | Bermuda Vendégház`}
+        description={
+          (typeof description === "string" ? description.slice(0, 155) : "") ||
+          "Szoba részletek, felszereltség és foglalás – Bermuda Vendégház."
+        }
+        canonicalUrl={`https://bermuda-vendeghaz.hu/rooms/${slug}`}
+        ogImage={
+          imgSrcRaw ? cld(imgSrcRaw, "f_auto,q_auto,w_1200") : "/og-image.jpg"
+        }
+      />
       <section className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Back button */}
-          <Link 
+          <Link
             to="/#rooms"
             className="inline-flex items-center text-gray-600 hover:text-green-600 font-medium mb-8 transition-colors"
           >
@@ -119,7 +136,7 @@ const RoomDetail = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <button
                   onClick={handleBookingClick}
                   className="mt-4 md:mt-0 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"
@@ -133,13 +150,11 @@ const RoomDetail = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-3">
                   {t("rooms.description") || "Leírás"}
                 </h2>
-                <p className="text-gray-600 leading-relaxed">
-                  {description}
-                </p>
+                <p className="text-gray-600 leading-relaxed">{description}</p>
               </div>
 
               {/* Amenities */}
-              {(room.amenities && room.amenities.length > 0) && (
+              {room.amenities && room.amenities.length > 0 && (
                 <div className="mb-8">
                   <h2 className="text-xl font-semibold text-gray-900 mb-3">
                     {t("rooms.amenities")}
@@ -197,9 +212,12 @@ const RoomDetail = () => {
                       const imgSrc = image.url || image;
                       const img400 = cld(imgSrc, "f_auto,q_auto,w_400");
                       const img800 = cld(imgSrc, "f_auto,q_auto,w_800");
-                      
+
                       return (
-                        <div key={index} className="aspect-square overflow-hidden rounded-lg">
+                        <div
+                          key={index}
+                          className="aspect-square overflow-hidden rounded-lg"
+                        >
                           <img
                             src={img400}
                             srcSet={`${img400} 400w, ${img800} 800w`}

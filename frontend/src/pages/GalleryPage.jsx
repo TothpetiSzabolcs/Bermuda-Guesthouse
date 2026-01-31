@@ -7,6 +7,7 @@ import { cld } from "../utils/cloudinary";
 import Lightbox from "../components/Lightbox";
 import { FaPlay } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
+import SEO from "../components/SEO";
 
 const GALLERY_CATS = [
   "to",
@@ -118,154 +119,170 @@ export default function GalleryPage() {
     };
 
     return (
-      <section className="scroll-mt-24 py-30 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            to="/"
-            className="inline-flex items-center text-gray-600 hover:text-green-600 font-medium mb-8 transition-colors"
-          >
-            <FiArrowLeft className="w-5 h-5 mr-2" />
-            {t("common.backToHome")}
-          </Link>
+      <>
+        <SEO
+          title={`${t("gallery.title")} | Bermuda Vendégház`}
+          description={t("gallery.lead")}
+          canonicalUrl="https://bermuda-vendeghaz.hu/gallery"
+        />
 
-          <div className="text-center mb-20">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-              {t("gallery.title")}
-            </h1>
-            <p className="mt-3 text-gray-600">{t("gallery.lead")}</p>
+        <section className="scroll-mt-24 py-30 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Link
+              to="/"
+              className="inline-flex items-center text-gray-600 hover:text-green-600 font-medium mb-8 transition-colors"
+            >
+              <FiArrowLeft className="w-5 h-5 mr-2" />
+              {t("common.backToHome")}
+            </Link>
+
+            <div className="text-center mb-20">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+                {t("gallery.title")}
+              </h1>
+              <p className="mt-3 text-gray-600">{t("gallery.lead")}</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {GALLERY_CATS.map((key) => {
+                const coverRaw = covers?.[key]?.coverRaw || null;
+                const coverSrc = coverRaw
+                  ? cld(coverRaw, "f_auto,q_auto,w_1200")
+                  : placeholderImages[key];
+
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleCategorySelect(key)}
+                    className="group relative overflow-hidden rounded-2xl bg-gray-100 text-left shadow hover:shadow-lg transition"
+                  >
+                    <img
+                      src={coverSrc}
+                      alt={t(`gallery.filters.${key}`)}
+                      className="h-56 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                      <h3 className="text-xl font-semibold">
+                        {t(`gallery.filters.${key}`)}
+                      </h3>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {GALLERY_CATS.map((key) => {
-              const coverRaw = covers?.[key]?.coverRaw || null;
-              const coverSrc = coverRaw
-                ? cld(coverRaw, "f_auto,q_auto,w_1200")
-                : placeholderImages[key];
-
-              return (
-                <button
-                  key={key}
-                  onClick={() => handleCategorySelect(key)}
-                  className="group relative overflow-hidden rounded-2xl bg-gray-100 text-left shadow hover:shadow-lg transition"
-                >
-                  <img
-                    src={coverSrc}
-                    alt={t(`gallery.filters.${key}`)}
-                    className="h-56 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                    <h3 className="text-xl font-semibold">
-                      {t(`gallery.filters.${key}`)}
-                    </h3>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+        </section>
+      </>
     );
   }
 
   // ========== 2) CATEGORY DETAIL VIEW ==========
   return (
-    <section className="scroll-mt-24 py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              {t(`gallery.filters.${cat}`)}
-            </h1>
-            <p className="mt-2 text-gray-600">{t("gallery.lead")}</p>
-          </div>
-          <button
-            onClick={handleBackToCategories}
-            className="self-start rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            {t("gallery.backToCategories")}
-          </button>
-        </div>
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {GALLERY_CATS.map((c) => (
+    <>
+      <SEO
+        title={`${t(`gallery.filters.${cat}`)} – ${t("gallery.title")} | Bermuda Vendégház`}
+        description={t("gallery.lead")}
+        canonicalUrl={`https://bermuda-vendeghaz.hu/gallery/${cat}`}
+      />
+
+      <section className="scroll-mt-24 py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                {t(`gallery.filters.${cat}`)}
+              </h1>
+              <p className="mt-2 text-gray-600">{t("gallery.lead")}</p>
+            </div>
             <button
-              key={c}
-              onClick={() => handleCategorySelect(c)}
-              className={`px-4 py-2 rounded-full text-sm font-medium border transition
+              onClick={handleBackToCategories}
+              className="self-start rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              {t("gallery.backToCategories")}
+            </button>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {GALLERY_CATS.map((c) => (
+              <button
+                key={c}
+                onClick={() => handleCategorySelect(c)}
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition
               ${
                 cat === c
                   ? "bg-emerald-600 text-white border-emerald-600"
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
               }`}
-            >
-              {t(`gallery.filters.${c}`)}
-            </button>
-          ))}
+              >
+                {t(`gallery.filters.${c}`)}
+              </button>
+            ))}
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12">{t("common.loading")}</div>
+          ) : error ? (
+            <div className="text-center py-12 text-red-600">
+              {t("common.error")}
+            </div>
+          ) : items.length === 0 ? (
+            <div className="text-center py-12 text-gray-600">
+              {t("gallery.empty")}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+              {items.map((m, idx) => {
+                const thumb = getThumb(m);
+                const isVideo = m.resourceType === "video";
+                return (
+                  <button
+                    key={m._id}
+                    onClick={() => onOpen(idx)}
+                    className="group relative overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    aria-label={getAlt(m)}
+                  >
+                    <img
+                      src={thumb}
+                      alt={getAlt(m)}
+                      className="h-40 sm:h-48 md:h-52 w-full object-center bg-black/5 transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    {isVideo && (
+                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white">
+                        <FaPlay className="h-3 w-3" /> {t("common.video")}
+                      </span>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {total > 0 && (
+            <div className="text-center mt-6 text-sm text-gray-500">
+              {total} {unit}
+            </div>
+          )}
         </div>
 
-        {loading ? (
-          <div className="text-center py-12">{t("common.loading")}</div>
-        ) : error ? (
-          <div className="text-center py-12 text-red-600">
-            {t("common.error")}
-          </div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-12 text-gray-600">
-            {t("gallery.empty")}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-            {items.map((m, idx) => {
-              const thumb = getThumb(m);
-              const isVideo = m.resourceType === "video";
-              return (
-                <button
-                  key={m._id}
-                  onClick={() => onOpen(idx)}
-                  className="group relative overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  aria-label={getAlt(m)}
-                >
-                  <img
-                    src={thumb}
-                    alt={getAlt(m)}
-                    className="h-40 sm:h-48 md:h-52 w-full object-center bg-black/5 transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  {isVideo && (
-                    <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white">
-                      <FaPlay className="h-3 w-3" /> {t("common.video")}
-                    </span>
-                  )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                </button>
-              );
-            })}
-          </div>
+        {openIndex !== null && items.length > 0 && (
+          <Lightbox
+            items={items}
+            index={openIndex}
+            onClose={onClose}
+            onPrev={onPrev}
+            onNext={onNext}
+            getAlt={getAlt}
+            getImgSrc={getFullImg}
+            getVideoSrc={getVideoSrc}
+            getPosterSrc={getPosterSrc}
+          />
         )}
-
-        {total > 0 && (
-          <div className="text-center mt-6 text-sm text-gray-500">
-            {total} {unit}
-          </div>
-        )}
-      </div>
-
-      {openIndex !== null && items.length > 0 && (
-        <Lightbox
-          items={items}
-          index={openIndex}
-          onClose={onClose}
-          onPrev={onPrev}
-          onNext={onNext}
-          getAlt={getAlt}
-          getImgSrc={getFullImg}
-          getVideoSrc={getVideoSrc}
-          getPosterSrc={getPosterSrc}
-        />
-      )}
-    </section>
+      </section>
+    </>
   );
 }

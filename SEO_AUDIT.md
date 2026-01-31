@@ -121,9 +121,9 @@ Sitemap: https://bermuda-vendeghaz.hu/sitemap.xml
 Minden oldalnál hozzáadni:
 ```html
 <link rel="alternate" hreflang="hu" href="https://bermuda-vendeghaz.hu/oldal" />
-<link rel="alternate" hreflang="en" href="https://bermunda-vendeghaz.hu/en/oldal" />
-<link rel="alternate" hreflang="de" href="https://bermunda-vendeghaz.hu/de/oldal" />
-<link rel="alternate" hreflang="x-default" href="https://bermunda-vendeghaz.hu/oldal" />
+<link rel="alternate" hreflang="en" href="https://bermuda-vendeghaz.hu/en/oldal" />
+<link rel="alternate" hreflang="de" href="https://bermuda-vendeghaz.hu/de/oldal" />
+<link rel="alternate" hreflang="x-default" href="https://bermuda-vendeghaz.hu/oldal" />
 ```
 
 ### 3. Hosszú távú javítások (P2)
