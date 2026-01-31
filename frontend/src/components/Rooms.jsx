@@ -121,12 +121,20 @@ const Rooms = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => setSelectedRoom(room)}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors duration-200"
-                  >
-                    {t("rooms.bookCta")}
-                  </button>
+                  <div className="flex space-x-3">
+                    <Link
+                      to={`/rooms/${room.slug || room.id || room._id}`}
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-lg font-medium transition-colors duration-200 text-center"
+                    >
+                      {t("common.viewDetails") || "Megtekintés"}
+                    </Link>
+                    <button
+                      onClick={() => setSelectedRoom(room)}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors duration-200"
+                    >
+                      {t("rooms.bookCta")}
+                    </button>
+                  </div>
                 </div>
               </div>
             );

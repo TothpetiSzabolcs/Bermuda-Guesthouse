@@ -24,6 +24,7 @@ export const translations = {
       pricePerNight: "éj/ár",
       photos: "kép",
       video: "Video",
+      viewDetails: "Megtekintés",
       fullscreenNotSupported: "Fullscreen API not supported",
       previous: "Előző",
       next: "Következő",
@@ -72,6 +73,10 @@ export const translations = {
       pricePerNight: "éj/ár",
       privateBathroom: "Saját fürdőszoba",
       amenities: "Felszereltség",
+      description: "Leírás",
+      backToRooms: "Vissza a szobákhoz",
+      standardAmenities: "Alap felszereltség",
+      morePhotos: "További képek",
     },
 
     experiences: {
@@ -431,6 +436,7 @@ export const translations = {
       pricePerNight: "price/night",
       photos: "photos",
       video: "Video",
+      viewDetails: "View Details",
       fullscreenNotSupported: "Fullscreen API not supported",
       previous: "Previous",
       next: "Next",
@@ -479,6 +485,10 @@ export const translations = {
       pricePerNight: "price/night",
       privateBathroom: "Private bathroom",
       amenities: "Amenities",
+      description: "Description",
+      backToRooms: "Back to rooms",
+      standardAmenities: "Standard amenities",
+      morePhotos: "More photos",
     },
 
     experiences: {
@@ -838,6 +848,7 @@ export const translations = {
       pricePerNight: "Preis/Nacht",
       photos: "Bilder",
       video: "Video",
+      viewDetails: "Ansehen",
       fullscreenNotSupported: "Fullscreen API wird nicht unterstützt",
       previous: "Zurück",
       next: "Weiter",
@@ -886,6 +897,10 @@ export const translations = {
       pricePerNight: "Preis/Nacht",
       privateBathroom: "Eigenes Bad",
       amenities: "Ausstattung",
+      description: "Beschreibung",
+      backToRooms: "Zurück zu den Zimmern",
+      standardAmenities: "Grundausstattung",
+      morePhotos: "Weitere Fotos",
     },
 
     experiences: {
