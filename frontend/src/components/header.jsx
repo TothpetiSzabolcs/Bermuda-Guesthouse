@@ -27,13 +27,13 @@ const isHome = pathname === "/" || pathname === "/home";
     };
   }, []);
 
-  // Menü: hash = oldalon belüli szekció
+  // Menü: hash = oldalon belüli szekció, to = dedikált oldal
   const navItems = [
     { key: "nav.home",        hash: "hero" },
     { key: "nav.rooms",       hash: "rooms" },
     { key: "nav.experiences", hash: "experiences" },
-    { key: "nav.gallery",     hash: "gallery" },
-    { key: "nav.contact",     to: "/contact" },
+    { key: "nav.gallery",     to: "/gallery" },
+    { key: "nav.contact",     hash: "contact" },
   ];
 
   // Simított görgetés fix header offsettel

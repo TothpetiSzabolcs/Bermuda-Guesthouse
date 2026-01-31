@@ -48,14 +48,14 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a 
-                  href="#gallery"
+                <Link 
+                  to="/gallery"
                   className="hover:text-emerald-400 transition-colors"
                 >
                   {lang === "hu" && "Galéria"}
                   {lang === "en" && "Gallery"}
                   {lang === "de" && "Galerie"}
-                </a>
+                </Link>
               </li>
               <li>
                 <a 
