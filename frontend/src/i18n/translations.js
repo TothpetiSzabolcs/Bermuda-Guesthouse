@@ -31,6 +31,7 @@ export const translations = {
       close: "Bezárás",
       menu: "Menü",
       adminTitle: "Bermuda Vendégház",
+      backToHome: "Vissza a főoldalra",
       bookingForm: {
         checkIn: "Érkezés",
         checkOut: "Távozás",
@@ -453,7 +454,8 @@ export const translations = {
         specialRequests: "Special requests",
         submit: "Send booking",
         privacyAgreement: "I accept the privacy policy",
-        termsAgreement: "I accept the terms and conditions"
+        termsAgreement: "I accept the terms and conditions",
+        backToHome: "Back to home",
       },
       altText: {
         galleryImage: "Gallery image",
@@ -855,6 +857,7 @@ export const translations = {
       close: "Schließen",
       menu: "Menü",
       adminTitle: "Bermuda Gästehaus",
+      backToHome: "Zur Startseite",
       bookingForm: {
         checkIn: "Anreise",
         checkOut: "Abreise",

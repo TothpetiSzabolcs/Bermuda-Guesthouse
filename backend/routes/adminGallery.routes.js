@@ -7,13 +7,15 @@ import Property from "../models/property.model.js";
 import GalleryMedia from "../models/gallery.model.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 
-
 const router = express.Router();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("image/") || file.mimetype.startsWith("video/")) {
+    if (
+      file.mimetype.startsWith("image/") ||
+      file.mimetype.startsWith("video/")
+    ) {
       return cb(null, true);
     }
     cb(new Error("Unsupported file type"));
@@ -23,12 +25,21 @@ const upload = multer({
 // LISTA (admin)
 router.get("/", requireAdmin, async (req, res) => {
   try {
-    const { propertySlug, category = "all", page = 1, limit = 24, resourceType = "all" } = req.query;
+    const {
+      propertySlug,
+      category = "all",
+      page = 1,
+      limit = 24,
+      resourceType = "all",
+    } = req.query;
 
     const query = {};
     if (propertySlug) {
-      const prop = await Property.findOne({ slug: propertySlug }).select("_id").lean();
-      if (!prop) return res.json({ items: [], total: 0, page: 1, limit: Number(limit) });
+      const prop = await Property.findOne({ slug: propertySlug })
+        .select("_id")
+        .lean();
+      if (!prop)
+        return res.json({ items: [], total: 0, page: 1, limit: Number(limit) });
       query.property = prop._id;
     }
     if (category !== "all") query.category = category;
@@ -41,7 +52,9 @@ router.get("/", requireAdmin, async (req, res) => {
 
     const [items, total] = await Promise.all([
       GalleryMedia.find(query)
-        .select("url publicId resourceType posterUrl width height format alt category isCover createdAt")
+        .select(
+          "url publicId resourceType posterUrl width height format alt category isCover createdAt",
+        )
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(l)
@@ -86,9 +99,8 @@ router.post("/:id/cover", requireAdmin, async (req, res) => {
 
     await GalleryMedia.updateMany(
       { property: media.property, category: media.category, isCover: true },
-      { $set: { isCover: false } }
+      { $set: { isCover: false } },
     );
-
     media.isCover = true;
     await media.save();
 
@@ -101,11 +113,20 @@ router.post("/:id/cover", requireAdmin, async (req, res) => {
 
 async function handlerUpload(req, res) {
   try {
-    const { propertySlug, category = "egyeb", altHu = "", altEn = "", altDe = "" } = req.body;
+    const {
+      propertySlug,
+      category = "egyeb",
+      altHu = "",
+      altEn = "",
+      altDe = "",
+    } = req.body;
     if (!req.file) return res.status(400).json({ message: "file missing" });
-    if (!propertySlug) return res.status(400).json({ message: "propertySlug missing" });
+    if (!propertySlug)
+      return res.status(400).json({ message: "propertySlug missing" });
 
-    const prop = await Property.findOne({ slug: propertySlug }).select("_id").lean();
+    const prop = await Property.findOne({ slug: propertySlug })
+      .select("_id")
+      .lean();
     if (!prop) return res.status(404).json({ message: "Property not found" });
 
     const folder = `bermuda/gallery/${category}`;
@@ -122,29 +143,31 @@ async function handlerUpload(req, res) {
     });
 
     const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          folder,
-          resource_type: resourceType,
-        },
-        (err, r) => (err ? reject(err) : resolve(r))
-      ).end(req.file.buffer);
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder,
+            resource_type: resourceType,
+          },
+          (err, r) => (err ? reject(err) : resolve(r)),
+        )
+        .end(req.file.buffer);
     });
 
     let posterUrl;
-if (result.resource_type === "video") {
-  try {
-    const exp = await cloudinary.uploader.explicit(result.public_id, {
-      resource_type: "video",
-      type: "upload",                        
-      eager: [{ format: "jpg", transformation: [{ so: 1 }] }],
-      eager_async: false,
-    });
-    posterUrl = exp?.eager?.[0]?.secure_url;
-  } catch (e) {
-    console.warn("poster gen warn:", e?.message || e);
-  }
-}
+    if (result.resource_type === "video") {
+      try {
+        const exp = await cloudinary.uploader.explicit(result.public_id, {
+          resource_type: "video",
+          type: "upload",
+          eager: [{ format: "jpg", transformation: [{ so: 1 }] }],
+          eager_async: false,
+        });
+        posterUrl = exp?.eager?.[0]?.secure_url;
+      } catch (e) {
+        console.warn("poster gen warn:", e?.message || e);
+      }
+    }
 
     const doc = await GalleryMedia.create({
       property: prop._id,
@@ -164,7 +187,6 @@ if (result.resource_type === "video") {
 
     res.status(201).json(doc);
   } catch (e) {
-
     console.error("Upload error:", e?.http_code, e?.message || e);
     if (e?.error) console.error("Cloudinary error:", e.error);
     res.status(500).json({
@@ -176,6 +198,6 @@ if (result.resource_type === "video") {
 }
 
 router.post("/upload", requireAdmin, upload.single("file"), handlerUpload);
-router.post("/",        requireAdmin, upload.single("file"), handlerUpload); // <<< most már a gyökér is működik
+router.post("/", requireAdmin, upload.single("file"), handlerUpload); // <<< most már a gyökér is működik
 
 export default router;

@@ -1,27 +1,47 @@
-// src/hooks/useGalleryCovers.js
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const API = import.meta.env.VITE_API_URL || window.location.origin;
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5555";
 
-export function useGalleryCovers(propertySlug = "bermuda-vendeghaz") {
+export function useGalleryCovers(propertySlug, categories = []) {
   const [covers, setCovers] = useState({});
-  const [loading, setL] = useState(true);
-  const [error, setErr] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const catsParam = useMemo(() => {
+    if (!Array.isArray(categories) || categories.length === 0) return "";
+    return categories.join(",");
+  }, [categories]);
 
   useEffect(() => {
-    let alive = true;
-    setL(true); setErr(null);
-    const url = new URL("/api/public/gallery/covers", API);
-    url.searchParams.set("propertySlug", propertySlug);
+    if (!propertySlug) return;
 
-    fetch(url.toString())
-      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
-      .then(json => { if (alive) setCovers(json.covers || {}); })
-      .catch(e => alive && setErr(e))
-      .finally(() => alive && setL(false));
+    const controller = new AbortController();
 
-    return () => { alive = false; };
-  }, [propertySlug]);
+    async function run() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const url = new URL(`${API_BASE}/api/public/gallery/covers`);
+        url.searchParams.set("propertySlug", propertySlug);
+        if (catsParam) url.searchParams.set("categories", catsParam);
+
+        const res = await fetch(url.toString(), { signal: controller.signal });
+        if (!res.ok) throw new Error(`covers http ${res.status}`);
+
+        const data = await res.json();
+        setCovers(data?.covers || {});
+      } catch (e) {
+        if (e?.name === "AbortError") return;
+        setError(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    run();
+    return () => controller.abort();
+  }, [propertySlug, catsParam]);
 
   return { covers, loading, error };
 }

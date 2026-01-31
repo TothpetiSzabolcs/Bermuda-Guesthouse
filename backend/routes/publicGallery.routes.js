@@ -43,7 +43,12 @@ router.get("/", async (req, res) => {
     if (resourceType === "image") q.resourceType = "image";
     if (resourceType === "video") q.resourceType = "video";
     if (typeof tags === "string" && tags.trim()) {
-      q.tags = { $in: tags.split(",").map((s) => s.trim()).filter(Boolean) };
+      q.tags = {
+        $in: tags
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      };
     }
 
     const p = Math.max(1, Number(page));
@@ -54,7 +59,7 @@ router.get("/", async (req, res) => {
     const [items, total] = await Promise.all([
       GalleryImage.find(q)
         .select(
-          "url publicId resourceType posterUrl width height format alt category createdAt"
+          "url publicId resourceType posterUrl width height format alt category createdAt",
         )
         .sort(sortObj)
         .skip(skip)
@@ -64,7 +69,7 @@ router.get("/", async (req, res) => {
     ]);
 
     res.json({
-      total,               // összes (szűrt) elem
+      total, // összes (szűrt) elem
       count: items.length, // aktuális oldal elemszáma
       page: p,
       limit: l,
@@ -82,7 +87,7 @@ router.get("/", async (req, res) => {
 // Kategóriánként egy "borító" (kép vagy videó poszter)
 router.get("/covers", async (req, res) => {
   try {
-    const { propertySlug } = req.query;
+    const { propertySlug, categories } = req.query;
     if (!propertySlug) {
       return res.status(400).json({ message: "propertySlug missing" });
     }
@@ -92,25 +97,44 @@ router.get("/covers", async (req, res) => {
       .lean();
     if (!prop) return res.json({ covers: {} });
 
-    const CATS = ["to", "udvar", "csarda", "wellness", "programok", "egyeb"];
+    // ✅ dinamikus kategóriák (ha nincs megadva, marad a régi default)
+    const parsedCats =
+      typeof categories === "string" && categories.trim()
+        ? categories
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : null;
+
+    const CATS = parsedCats ?? [
+      "to",
+      "udvar",
+      "csarda",
+      "wellness",
+      "programok",
+      "egyeb",
+    ];
 
     const entries = await Promise.all(
       CATS.map(async (cat) => {
-        const doc = await GalleryImage.findOne({
-          property: prop._id,
-          category: cat,
-          active: true,
-          isCover: true,                 // ⬅️ először explicit cover
-        })
-          .select("url posterUrl resourceType publicId width height format createdAt")
-          .sort({ createdAt: -1 })
-          .lean()
-          || await GalleryImage.findOne({   // ⬅️ fallback: legfrissebb aktív
-            property: prop._id, category: cat, active: true,
+        const doc =
+          (await GalleryImage.findOne({
+            property: prop._id,
+            category: cat,
+            active: true,
+            isCover: true, // ✅ adminban beállított cover
           })
-          .select("url posterUrl resourceType publicId width height format createdAt")
-          .sort({ createdAt: -1 })
-          .lean();
+            .select("url posterUrl resourceType publicId width height format createdAt")
+            .sort({ createdAt: -1 })
+            .lean()) ||
+          (await GalleryImage.findOne({
+            property: prop._id,
+            category: cat,
+            active: true, // fallback: legfrissebb aktív
+          })
+            .select("url posterUrl resourceType publicId width height format createdAt")
+            .sort({ createdAt: -1 })
+            .lean());
 
         if (!doc) return [cat, null];
 
@@ -118,12 +142,13 @@ router.get("/covers", async (req, res) => {
         return [
           cat,
           {
-            coverRaw,                // nyers URL (frontend transzformál)
+            coverRaw,
             resourceType: doc.resourceType,
             width: doc.width,
             height: doc.height,
             publicId: doc.publicId,
             createdAt: doc.createdAt,
+            isCover: !!doc.isCover, // (opcionális) debughoz hasznos
           },
         ];
       })
@@ -165,7 +190,7 @@ router.get("/stats", async (req, res) => {
     ]);
 
     const byCategory = Object.fromEntries(
-      byCategoryRaw.map((x) => [x._id, x.count])
+      byCategoryRaw.map((x) => [x._id, x.count]),
     );
     const byType = Object.fromEntries(byTypeRaw.map((x) => [x._id, x.count]));
 
@@ -226,7 +251,7 @@ router.get("/:id", async (req, res) => {
       active: true,
     })
       .select(
-        "url publicId resourceType posterUrl width height format alt category createdAt"
+        "url publicId resourceType posterUrl width height format alt category createdAt",
       )
       .lean();
 
