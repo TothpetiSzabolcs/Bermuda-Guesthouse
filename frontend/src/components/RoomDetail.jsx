@@ -34,6 +34,10 @@ const RoomDetail = () => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   
+  // Image loading states
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  
   // Autoplay state
   const [isHovered, setIsHovered] = useState(false);
   const autoplayTimerRef = useRef(null);
@@ -86,15 +90,27 @@ const RoomDetail = () => {
         // Clamp index between 0 and images.length - 1
         const clampedIndex = Math.max(0, Math.min(parsedIndex, images.length - 1));
         setActiveImg(clampedIndex);
+        setImageLoading(true);
+        setImageError(false);
         setQueryParamApplied(true);
       }
     }
   }, [images.length, loading, queryParamApplied, searchParams]);
 
+  // Initialize image loading states when room data loads
+  useEffect(() => {
+    if (!loading && room && images.length > 0) {
+      setImageLoading(true);
+      setImageError(false);
+    }
+  }, [loading, room, images.length]);
+
   // slug váltáskor vissza az első képre és reset query param state
   useEffect(() => {
     setActiveImg(0);
     setQueryParamApplied(false);
+    setImageLoading(true);
+    setImageError(false);
   }, [images.length]);
 
   // Autoplay helper functions
@@ -104,6 +120,8 @@ const RoomDetail = () => {
     clearInterval(autoplayTimerRef.current);
     autoplayTimerRef.current = setInterval(() => {
       setActiveImg((i) => (i + 1) % images.length);
+      setImageLoading(true);
+      setImageError(false);
     }, AUTOPLAY_INTERVAL);
   }, [hasMany, isHovered, images.length]);
 
@@ -124,12 +142,16 @@ const RoomDetail = () => {
   const goPrev = useCallback(() => {
     if (!hasMany) return;
     setActiveImg((i) => (i - 1 + images.length) % images.length);
+    setImageLoading(true);
+    setImageError(false);
     resetAutoplay();
   }, [hasMany, images.length, resetAutoplay]);
 
   const goNext = useCallback(() => {
     if (!hasMany) return;
     setActiveImg((i) => (i + 1) % images.length);
+    setImageLoading(true);
+    setImageError(false);
     resetAutoplay();
   }, [hasMany, images.length, resetAutoplay]);
 
@@ -204,6 +226,35 @@ const RoomDetail = () => {
     // Reset autoplay on any swipe action
     resetAutoplay();
   };
+
+  // Lazy preload functionality
+  const preloadImage = useCallback((imageUrl) => {
+    if (!imageUrl) return;
+    const img = new Image();
+    img.src = imageUrl;
+  }, []);
+
+  // Preload next and previous images when activeImg changes
+  useEffect(() => {
+    if (images.length <= 1) return;
+
+    const nextIndex = (activeImg + 1) % images.length;
+    const prevIndex = (activeImg - 1 + images.length) % images.length;
+
+    // Preload next and previous images with w_1200 transformation
+    preloadImage(cld(images[nextIndex], "f_auto,q_auto,w_1200"));
+    preloadImage(cld(images[prevIndex], "f_auto,q_auto,w_1200"));
+  }, [activeImg, images, preloadImage]);
+
+  const handleImageLoad = useCallback(() => {
+    setImageLoading(false);
+    setImageError(false);
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    setImageLoading(false);
+    setImageError(true);
+  }, []);
 
   // Billentyű lapozás (← →)
   useEffect(() => {
@@ -299,13 +350,32 @@ const RoomDetail = () => {
             >
               {heroRaw ? (
                 <>
+                  {/* Skeleton overlay */}
+                  {imageLoading && (
+                    <div className="absolute inset-0 bg-gray-300 animate-pulse" />
+                  )}
+                  
                   <img
                     src={hero1200}
                     srcSet={`${hero480} 480w, ${hero800} 800w, ${hero1200} 1200w`}
                     sizes="(max-width: 640px) 480px, (max-width: 1024px) 800px, 1200px"
                     alt={`${room.name} - ${activeImg + 1}/${images.length}`}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover transition-opacity duration-300 ${
+                      imageLoading ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
                   />
+
+                  {/* Error fallback UI */}
+                  {imageError && (
+                    <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500">
+                      <div className="text-center">
+                        <div className="text-4xl mb-2">📷</div>
+                        <p>{t("common.imageLoadError") || "Kép betöltése sikertelen"}</p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Left / Right arrows */}
                   {hasMany && (
