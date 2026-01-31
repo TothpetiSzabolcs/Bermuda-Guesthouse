@@ -5,9 +5,27 @@ import HeroSection from '../components/heroSection'
 import Rooms from '../components/Rooms'
 import Experiences from '../components/Experiences'
 import Gallery from '../components/gallery'
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 const Home = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const scrollTo = params.get("scrollTo");
+
+    if (scrollTo === "rooms") {
+      setTimeout(() => {
+        const el = document.getElementById("rooms");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        navigate("/", { replace: true });
+      }, 50);
+    }
+  }, [location.search, navigate]);
 
   return (
     <div>
