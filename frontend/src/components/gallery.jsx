@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { useGallery } from "../hooks/useGallery";
-import { useGalleryCovers } from "../hooks/useGalleryCovers";
+// import { useGalleryCovers } from "../hooks/useGalleryCovers";
 import { useI18n } from "../i18n/useI18n";
 import { cld } from "../utils/cloudinary";
 import Lightbox from "../components/Lightbox";
 import { FaPlay } from "react-icons/fa";
 
-const CATS = ["to", "udvar", "wellness", "programok", "egyeb"];
+const SERVICE_CATS = ["konyha", "etkezo", "nappali", "nagyterem", "kavezoteazo", "terasz"];
 const PROPERTY_SLUG = "bermuda-vendeghaz";
 
 export default function Gallery() {
@@ -15,8 +15,8 @@ export default function Gallery() {
   // 1) Kategória kiválasztás (kezdetben null -> „válassz kategóriát” nézet)
   const [cat, setCat] = useState(null);
 
-  // 2) Dinamikus borítók a kategóriaválasztóhoz
-  const { covers, loading: covLoading, error: covError } = useGalleryCovers(PROPERTY_SLUG);
+  // 2) Dinamikus borítók a kategóriaválasztóhoz (nem használt a szolgáltatásoknál)
+  // const { covers, loading: covLoading, error: covError } = useGalleryCovers(PROPERTY_SLUG);
 
   // 3) Képek/videók listája a kiválasztott kategóriához
   const [openIndex, setOpenIndex] = useState(null);
@@ -56,65 +56,53 @@ export default function Gallery() {
     setOpenIndex((i) => (i === null ? null : (i + items.length - 1) % items.length));
   const onNext = () => setOpenIndex((i) => (i === null ? null : (i + 1) % items.length));
 
-  // ========== 1) KEZDŐ NÉZET – kategóriaválasztás ==========
+  // ========== 1) KEZDŐ NÉZET – Szolgáltatásaink kártyák ==========
   if (!cat) {
     return (
       <section id="gallery" className="scroll-mt-24 py-30 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
-              {t("gallery.pick.title")}
+              {t("services.title")}
             </h2>
-            <p className="mt-3 text-gray-600">{t("gallery.pick.lead")}</p>
+            <p className="mt-3 text-gray-600">{t("services.lead")}</p>
           </div>
 
-          {covLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-56 rounded-2xl bg-gray-200 animate-pulse" />
-              ))}
-            </div>
-          ) : covError ? (
-            <div className="text-center text-red-600">{t("common.error")}</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {CATS.map((key) => {
-                const coverRaw = covers?.[key]?.coverRaw || null;
-                const bg = coverRaw
-                  ? cld(coverRaw, "f_auto,q_auto,c_fill,g_center,w_1200,h_700")
-                  : null;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SERVICE_CATS.map((key) => {
+              // Placeholder images - later these can be replaced with actual images
+              const placeholderImages = {
+                konyha: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200&h=700&fit=crop&crop=center",
+                etkezo: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&h=700&fit=crop&crop=center",
+                nappali: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&h=700&fit=crop&crop=center",
+                nagyterem: "https://images.unsplash.com/photo-1519167758481-91532716981d?w=1200&h=700&fit=crop&crop=center",
+                kavezoteazo: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&h=700&fit=crop&crop=center",
+                terasz: "https://images.unsplash.com/photo-1560185127-cd55a6ce8ae2?w=1200&h=700&fit=crop&crop=center"
+              };
 
-                return (
-                  <button
-                    key={key}
-                    onClick={() => setCat(key)}
-                    className="group relative overflow-hidden rounded-2xl bg-gray-100 text-left shadow hover:shadow-lg transition"
-                  >
-                    {bg ? (
-                      <img
-                        src={bg}
-                        alt={t(`gallery.filters.${key}`)}
-                        className="h-56 w-full object-center transition-transform duration-700 ease-out group-hover:scale-110"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : (
-                      <div className="h-56 w-full bg-gray-200" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                      <h3 className="text-xl font-semibold">
-                        {t(`gallery.filters.${key}`)}
-                      </h3>
-                      <p className="text-white/90 text-sm mt-1">
-                        {t("gallery.pick.hint")}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+              return (
+                <button
+                  key={key}
+                  onClick={() => setCat(key)}
+                  className="group relative overflow-hidden rounded-2xl bg-gray-100 text-left shadow hover:shadow-lg transition"
+                >
+                  <img
+                    src={placeholderImages[key]}
+                    alt={t(`services.categories.${key}`)}
+                    className="h-56 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                    <h3 className="text-xl font-semibold">
+                      {t(`services.categories.${key}`)}
+                    </h3>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
     );
@@ -143,7 +131,7 @@ export default function Gallery() {
 
         {/* Kategória váltó – NINCS „összes” */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {CATS.map((c) => (
+          {SERVICE_CATS.map((c) => (
             <button
               key={c}
               onClick={() => setCat(c)}
@@ -152,7 +140,7 @@ export default function Gallery() {
                 ? "bg-emerald-600 text-white border-emerald-600"
                 : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}`}
             >
-              {t(`gallery.filters.${c}`)}
+              {t(`services.categories.${c}`)}
             </button>
           ))}
         </div>

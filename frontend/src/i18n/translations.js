@@ -95,6 +95,19 @@ export const translations = {
       },
     },
 
+    services: {
+      title: "Szolgáltatásaink",
+      lead: "Mindent megtalál, ami egy felejthetetlen nyaraláshoz kell",
+      categories: {
+        konyha: "Konyha",
+        etkezo: "Étkező",
+        nappali: "Nappali",
+        nagyterem: "Nagyterem",
+        kavezoteazo: "Kávézó/Teázó",
+        terasz: "Terasz",
+      },
+    },
+
     gallery: {
       title: "Galéria",
       lead: "Pillanatképek a vendégházról, a környezetről és az élményekről.",
@@ -489,6 +502,19 @@ export const translations = {
       },
     },
 
+    services: {
+      title: "Our Services",
+      lead: "Everything you need for an unforgettable vacation",
+      categories: {
+        konyha: "Kitchen",
+        etkezo: "Dining Room",
+        nappali: "Living Room",
+        nagyterem: "Great Hall",
+        kavezoteazo: "Café/Tea Room",
+        terasz: "Terrace",
+      },
+    },
+
     gallery: {
       title: "Gallery",
       lead: "Snapshots of the guesthouse, surroundings and activities.",
@@ -880,6 +906,19 @@ export const translations = {
           title: "Dörfliche Traditionen",
           desc: "Holzbackofen, Kesselküche und handwerkliche Mitmachprogramme.",
         },
+      },
+    },
+
+    services: {
+      title: "Unsere Dienstleistungen",
+      lead: "Alles für einen unvergesslichen Urlaub",
+      categories: {
+        konyha: "Küche",
+        etkezo: "Esszimmer",
+        nappali: "Wohnzimmer",
+        nagyterem: "Großer Saal",
+        kavezoteazo: "Café/Teezimmer",
+        terasz: "Terrasse",
       },
     },
 
