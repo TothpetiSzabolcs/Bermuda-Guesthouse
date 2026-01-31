@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import bg from "../assets/welcome_screen_bg.jpg";
 import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/useI18n";
 import { HiOutlineLocationMarker } from "react-icons/hi";
+import MapPanel from "./MapPanel";
 
 const HeroSection = () => {
   const { t } = useI18n();
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   return (
     <div id="hero" className="relative h-screen w-full overflow-hidden">
@@ -56,6 +58,12 @@ const HeroSection = () => {
               >
                 {t("hero.contact")}
               </Link>
+              <button
+                onClick={() => setIsMapOpen(true)}
+                className="inline-flex items-center justify-center rounded-xl border border-white/40 text-white/95 hover:bg-white/10 px-6 py-3 font-medium transition"
+              >
+                {t("hero.map")}
+              </button>
             </div>
           </div>
         </div>
@@ -66,6 +74,9 @@ const HeroSection = () => {
           <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse" />
         </div>
       </div>
+
+      {/* Map Panel */}
+      <MapPanel isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
     </div>
   );
 };

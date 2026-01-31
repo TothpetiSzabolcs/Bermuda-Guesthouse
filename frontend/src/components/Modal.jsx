@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+const ANIM_MS = 200; // 150–250ms között oké
+
 const Modal = ({
   isOpen,
   onClose,
@@ -11,11 +13,18 @@ const Modal = ({
   closeOnBackdropClick = true,
   closeOnEscape = true,
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // shouldRender: maradjon a DOM-ban záráskor is, hogy az exit anim lefusson
+  const [shouldRender, setShouldRender] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   const modalRef = useRef(null);
   const previousFocusRef = useRef(null);
+  const prevBodyOverflowRef = useRef("");
+  const openTimerRef = useRef(null);
+  const closeTimerRef = useRef(null);
+  const focusTimerRef = useRef(null);
 
   // Track mount (portal target safety)
   useEffect(() => {
@@ -23,63 +32,99 @@ const Modal = ({
     return () => setMounted(false);
   }, []);
 
-  // Handle animation + body scroll
+  // Open/close state machine + animációk
   useEffect(() => {
-    if (!mounted) return;
+    // Takarítás
+    if (openTimerRef.current) clearTimeout(openTimerRef.current);
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
 
     if (isOpen) {
-      previousFocusRef.current = document.activeElement;
-      document.body.style.overflow = "hidden";
-      const t = setTimeout(() => setIsVisible(true), 10);
-      return () => clearTimeout(t);
+      setShouldRender(true);
+      // Következő tick: enter anim
+      openTimerRef.current = setTimeout(() => setIsVisible(true), 10);
     } else {
+      // Exit anim
       setIsVisible(false);
-      const t = setTimeout(() => {
-        document.body.style.overflow = "";
-      }, 200);
-      return () => clearTimeout(t);
+      closeTimerRef.current = setTimeout(() => setShouldRender(false), ANIM_MS);
     }
-  }, [isOpen, mounted]);
 
-  // Restore focus when modal closes
-  useEffect(() => {
-    if (!isOpen && previousFocusRef.current) {
-      previousFocusRef.current.focus();
-    }
+    return () => {
+      if (openTimerRef.current) clearTimeout(openTimerRef.current);
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
   }, [isOpen]);
+
+  // Scroll lock (NEM timeoutos, cleanup-pal biztos)
+  useEffect(() => {
+    if (!shouldRender) return;
+
+    // nyitáskor mentjük a fókuszt és a body overflow-t
+    previousFocusRef.current = document.activeElement;
+    prevBodyOverflowRef.current = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      // zárás/unmount esetén biztos visszaáll
+      document.body.style.overflow = prevBodyOverflowRef.current || "";
+    };
+  }, [shouldRender]);
+
+  // Restore focus amikor teljesen bezárt (amikor már le is renderelődött)
+  useEffect(() => {
+    if (shouldRender) return;
+
+    if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
+    // kis delay, hogy biztosan ne a már unmountolt elemre fókuszáljon
+    focusTimerRef.current = setTimeout(() => {
+      previousFocusRef.current?.focus?.();
+    }, 0);
+
+    return () => {
+      if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
+    };
+  }, [shouldRender]);
 
   // ESC key
   useEffect(() => {
+    if (!shouldRender) return;
+
     const handleEscape = (e) => {
-      if (e.key === "Escape" && isOpen && closeOnEscape) onClose();
+      if (e.key === "Escape" && closeOnEscape) onClose();
     };
 
-    if (isOpen) document.addEventListener("keydown", handleEscape);
+    document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose, closeOnEscape]);
+  }, [shouldRender, onClose, closeOnEscape]);
 
   // Focus trap
   useEffect(() => {
-    if (!isOpen || !modalRef.current) return;
+    if (!shouldRender || !modalRef.current) return;
 
-    const focusableElements = modalRef.current.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    );
+    const el = modalRef.current;
 
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+    const getFocusable = () =>
+      el.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+
+
 
     const handleTab = (e) => {
       if (e.key !== "Tab") return;
+      const currentFocusable = getFocusable();
+      const firstEl = currentFocusable[0];
+      const lastEl = currentFocusable[currentFocusable.length - 1];
+
+      if (!firstEl || !lastEl) return;
 
       if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-          lastElement?.focus();
+        if (document.activeElement === firstEl) {
+          lastEl.focus();
           e.preventDefault();
         }
       } else {
-        if (document.activeElement === lastElement) {
-          firstElement?.focus();
+        if (document.activeElement === lastEl) {
+          firstEl.focus();
           e.preventDefault();
         }
       }
@@ -87,20 +132,25 @@ const Modal = ({
 
     document.addEventListener("keydown", handleTab);
 
-    if (firstElement) setTimeout(() => firstElement.focus(), 100);
+    // fókusz be a modalba nyitáskor
+    const t = setTimeout(() => {
+      const currentFocusable = getFocusable();
+      (currentFocusable[0] || el).focus?.();
+    }, 50);
 
-    return () => document.removeEventListener("keydown", handleTab);
-  }, [isOpen]);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("keydown", handleTab);
+    };
+  }, [shouldRender]);
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget && closeOnBackdropClick) onClose();
   };
 
-  const modalId = `modal-${
-    title?.replace(/\s+/g, "-").toLowerCase() || "dialog"
-  }`;
+  const modalId = `modal-${title?.replace(/\s+/g, "-").toLowerCase() || "dialog"}`;
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   const modalUi = (
     <div
@@ -123,10 +173,9 @@ const Modal = ({
         aria-modal="true"
         aria-labelledby={title ? `${modalId}-title` : undefined}
         aria-describedby={title ? `${modalId}-description` : undefined}
+        tabIndex={-1}
         className={`relative w-full max-w-lg transform transition-all duration-200 ${
-          isVisible
-            ? "scale-100 opacity-100 translate-y-0"
-            : "scale-95 opacity-0 translate-y-4"
+          isVisible ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-4"
         } ${className}`}
       >
         {showCloseButton && (
@@ -134,6 +183,7 @@ const Modal = ({
             onClick={onClose}
             className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             aria-label="Bezárás"
+            type="button"
           >
             <svg
               className="h-5 w-5"
@@ -142,12 +192,7 @@ const Modal = ({
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
@@ -155,10 +200,7 @@ const Modal = ({
         <div className="relative w-full rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5 md:p-8">
           {title && (
             <div className="mb-6">
-              <h2
-                id={`${modalId}-title`}
-                className="text-xl font-semibold text-gray-900 md:text-2xl"
-              >
+              <h2 id={`${modalId}-title`} className="text-xl font-semibold text-gray-900 md:text-2xl">
                 {title}
               </h2>
               <div id={`${modalId}-description`} className="sr-only">
