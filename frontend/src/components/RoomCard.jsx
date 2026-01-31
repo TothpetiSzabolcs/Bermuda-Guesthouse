@@ -46,7 +46,14 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
               src={img800}
               srcSet={`${img400} 400w, ${img600} 600w, ${img800} 800w`}
               sizes="(max-width: 640px) 400px, (max-width: 1024px) 600px, 800px"
-              alt={currentImage?.alt || room.name}
+              alt={
+                currentImage?.alt ||
+                t("rooms.carousel.imageAlt", {
+                  roomName: room.name,
+                  index: currentImageIndex + 1,
+                  total: images.length || 1,
+                })
+              }
               className="w-full h-full object-cover hover:scale-105 transition-all duration-500"
               loading="lazy"
               decoding="async"
@@ -57,7 +64,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                 <button
                   onClick={handlePrevImage}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
-                  aria-label="Previous image"
+                  aria-label={t("rooms.carousel.prev")}
                 >
                   <MdChevronLeft className="w-5 h-5" />
                 </button>
@@ -65,7 +72,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                 <button
                   onClick={handleNextImage}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
-                  aria-label="Next image"
+                  aria-label={t("rooms.carousel.next")}
                 >
                   <MdChevronRight className="w-5 h-5" />
                 </button>
@@ -83,7 +90,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                           ? "bg-white w-6"
                           : "bg-white/50 hover:bg-white/70"
                       }`}
-                      aria-label={`Go to image ${index + 1}`}
+                      aria-label={t("rooms.carousel.goToImage", { index: index + 1 })}
                     />
                   ))}
                 </div>
@@ -99,7 +106,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
         {/* ár badge (ha van ár) */}
         <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
           <FiTag className="w-4 h-4 mr-1" />
-          9000 Ft / {t("common.pricePerPersonPerNight")}
+          {t("rooms.price.amount")} {t("rooms.price.unit")}
         </div>
       </div>
 

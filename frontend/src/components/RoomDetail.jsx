@@ -359,7 +359,7 @@ const RoomDetail = () => {
                     src={hero1200}
                     srcSet={`${hero480} 480w, ${hero800} 800w, ${hero1200} 1200w`}
                     sizes="(max-width: 640px) 480px, (max-width: 1024px) 800px, 1200px"
-                    alt={`${room.name} - ${activeImg + 1}/${images.length}`}
+                    alt={t("rooms.carousel.imageAlt", { roomName: room.name, index: activeImg + 1, total: images.length })}
                     className={`w-full h-full object-cover transition-opacity duration-300 ${
                       imageLoading ? 'opacity-0' : 'opacity-100'
                     }`}
@@ -372,7 +372,7 @@ const RoomDetail = () => {
                     <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500">
                       <div className="text-center">
                         <div className="text-4xl mb-2">📷</div>
-                        <p>{t("common.imageLoadError") || "Kép betöltése sikertelen"}</p>
+                        <p>{t("common.imageLoadError")}</p>
                       </div>
                     </div>
                   )}
@@ -383,7 +383,7 @@ const RoomDetail = () => {
                       <button
                         type="button"
                         onClick={goPrev}
-                        aria-label="Previous photo"
+                        aria-label={t("rooms.carousel.prev")}
                         className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
                       >
                         <FiChevronLeft className="h-6 w-6" />
@@ -392,7 +392,7 @@ const RoomDetail = () => {
                       <button
                         type="button"
                         onClick={goNext}
-                        aria-label="Next photo"
+                        aria-label={t("rooms.carousel.next")}
                         className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
                       >
                         <FiChevronRight className="h-6 w-6" />

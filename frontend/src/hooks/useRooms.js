@@ -20,17 +20,19 @@ export function useRooms(propertySlug = "bermuda-vendeghaz", opts = {}) {
   const [loading, setL] = useState(true);
   const [error, setErr] = useState(null);
 
+  
   useEffect(() => {
+    console.log("useRooms FETCH, lang =", lang);
     const controller = new AbortController();
     setL(true);
     setErr(null);
-
+    
     const base = resolveBase();
     const url = new URL("/api/rooms", base);
     url.searchParams.set("propertySlug", propertySlug);
     url.searchParams.set("active", String(active));
     url.searchParams.set("lang", lang);
-
+    
     const credentials =
       import.meta.env.VITE_WITH_CREDENTIALS === "true" ? "include" : "omit";
 

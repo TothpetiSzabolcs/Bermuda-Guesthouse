@@ -36,21 +36,22 @@ export const listRooms = async (req, res) => {
       .sort({ capacity: -1, [`name.${lang}`]: 1 })
       .lean();
 
-    const mapped = rooms.map((r) => {
-      const firstImg = r.images?.[0];
-      return {
-        id: r._id,
-        name: pickLang(r.name, lang),
-        slug: r.slug,
-        guests: r.capacity,
-        description: pickLang(r.description, lang),
-        amenities: r.amenities ?? [],
-        image: firstImg?.url ?? null,
-        imageAlt: firstImg ? pickLang(firstImg.alt, lang) : "",
-        privateBathroom: r.privateBathroom,
-        active: r.active,
-      };
-    });
+      const mapped = rooms.map((r) => {
+        return {
+          id: r._id,
+          name: pickLang(r.name, lang),
+          description: pickLang(r.description, lang),
+          guests: r.capacity,
+          amenities: r.amenities ?? [],
+          images: (r.images ?? []).map((img) => ({
+            url: img.url,
+            alt: pickLang(img.alt, lang),
+          })),
+          image: r.images?.[0]?.url ?? null,
+          privateBathroom: r.privateBathroom,
+          active: r.active,
+        };
+      });
 
     res.json(mapped);
   } catch (e) {
