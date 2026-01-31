@@ -42,7 +42,7 @@ const Header = () => {
     { key: "nav.rooms", hash: "rooms" },
     { key: "nav.experiences", hash: "experiences" },
     { key: "nav.gallery", to: "/gallery" },
-    { key: "nav.contact", hash: "contact" },
+    { key: "nav.contact", to: "/contact" },
   ];
 
   // Simított görgetés fix header offsettel

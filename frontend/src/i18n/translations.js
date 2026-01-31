@@ -27,6 +27,7 @@ export const translations = {
       video: "Video",
       viewDetails: "Megtekintés",
       fullscreenNotSupported: "Fullscreen API not supported",
+      imageLoadError: "Kép betöltése sikertelen",
       previous: "Előző",
       next: "Következő",
       close: "Bezárás",
@@ -43,12 +44,12 @@ export const translations = {
         specialRequests: "Különleges kérések",
         submit: "Foglalás elküldése",
         privacyAgreement: "Elfogadom az adatkezelési tájékoztatót",
-        termsAgreement: "Elfogadom az általános szerződési feltételeket"
+        termsAgreement: "Elfogadom az általános szerződési feltételeket",
       },
       altText: {
         galleryImage: "Galéria kép",
-        backgroundImage: "background"
-      }
+        backgroundImage: "background",
+      },
     },
 
     hero: {
@@ -79,6 +80,17 @@ export const translations = {
       backToRooms: "Vissza a szobákhoz",
       standardAmenities: "Alap felszereltség",
       morePhotos: "További képek",
+      price: {
+        amount: "9000 Ft",
+        unit: "fő / éj",
+      },
+      carousel: {
+        prev: "Előző kép",
+        next: "Következő kép",
+        goToImage: "{index}. kép",
+        counter: "{index}/{total}",
+        imageAlt: "{roomName} – kép {index}/{total}",
+      },
     },
 
     experiences: {
@@ -150,7 +162,28 @@ export const translations = {
 
     contact: {
       title: "Kapcsolat",
-      lead: "Kérdése van? Írjon nekünk, és hamarosan jelentkezünk.",
+      lead: "Kérjük, vegye fel velünk a kapcsolatot bármilyen kérdés vagy foglalás esetén.",
+      name: "Név",
+      ntakLabel: "NTAK Szám",
+      address: "Cím",
+      phone: "Telefon",
+      email: "E-mail",
+      clickToCall: "Kattintson a híváshoz",
+      clickToEmail: "Kattintson az e-mail küldéséhez",
+      navigation: "Útvonal tervezése",
+      navigationDesc: "Tervezzen útvonalat hozzánk a Google Maps segítségével.",
+      planRoute: "Útvonal tervezése",
+      seo: {
+        title: "Kapcsolat - Bermuda Vendégház",
+        description: "Vegye fel a kapcsolatot a Bermuda Vendégházzal. Elérhetőségek: telefon, e-mail, cím. NTAK regisztráció: MA24095212. Somogy megye, Vése Zrínyi utca 1."
+      },
+      additionalInfo: {
+        title: "Tudnivalók",
+        description: "Vendégházunk kényelmes és modern környezetet biztosít vendégeink számára. Többnyelvű személyzetünk áll rendelkezésre a foglalásokhoz és kérdésekhez.",
+        checkIn: "Bejelentkezés: 14:00-tól",
+        checkOut: "Kijelentkezés: 10:00-ig",
+        languages: "Magyar, angol és német nyelven is beszélünk"
+      },
       form: {
         name: "Név",
         email: "E-mail",
@@ -168,8 +201,8 @@ export const translations = {
       submit: "Foglalás indítása",
       picker: {
         title: "Válasszon szobát",
-        backToPicker: "Vissza a szobaválasztóhoz"
-      }
+        backToPicker: "Vissza a szobaválasztóhoz",
+      },
     },
 
     terms: {
@@ -177,16 +210,20 @@ export const translations = {
       sections: {
         provider: {
           title: "1. A szolgáltató megnevezése és elérhetőségei",
-          content: "Bermuda Vendégház\nEmail: info@bermuda-vendeghaz.hu\nWeboldal: www.bermuda-vendeghaz.hu"
+          content:
+            "Bermuda Vendégház\nEmail: info@bermuda-vendeghaz.hu\nWeboldal: www.bermuda-vendeghaz.hu",
         },
         services: {
           title: "2. A szállás szolgáltatásainak leírása",
-          content: "A Bermuda Vendégház szállás szolgáltatást nyújt a weboldalunkon keresztül történő foglalás alapján. A foglalás elektronikus úton jön létre a vendég és a szolgáltató között."
+          content:
+            "A Bermuda Vendégház szállás szolgáltatást nyújt a weboldalunkon keresztül történő foglalás alapján. A foglalás elektronikus úton jön létre a vendég és a szolgáltató között.",
         },
         prices: {
           title: "3. Árak és fizetési feltételek",
-          prices: "Árak: A weboldalon feltüntetett árak érvényesek. Az ár tartalmazza a szállás díját, nem tartalmazza a helyi idegenforgalmi adót (IAFA), amelynek összege 18 éven felüli vendégek esetén éjelenként 450 Ft.",
-          payment: "Fizetés: A fizetés készpénzben történik a szálláshelyen érkezéskor."
+          prices:
+            "Árak: A weboldalon feltüntetett árak érvényesek. Az ár tartalmazza a szállás díját, nem tartalmazza a helyi idegenforgalmi adót (IAFA), amelynek összege 18 éven felüli vendégek esetén éjelenként 450 Ft.",
+          payment:
+            "Fizetés: A fizetés készpénzben történik a szálláshelyen érkezéskor.",
         },
         bookingProcess: {
           title: "4. Foglalás menete",
@@ -194,8 +231,8 @@ export const translations = {
             "Vendég kitölti a foglalási űrlapot a weboldalon",
             "Rendszerünk automatikus visszaigazolást küld a foglalás fogadásáról",
             "Szolgáltató 24 órán belül visszaigazolja a foglalást és küldi a foglalási kódot",
-            "A foglalás a szolgáltató visszaigazolásával lép hatályba"
-          ]
+            "A foglalás a szolgáltató visszaigazolásával lép hatályba",
+          ],
         },
         cancellation: {
           title: "5. Lemondási feltételek",
@@ -204,9 +241,10 @@ export const translations = {
             "Érkezés előtt 14 nappal vagy korábban: ingyenes",
             "Érkezés előtt 7-13 nappal: 50% az első éjszaka ára",
             "Érkezés előtt 3-6 nappal: 70% az első éjszaka ára",
-            "Érkezés előtt 0-2 nappal vagy meg nem jelenés: 100% az első éjszaka ára"
+            "Érkezés előtt 0-2 nappal vagy meg nem jelenés: 100% az első éjszaka ára",
           ],
-          notice: "A lemondást írásban (emailben) kell megtenni a szolgáltató felé."
+          notice:
+            "A lemondást írásban (emailben) kell megtenni a szolgáltató felé.",
         },
         guestObligations: {
           title: "6. Vendég kötelezettségei",
@@ -215,8 +253,8 @@ export const translations = {
             "A szobák és felszerelés rendeltetésszerű használata",
             "Károkozás esetén a kár megtérítése",
             "Érkezéskor a fennmaradó összeg kifizetése",
-            "Helyi idegenforgalmi adó fizetése"
-          ]
+            "Helyi idegenforgalmi adó fizetése",
+          ],
         },
         providerObligations: {
           title: "7. Szolgáltató kötelezettségei",
@@ -224,12 +262,13 @@ export const translations = {
             "A lefoglalt szoba biztosítása a megadott időszakra",
             "Tiszta, rendben tartott szállás biztosítása",
             "A weboldalon feltüntetett szolgáltatások nyújtása",
-            "A vendég jogainak és biztonságának tiszteletben tartása"
-          ]
+            "A vendég jogainak és biztonságának tiszteletben tartása",
+          ],
         },
         forceMajeure: {
           title: "8. Erővis majorok",
-          content: "Ha a szolgáltatót előre nem látható külső ok (természeti katasztrófa, járvány, háborús helyzet, stb.) akadályozza a szerződés teljesítésében, köteles a vendéget haladéktalanul értesíteni és lehetőség szerint másik szállást biztosítani, vagy a foglalási díjat visszatéríteni."
+          content:
+            "Ha a szolgáltatót előre nem látható külső ok (természeti katasztrófa, járvány, háborús helyzet, stb.) akadályozza a szerződés teljesítésében, köteles a vendéget haladéktalanul értesíteni és lehetőség szerint másik szállást biztosítani, vagy a foglalási díjat visszatéríteni.",
         },
         houseRules: {
           title: "9. Szállásra vonatkozó házirend",
@@ -240,21 +279,24 @@ export const translations = {
             "A szálláshelyen tilos a dohányzás a szobákban",
             "Rendellenkedések (hangos zene, buli) 22:00 és 8:00 között nem megengedettek",
             "Házállatot nem tudunk fogadni",
-            "Fokozottan figyeljük a környezeti zajszintet"
-          ]
+            "Fokozottan figyeljük a környezeti zajszintet",
+          ],
         },
         complaints: {
           title: "10. Panaszkezelés",
-          content: "Bármilyen panasz esetén kérjük, először a szolgáltatónk jelezzék problémájukat. Ha a panasz nem rendeződik, lehetőség van a fogyasztóvédelmi hatóságnál vagy bíróságon érvényesíteni jogaikat."
+          content:
+            "Bármilyen panasz esetén kérjük, először a szolgáltatónk jelezzék problémájukat. Ha a panasz nem rendeződik, lehetőség van a fogyasztóvédelmi hatóságnál vagy bíróságon érvényesíteni jogaikat.",
         },
         miscellaneous: {
           title: "11. Vegyes rendelkezések",
-          content: "A jelen ÁSZF-ben nem szabályozott kérdésekre a magyar jogszabályok, különösen a Polgári Törvénykönyv és a turisztikai törvény rendelkezései az irányadóak."
-        }
+          content:
+            "A jelen ÁSZF-ben nem szabályozott kérdésekre a magyar jogszabályok, különösen a Polgári Törvénykönyv és a turisztikai törvény rendelkezései az irányadóak.",
+        },
       },
       effectiveDate: "Hatályba lépés dátuma: 2026. január 28.",
-      disclaimer: "E szerződési feltételeket a szolgáltató fenntartja magának a jogot, hogy megváltoztassa.",
-      backToHome: "Vissza a főoldalra"
+      disclaimer:
+        "E szerződési feltételeket a szolgáltató fenntartja magának a jogot, hogy megváltoztassa.",
+      backToHome: "Vissza a főoldalra",
     },
 
     privacy: {
@@ -262,36 +304,42 @@ export const translations = {
       sections: {
         provider: {
           title: "1. Az adatkezelő megnevezése és elérhetőségei",
-          content: "Bermuda Vendégház\nEmail: info@bermuda-vendeghaz.hu\nWeboldal: www.bermuda-vendeghaz.hu"
+          content:
+            "Bermuda Vendégház\nEmail: info@bermuda-vendeghaz.hu\nWeboldal: www.bermuda-vendeghaz.hu",
         },
         dataScope: {
           title: "2. A kezelt adatok köre és célja",
           intro: "A foglalási folyamat során a következő adatokat kezeljük:",
           items: [
             "Név",
-            "Email cím", 
+            "Email cím",
             "Érkezés és távozás dátuma",
             "Vendégek száma",
-            "Esetleges üzenet, különleges kérések"
+            "Esetleges üzenet, különleges kérések",
           ],
-          purpose: "Cél: A szállásfoglalás teljesítése, kapcsolattartás, számlázás."
+          purpose:
+            "Cél: A szállásfoglalás teljesítése, kapcsolattartás, számlázás.",
         },
         legalBasis: {
           title: "3. Adatkezelés jogalapja",
-          content: "Az adatkezelés jogalapja az Ön hozzájárulása és a szerződés teljesítéséhez szükséges adatkezelés (GDPR 6. cikk (1) bekezdés a) és b) pont)."
+          content:
+            "Az adatkezelés jogalapja az Ön hozzájárulása és a szerződés teljesítéséhez szükséges adatkezelés (GDPR 6. cikk (1) bekezdés a) és b) pont).",
         },
         retention: {
           title: "4. Adatmegőrzés ideje",
-          content: "A foglalással kapcsolatos adatokat a szerződés teljesítését követő 3 évig őrizzük meg, kivéve, ha jogszabály hosszabb megőrzési időt ír elő."
+          content:
+            "A foglalással kapcsolatos adatokat a szerződés teljesítését követő 3 évig őrizzük meg, kivéve, ha jogszabály hosszabb megőrzési időt ír elő.",
         },
         dataTransfer: {
           title: "5. Adattovábbítás",
-          intro: "Az email címét és kapcsolattartási adatait a következő célból továbbítjuk:",
+          intro:
+            "Az email címét és kapcsolattartási adatait a következő célból továbbítjuk:",
           items: [
             "Email szolgáltatóknak a kommunikáció céljából",
-            "Számlázó szoftvernek a számlázás céljából"
+            "Számlázó szoftvernek a számlázás céljából",
           ],
-          disclaimer: "Adatokat nem adunk át harmadik fél számára marketing célokra."
+          disclaimer:
+            "Adatokat nem adunk át harmadik fél számára marketing célokra.",
         },
         rights: {
           title: "6. Érintetti jogok",
@@ -302,25 +350,29 @@ export const translations = {
             "Törlést kérni (ha nincs jogalap a további kezeléssel szemben)",
             "Korlátozni az adatkezelést",
             "Hozzájutni az adataihoz és továbbítani másik adatkezelőnek",
-            "Tiltakozni az adatkezelés ellen"
-          ]
+            "Tiltakozni az adatkezelés ellen",
+          ],
         },
         cookies: {
           title: "7. Technikai adatok (Cookie-k)",
-          content: "Weboldalunk csak technikailag szükséges cookie-kat használ, amelyek elengedhetetlenek a weboldal megfelelő működéséhez. Ezek nem igényelnek külön hozzájárulást."
+          content:
+            "Weboldalunk csak technikailag szükséges cookie-kat használ, amelyek elengedhetetlenek a weboldal megfelelő működéséhez. Ezek nem igényelnek külön hozzájárulást.",
         },
         complaints: {
           title: "8. Panasztétel",
-          content: "Amennyiben úgy érzi, hogy az adatkezelésünk során jogsérelem érte, panaszát benyújthatja a Nemzeti Adatvédelmi és Információszabadság Hatóságnál (1055 Budapest, Falk Miksa utca 9-11.)."
+          content:
+            "Amennyiben úgy érzi, hogy az adatkezelésünk során jogsérelem érte, panaszát benyújthatja a Nemzeti Adatvédelmi és Információszabadság Hatóságnál (1055 Budapest, Falk Miksa utca 9-11.).",
         },
         contact: {
           title: "9. Kapcsolat",
-          content: "Adatvédelmi kérdésekben keresse munkatársunkat:\nEmail: info@bermuda-vendeghaz.hu"
-        }
+          content:
+            "Adatvédelmi kérdésekben keresse munkatársunkat:\nEmail: info@bermuda-vendeghaz.hu",
+        },
       },
       effectiveDate: "Hatályba lépés dátuma: 2026. január 28.",
-      disclaimer: "E tájékoztatót az adatkezelő fenntartja magának a jogot, hogy megváltoztassa.",
-      backToHome: "Vissza a főoldalra"
+      disclaimer:
+        "E tájékoztatót az adatkezelő fenntartja magának a jogot, hogy megváltoztassa.",
+      backToHome: "Vissza a főoldalra",
     },
 
     admin: {
@@ -350,7 +402,7 @@ export const translations = {
         category: "Kategória",
         file: "Fájl (kép vagy videó)",
         altHu: "Alt (HU)",
-        altEn: "Alt (EN)", 
+        altEn: "Alt (EN)",
         altDe: "Alt (DE)",
         upload: "Feltöltés",
         uploadError: "Feltöltési hiba.",
@@ -374,8 +426,8 @@ export const translations = {
           csarda: "Csárda",
           wellness: "Wellness",
           programok: "Programok",
-          egyeb: "Egyéb"
-        }
+          egyeb: "Egyéb",
+        },
       },
       rooms: {
         editTitle: "Szoba szerkesztése",
@@ -395,15 +447,15 @@ export const translations = {
         delete: "Delete",
         noImages: "No images yet.",
         capacityLabel: "Kapacitás:",
-        active: "Aktív:"
+        active: "Aktív:",
       },
       dashboard: {
         welcome: "Üdv az adminban!",
-        description: "Itt tudod kezelni a galériát és a szobákat."
+        description: "Itt tudod kezelni a galériát és a szobákat.",
       },
       layout: {
         title: "Bermuda Admin",
-        logout: "Kilépés"
+        logout: "Kilépés",
       },
       common: {
         save: "Mentés",
@@ -437,6 +489,7 @@ export const translations = {
       book: "Book This Room",
       pricePerNight: "price/night",
       pricePerPersonPerNight: "person / night",
+      imageLoadError: "Failed to load image",
       photos: "photos",
       video: "Video",
       viewDetails: "View Details",
@@ -461,8 +514,8 @@ export const translations = {
       },
       altText: {
         galleryImage: "Gallery image",
-        backgroundImage: "background"
-      }
+        backgroundImage: "background",
+      },
     },
 
     hero: {
@@ -493,6 +546,17 @@ export const translations = {
       backToRooms: "Back to rooms",
       standardAmenities: "Standard amenities",
       morePhotos: "More photos",
+      price: {
+        amount: "9000 Ft",
+        unit: "person / night",
+      },
+      carousel: {
+        prev: "Previous image",
+        next: "Next image",
+        goToImage: "Go to image {index}",
+        counter: "{index}/{total}",
+        imageAlt: "{roomName} – image {index}/{total}",
+      },
     },
 
     experiences: {
@@ -564,7 +628,28 @@ export const translations = {
 
     contact: {
       title: "Contact",
-      lead: "Questions? Send us a message and we'll get back to you soon.",
+      lead: "Please contact us for any questions or booking inquiries.",
+      name: "Name",
+      ntakLabel: "NTAK Number",
+      address: "Address",
+      phone: "Phone",
+      email: "E-mail",
+      clickToCall: "Click to call",
+      clickToEmail: "Click to send email",
+      navigation: "Get Directions",
+      navigationDesc: "Plan your route to us using Google Maps.",
+      planRoute: "Plan Route",
+      seo: {
+        title: "Contact - Bermuda Guesthouse",
+        description: "Contact Bermuda Guesthouse. Contact information: phone, email, address. NTAK registration: MA24095212. Somogy county, Vése Zrínyi street 1."
+      },
+      additionalInfo: {
+        title: "Information",
+        description: "Our guesthouse provides comfortable and modern environment for our guests. Multi-lingual staff is available for bookings and questions.",
+        checkIn: "Check-in: from 14:00",
+        checkOut: "Check-out: until 10:00",
+        languages: "We speak Hungarian, English and German"
+      },
       form: {
         name: "Name",
         email: "Email",
@@ -582,8 +667,8 @@ export const translations = {
       submit: "Start Booking",
       picker: {
         title: "Choose a Room",
-        backToPicker: "Back to Room Selection"
-      }
+        backToPicker: "Back to Room Selection",
+      },
     },
 
     terms: {
@@ -591,16 +676,20 @@ export const translations = {
       sections: {
         provider: {
           title: "1. Provider name and contact information",
-          content: "Bermuda Guesthouse\nEmail: info@bermunda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu"
+          content:
+            "Bermuda Guesthouse\nEmail: info@bermunda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu",
         },
         services: {
           title: "2. Description of accommodation services",
-          content: "Bermuda Guesthouse provides accommodation services based on bookings made through our website. The booking is created electronically between the guest and the provider."
+          content:
+            "Bermuda Guesthouse provides accommodation services based on bookings made through our website. The booking is created electronically between the guest and the provider.",
         },
         prices: {
           title: "3. Prices and payment conditions",
-          prices: "Prices: The prices listed on the website are valid. The price includes accommodation fee, but does not include the local tourism tax (IAFA), which is 450 HUF per night for guests over 18 years of age.",
-          payment: "Payment: Payment is made in cash at the accommodation upon arrival."
+          prices:
+            "Prices: The prices listed on the website are valid. The price includes accommodation fee, but does not include the local tourism tax (IAFA), which is 450 HUF per night for guests over 18 years of age.",
+          payment:
+            "Payment: Payment is made in cash at the accommodation upon arrival.",
         },
         bookingProcess: {
           title: "4. Booking process",
@@ -608,8 +697,8 @@ export const translations = {
             "Guest fills out the booking form on the website",
             "Our system sends an automatic confirmation of booking receipt",
             "Provider confirms the booking within 24 hours and sends the booking code",
-            "The booking becomes effective upon provider confirmation"
-          ]
+            "The booking becomes effective upon provider confirmation",
+          ],
         },
         cancellation: {
           title: "5. Cancellation conditions",
@@ -618,9 +707,10 @@ export const translations = {
             "14 days or more before arrival: free",
             "7-13 days before arrival: 50% of first night price",
             "3-6 days before arrival: 70% of first night price",
-            "0-2 days before arrival or no-show: 100% of first night price"
+            "0-2 days before arrival or no-show: 100% of first night price",
           ],
-          notice: "Cancellation must be made in writing (email) to the provider."
+          notice:
+            "Cancellation must be made in writing (email) to the provider.",
         },
         guestObligations: {
           title: "6. Guest obligations",
@@ -629,8 +719,8 @@ export const translations = {
             "Proper use of rooms and equipment",
             "Compensation for damages caused",
             "Payment of remaining amount upon arrival",
-            "Payment of local tourism tax"
-          ]
+            "Payment of local tourism tax",
+          ],
         },
         providerObligations: {
           title: "7. Provider obligations",
@@ -638,12 +728,13 @@ export const translations = {
             "Ensuring the booked room for the specified period",
             "Providing clean, well-maintained accommodation",
             "Providing services listed on the website",
-            "Respecting guest rights and safety"
-          ]
+            "Respecting guest rights and safety",
+          ],
         },
         forceMajeure: {
           title: "8. Force majeure",
-          content: "If unforeseen external circumstances (natural disaster, epidemic, war situation, etc.) prevent the provider from fulfilling the contract, they must immediately notify the guest and, if possible, provide alternative accommodation or refund the booking fee."
+          content:
+            "If unforeseen external circumstances (natural disaster, epidemic, war situation, etc.) prevent the provider from fulfilling the contract, they must immediately notify the guest and, if possible, provide alternative accommodation or refund the booking fee.",
         },
         houseRules: {
           title: "9. House rules for accommodation",
@@ -654,21 +745,24 @@ export const translations = {
             "Smoking is prohibited in rooms at the accommodation",
             "Disturbances (loud music, parties) are not allowed between 22:00 and 8:00",
             "Pets cannot be accommodated",
-            "We pay close attention to environmental noise levels"
-          ]
+            "We pay close attention to environmental noise levels",
+          ],
         },
         complaints: {
           title: "10. Complaint handling",
-          content: "In case of any complaints, please first report your problem to our provider. If the complaint is not resolved, you can enforce your rights at the consumer protection authority or in court."
+          content:
+            "In case of any complaints, please first report your problem to our provider. If the complaint is not resolved, you can enforce your rights at the consumer protection authority or in court.",
         },
         miscellaneous: {
           title: "11. Miscellaneous provisions",
-          content: "For matters not regulated in these GTC, Hungarian laws, particularly the Civil Code and tourism legislation, shall apply."
-        }
+          content:
+            "For matters not regulated in these GTC, Hungarian laws, particularly the Civil Code and tourism legislation, shall apply.",
+        },
       },
       effectiveDate: "Effective date: January 28, 2026.",
-      disclaimer: "The provider reserves the right to change these terms and conditions.",
-      backToHome: "Back to homepage"
+      disclaimer:
+        "The provider reserves the right to change these terms and conditions.",
+      backToHome: "Back to homepage",
     },
 
     privacy: {
@@ -676,7 +770,8 @@ export const translations = {
       sections: {
         provider: {
           title: "1. Controller name and contact information",
-          content: "Bermuda Guesthouse\nEmail: info@bermunda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu"
+          content:
+            "Bermuda Guesthouse\nEmail: info@bermunda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu",
         },
         dataScope: {
           title: "2. Scope and purpose of processed data",
@@ -686,26 +781,31 @@ export const translations = {
             "Email address",
             "Arrival and departure dates",
             "Number of guests",
-            "Optional messages, special requests"
+            "Optional messages, special requests",
           ],
-          purpose: "Purpose: Fulfillment of accommodation booking, contact, invoicing."
+          purpose:
+            "Purpose: Fulfillment of accommodation booking, contact, invoicing.",
         },
         legalBasis: {
           title: "3. Legal basis of data processing",
-          content: "The legal basis of data processing is your consent and data processing necessary for contract performance (GDPR Article 6(1)(a) and (b))."
+          content:
+            "The legal basis of data processing is your consent and data processing necessary for contract performance (GDPR Article 6(1)(a) and (b)).",
         },
         retention: {
           title: "4. Data retention period",
-          content: "Booking-related data is retained for 3 years after contract fulfillment, unless legislation requires a longer retention period."
+          content:
+            "Booking-related data is retained for 3 years after contract fulfillment, unless legislation requires a longer retention period.",
         },
         dataTransfer: {
           title: "5. Data transfer",
-          intro: "Your email address and contact data are transferred for the following purposes:",
+          intro:
+            "Your email address and contact data are transferred for the following purposes:",
           items: [
             "To email providers for communication purposes",
-            "To invoicing software for invoicing purposes"
+            "To invoicing software for invoicing purposes",
           ],
-          disclaimer: "Data is not transferred to third parties for marketing purposes."
+          disclaimer:
+            "Data is not transferred to third parties for marketing purposes.",
         },
         rights: {
           title: "6. Data subject rights",
@@ -716,25 +816,29 @@ export const translations = {
             "Request erasure (if there is no legal basis for continued processing)",
             "Restrict data processing",
             "Access and transfer your data to another controller",
-            "Object to data processing"
-          ]
+            "Object to data processing",
+          ],
         },
         cookies: {
           title: "7. Technical data (Cookies)",
-          content: "Our website only uses technically necessary cookies that are essential for proper website operation. These do not require separate consent."
+          content:
+            "Our website only uses technically necessary cookies that are essential for proper website operation. These do not require separate consent.",
         },
         complaints: {
           title: "8. Complaint filing",
-          content: "If you believe your rights have been violated during our data processing, you can file a complaint with the National Authority for Data Protection and Freedom of Information (1055 Budapest, Falk Miksa utca 9-11.)."
+          content:
+            "If you believe your rights have been violated during our data processing, you can file a complaint with the National Authority for Data Protection and Freedom of Information (1055 Budapest, Falk Miksa utca 9-11.).",
         },
         contact: {
           title: "9. Contact",
-          content: "For privacy matters, please contact our staff:\nEmail: info@bermunda-vendeghaz.hu"
-        }
+          content:
+            "For privacy matters, please contact our staff:\nEmail: info@bermunda-vendeghaz.hu",
+        },
       },
       effectiveDate: "Effective date: January 28, 2026.",
-      disclaimer: "The controller reserves the right to change this privacy policy.",
-      backToHome: "Back to homepage"
+      disclaimer:
+        "The controller reserves the right to change this privacy policy.",
+      backToHome: "Back to homepage",
     },
 
     admin: {
@@ -757,7 +861,8 @@ export const translations = {
         selectFile: "Choose file",
         uploading: "Uploading…",
         deleteConfirm: "Are you sure you want to delete this media?",
-        fileTypesHint: "Supported: images and videos (e.g. JPG, PNG, MP4, MOV).",
+        fileTypesHint:
+          "Supported: images and videos (e.g. JPG, PNG, MP4, MOV).",
         uploadSuccess: "Uploaded.",
         deleteSuccess: "Deleted.",
         management: "Gallery Management",
@@ -788,8 +893,8 @@ export const translations = {
           csarda: "Tavern",
           wellness: "Wellness",
           programok: "Activities",
-          egyeb: "Other"
-        }
+          egyeb: "Other",
+        },
       },
       rooms: {
         editTitle: "Edit Room",
@@ -809,15 +914,15 @@ export const translations = {
         delete: "Delete",
         noImages: "No images yet.",
         capacityLabel: "Capacity:",
-        active: "Active:"
+        active: "Active:",
       },
       dashboard: {
         welcome: "Welcome to admin!",
-        description: "Here you can manage the gallery and rooms."
+        description: "Here you can manage the gallery and rooms.",
       },
       layout: {
         title: "Bermuda Admin",
-        logout: "Logout"
+        logout: "Logout",
       },
       common: {
         save: "Save",
@@ -851,6 +956,7 @@ export const translations = {
       book: "Zimmer buchen",
       pricePerNight: "Preis/Nacht",
       pricePerPersonPerNight: "Person / Nacht",
+      imageLoadError: "Bild konnte nicht geladen werden",
       photos: "Bilder",
       video: "Video",
       viewDetails: "Ansehen",
@@ -871,12 +977,12 @@ export const translations = {
         specialRequests: "Besondere Wünsche",
         submit: "Buchung senden",
         privacyAgreement: "Ich akzeptiere die Datenschutzerklärung",
-        termsAgreement: "Ich akzeptiere die Allgemeinen Geschäftsbedingungen"
+        termsAgreement: "Ich akzeptiere die Allgemeinen Geschäftsbedingungen",
       },
       altText: {
         galleryImage: "Galeriebild",
-        backgroundImage: "Hintergrund"
-      }
+        backgroundImage: "Hintergrund",
+      },
     },
 
     hero: {
@@ -899,7 +1005,8 @@ export const translations = {
       lead: "Zuhause, wo Entspannung natürlich ist!",
       guestsLabel: "Gäste",
       bookCta: "Zimmer buchen",
-      placeholderDescription: "Komfortables Zimmer mit grundlegender Ausstattung.",
+      placeholderDescription:
+        "Komfortables Zimmer mit grundlegender Ausstattung.",
       pricePerNight: "Preis/Nacht",
       privateBathroom: "Eigenes Bad",
       amenities: "Ausstattung",
@@ -907,6 +1014,17 @@ export const translations = {
       backToRooms: "Zurück zu den Zimmern",
       standardAmenities: "Grundausstattung",
       morePhotos: "Weitere Fotos",
+      price: {
+        amount: "9000 Ft",
+        unit: "Person / Nacht",
+      },
+      carousel: {
+        prev: "Vorheriges Bild",
+        next: "Nächstes Bild",
+        goToImage: "Zum Bild {index}",
+        counter: "{index}/{total}",
+        imageAlt: "{roomName} – Bild {index}/{total}",
+      },
     },
 
     experiences: {
@@ -978,7 +1096,28 @@ export const translations = {
 
     contact: {
       title: "Kontakt",
-      lead: "Fragen? Schreiben Sie uns – wir melden uns bald.",
+      lead: "Bitte kontaktieren Sie uns bei Fragen oder Buchungsanfragen.",
+      name: "Name",
+      ntakLabel: "NTAK Nummer",
+      address: "Adresse",
+      phone: "Telefon",
+      email: "E-Mail",
+      clickToCall: "Zum Anrufen klicken",
+      clickToEmail: "Zum E-Mail senden klicken",
+      navigation: "Wegbeschreibung",
+      navigationDesc: "Planen Sie Ihre Route zu uns mit Google Maps.",
+      planRoute: "Route planen",
+      seo: {
+        title: "Kontakt - Bermuda Gästehaus",
+        description: "Kontaktieren Sie Bermuda Gästehaus. Kontaktinformationen: Telefon, E-Mail, Adresse. NTAK Registrierung: MA24095212. Komitat Somogy, Vése Zrínyi Straße 1."
+      },
+      additionalInfo: {
+        title: "Informationen",
+        description: "Unser Gästehaus bietet komfortable und moderne Umgebung für unsere Gäste. Mehrsprachiges Personal steht für Buchungen und Fragen zur Verfügung.",
+        checkIn: "Check-in: ab 14:00 Uhr",
+        checkOut: "Check-out: bis 10:00 Uhr",
+        languages: "Wir sprechen Ungarisch, Englisch und Deutsch"
+      },
       form: {
         name: "Name",
         email: "E-Mail",
@@ -996,8 +1135,8 @@ export const translations = {
       submit: "Buchung starten",
       picker: {
         title: "Zimmer wählen",
-        backToPicker: "Zurück zur Zimmerauswahl"
-      }
+        backToPicker: "Zurück zur Zimmerauswahl",
+      },
     },
 
     terms: {
@@ -1005,16 +1144,20 @@ export const translations = {
       sections: {
         provider: {
           title: "1. Name und Kontaktdaten des Anbieters",
-          content: "Bermuda Gästehaus\nEmail: info@bermunda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu"
+          content:
+            "Bermuda Gästehaus\nEmail: info@bermunda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
         },
         services: {
           title: "2. Beschreibung der Unterkunftsdienstleistungen",
-          content: "Bermuda Gästehaus bietet Unterkunftsdienstleistungen auf Basis von Buchungen über unsere Website an. Die Buchung wird elektronisch zwischen Gast und Anbieter erstellt."
+          content:
+            "Bermuda Gästehaus bietet Unterkunftsdienstleistungen auf Basis von Buchungen über unsere Website an. Die Buchung wird elektronisch zwischen Gast und Anbieter erstellt.",
         },
         prices: {
           title: "3. Preise und Zahlungsbedingungen",
-          prices: "Preise: Die auf der Website angegebenen Preise sind gültig. Der Preis umfasst die Unterkunftsgebühr, jedoch nicht die lokale Tourismussteuer (IAFA), die 450 HUF pro Nacht für Gäste über 18 Jahre beträgt.",
-          payment: "Zahlung: Die Zahlung erfolgt bar bei der Unterkunft bei Ankunft."
+          prices:
+            "Preise: Die auf der Website angegebenen Preise sind gültig. Der Preis umfasst die Unterkunftsgebühr, jedoch nicht die lokale Tourismussteuer (IAFA), die 450 HUF pro Nacht für Gäste über 18 Jahre beträgt.",
+          payment:
+            "Zahlung: Die Zahlung erfolgt bar bei der Unterkunft bei Ankunft.",
         },
         bookingProcess: {
           title: "4. Buchungsprozess",
@@ -1022,8 +1165,8 @@ export const translations = {
             "Gast füllt das Buchungsformular auf der Website aus",
             "Unser System sendet eine automatische Bestätigung des Buchungseingangs",
             "Anbieter bestätigt die Buchung innerhalb von 24 Stunden und sendet den Buchungscode",
-            "Die Buchung wird mit der Anbieterbestätigung wirksam"
-          ]
+            "Die Buchung wird mit der Anbieterbestätigung wirksam",
+          ],
         },
         cancellation: {
           title: "5. Stornierungsbedingungen",
@@ -1032,9 +1175,10 @@ export const translations = {
             "14 Tage oder mehr vor Ankunft: kostenlos",
             "7-13 Tage vor Ankunft: 50% des Preises der ersten Nacht",
             "3-6 Tage vor Ankunft: 70% des Preises der ersten Nacht",
-            "0-2 Tage vor Ankunft oder Nichterscheinen: 100% des Preises der ersten Nacht"
+            "0-2 Tage vor Ankunft oder Nichterscheinen: 100% des Preises der ersten Nacht",
           ],
-          notice: "Die Stornierung muss schriftlich (E-Mail) beim Anbieter erfolgen."
+          notice:
+            "Die Stornierung muss schriftlich (E-Mail) beim Anbieter erfolgen.",
         },
         guestObligations: {
           title: "6. Gastpflichten",
@@ -1043,8 +1187,8 @@ export const translations = {
             "ordnungsgemäße Nutzung der Zimmer und Einrichtung",
             "Kompensation von verursachten Schäden",
             "Zahlung des Restbetrags bei Ankunft",
-            "Zahlung der lokalen Tourismussteuer"
-          ]
+            "Zahlung der lokalen Tourismussteuer",
+          ],
         },
         providerObligations: {
           title: "7. Anbieterpflichten",
@@ -1052,12 +1196,13 @@ export const translations = {
             "Sicherstellung des gebuchten Zimmers für den angegebenen Zeitraum",
             "Bereitstellung sauberer, gepflegter Unterkunft",
             "Erbringung der auf der Website genannten Dienstleistungen",
-            "Respektierung der Gäste- und Sicherheitsrechte"
-          ]
+            "Respektierung der Gäste- und Sicherheitsrechte",
+          ],
         },
         forceMajeure: {
           title: "8. Höhere Gewalt",
-          content: "Wenn unvorhergesehene externe Umstände (Naturkatastrophe, Epidemie, Kriegssituation usw.) den Anbieter an der Erfüllung des Vertrags hindern, muss er den Gast unverzüglich benachrichtigen und nach Möglichkeit alternative Unterkunft bereitstellen oder die Buchungsgebühr erstatten."
+          content:
+            "Wenn unvorhergesehene externe Umstände (Naturkatastrophe, Epidemie, Kriegssituation usw.) den Anbieter an der Erfüllung des Vertrags hindern, muss er den Gast unverzüglich benachrichtigen und nach Möglichkeit alternative Unterkunft bereitstellen oder die Buchungsgebühr erstatten.",
         },
         houseRules: {
           title: "9. Hausregeln für die Unterkunft",
@@ -1068,21 +1213,24 @@ export const translations = {
             "Rauchen in den Zimmern der Unterkunft ist verboten",
             "Störungen (laute Musik, Partys) sind zwischen 22:00 und 8:00 Uhr nicht erlaubt",
             "Haustiere können nicht aufgenommen werden",
-            "Wir achten genau auf die Umgebungslautstärke"
-          ]
+            "Wir achten genau auf die Umgebungslautstärke",
+          ],
         },
         complaints: {
           title: "10. Beschwerdemanagement",
-          content: "Bei Beschwerden melden Sie bitte zuerst Ihr Problem bei unserem Anbieter. Wenn die Beschwerde nicht gelöst wird, können Sie Ihre Rechte bei der Verbraucherschutzbehörde oder vor Gericht geltend machen."
+          content:
+            "Bei Beschwerden melden Sie bitte zuerst Ihr Problem bei unserem Anbieter. Wenn die Beschwerde nicht gelöst wird, können Sie Ihre Rechte bei der Verbraucherschutzbehörde oder vor Gericht geltend machen.",
         },
         miscellaneous: {
           title: "11. Sonstige Bestimmungen",
-          content: "Für nicht in diesen AGB geregelte Fragen gelten die ungarischen Gesetze, insbesondere das Zivilgesetzbuch und das Tourismusgesetz."
-        }
+          content:
+            "Für nicht in diesen AGB geregelte Fragen gelten die ungarischen Gesetze, insbesondere das Zivilgesetzbuch und das Tourismusgesetz.",
+        },
       },
       effectiveDate: "Gültig ab: 28. Januar 2026.",
-      disclaimer: "Der Anbieter behält sich das Recht vor, diese Geschäftsbedingungen zu ändern.",
-      backToHome: "Zurück zur Startseite"
+      disclaimer:
+        "Der Anbieter behält sich das Recht vor, diese Geschäftsbedingungen zu ändern.",
+      backToHome: "Zurück zur Startseite",
     },
 
     privacy: {
@@ -1090,36 +1238,43 @@ export const translations = {
       sections: {
         provider: {
           title: "1. Name und Kontaktdaten des Verantwortlichen",
-          content: "Bermuda Gästehaus\nEmail: info@bermunda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu"
+          content:
+            "Bermuda Gästehaus\nEmail: info@bermunda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
         },
         dataScope: {
           title: "2. Umfang und Zweck der verarbeiteten Daten",
-          intro: "Während des Buchungsprozesses verarbeiten wir die folgenden Daten:",
+          intro:
+            "Während des Buchungsprozesses verarbeiten wir die folgenden Daten:",
           items: [
             "Name",
             "E-Mail-Adresse",
             "An- und Abreisedatum",
             "Anzahl der Gäste",
-            "Optionale Nachrichten, besondere Wünsche"
+            "Optionale Nachrichten, besondere Wünsche",
           ],
-          purpose: "Zweck: Erfüllung der Unterkunftsbuchung, Kontakt, Rechnungsstellung."
+          purpose:
+            "Zweck: Erfüllung der Unterkunftsbuchung, Kontakt, Rechnungsstellung.",
         },
         legalBasis: {
           title: "3. Rechtsgrundlage der Datenverarbeitung",
-          content: "Die Rechtsgrundlage der Datenverarbeitung ist Ihre Einwilligung und die für Vertragserfüllung erforderliche Datenverarbeitung (DSGVO Art. 6 Abs. 1 lit. a und b)."
+          content:
+            "Die Rechtsgrundlage der Datenverarbeitung ist Ihre Einwilligung und die für Vertragserfüllung erforderliche Datenverarbeitung (DSGVO Art. 6 Abs. 1 lit. a und b).",
         },
         retention: {
           title: "4. Datenaufbewahrungsdauer",
-          content: "Buchungsbezogene Daten werden 3 Jahre nach Vertragserfüllung aufbewahrt, es sei denn, gesetzliche Vorschriften schreiben eine längere Aufbewahrungsdauer vor."
+          content:
+            "Buchungsbezogene Daten werden 3 Jahre nach Vertragserfüllung aufbewahrt, es sei denn, gesetzliche Vorschriften schreiben eine längere Aufbewahrungsdauer vor.",
         },
         dataTransfer: {
           title: "5. Datenübertragung",
-          intro: "Ihre E-Mail-Adresse und Kontaktdaten werden für folgende Zwecke übertragen:",
+          intro:
+            "Ihre E-Mail-Adresse und Kontaktdaten werden für folgende Zwecke übertragen:",
           items: [
             "An E-Mail-Anbieter für Kommunikationszwecke",
-            "An Abrechnungssoftware für Abrechnungszwecke"
+            "An Abrechnungssoftware für Abrechnungszwecke",
           ],
-          disclaimer: "Daten werden nicht für Marketingzwecke an Dritte übertragen."
+          disclaimer:
+            "Daten werden nicht für Marketingzwecke an Dritte übertragen.",
         },
         rights: {
           title: "6. Betroffenenrechte",
@@ -1130,25 +1285,29 @@ export const translations = {
             "Löschung zu verlangen (wenn keine Rechtsgrundlage für weitere Verarbeitung besteht)",
             "Einschränkung der Datenverarbeitung",
             "Zugriff auf Ihre Daten und Übertragung an einen anderen Verantwortlichen",
-            "Widerspruch gegen die Datenverarbeitung"
-          ]
+            "Widerspruch gegen die Datenverarbeitung",
+          ],
         },
         cookies: {
           title: "7. Technische Daten (Cookies)",
-          content: "Unsere Website verwendet nur technisch notwendige Cookies, die für den ordnungsgemäßen Betrieb der Website unerlässlich sind. Diese erfordern keine separate Einwilligung."
+          content:
+            "Unsere Website verwendet nur technisch notwendige Cookies, die für den ordnungsgemäßen Betrieb der Website unerlässlich sind. Diese erfordern keine separate Einwilligung.",
         },
         complaints: {
           title: "8. Beschwerdeeinreichung",
-          content: "Wenn Sie der Meinung sind, dass Ihre Rechte während unserer Datenverarbeitung verletzt wurden, können Sie Beschwerde bei der Nationalen Behörde für Datenschutz und Informationsfreiheit (1055 Budapest, Falk Miksa utca 9-11.) einreichen."
+          content:
+            "Wenn Sie der Meinung sind, dass Ihre Rechte während unserer Datenverarbeitung verletzt wurden, können Sie Beschwerde bei der Nationalen Behörde für Datenschutz und Informationsfreiheit (1055 Budapest, Falk Miksa utca 9-11.) einreichen.",
         },
         contact: {
           title: "9. Kontakt",
-          content: "Für Datenschutzfragen wenden Sie sich bitte an unsere Mitarbeiter:\nEmail: info@bermunda-vendeghaz.hu"
-        }
+          content:
+            "Für Datenschutzfragen wenden Sie sich bitte an unsere Mitarbeiter:\nEmail: info@bermunda-vendeghaz.hu",
+        },
       },
       effectiveDate: "Gültig ab: 28. Januar 2026.",
-      disclaimer: "Der Verantwortliche behält sich das Recht vor, diese Datenschutzerklärung zu ändern.",
-      backToHome: "Zurück zur Startseite"
+      disclaimer:
+        "Der Verantwortliche behält sich das Recht vor, diese Datenschutzerklärung zu ändern.",
+      backToHome: "Zurück zur Startseite",
     },
 
     admin: {
@@ -1171,7 +1330,8 @@ export const translations = {
         selectFile: "Datei wählen",
         uploading: "Wird hochgeladen…",
         deleteConfirm: "Möchten Sie dieses Medium wirklich löschen?",
-        fileTypesHint: "Unterstützt: Bilder und Videos (z. B. JPG, PNG, MP4, MOV).",
+        fileTypesHint:
+          "Unterstützt: Bilder und Videos (z. B. JPG, PNG, MP4, MOV).",
         uploadSuccess: "Hochgeladen.",
         deleteSuccess: "Gelöscht.",
         management: "Galerie verwalten",
@@ -1202,8 +1362,8 @@ export const translations = {
           csarda: "Tscharda",
           wellness: "Wellness",
           programok: "Programme",
-          egyeb: "Sonstiges"
-        }
+          egyeb: "Sonstiges",
+        },
       },
       rooms: {
         editTitle: "Zimmer bearbeiten",
@@ -1223,15 +1383,15 @@ export const translations = {
         delete: "Löschen",
         noImages: "Noch keine Bilder.",
         capacityLabel: "Kapazität:",
-        active: "Aktiv:"
+        active: "Aktiv:",
       },
       dashboard: {
         welcome: "Willkommen im Admin-Bereich!",
-        description: "Hier können Sie Galerie und Zimmer verwalten."
+        description: "Hier können Sie Galerie und Zimmer verwalten.",
       },
       layout: {
         title: "Bermuda Admin",
-        logout: "Abmelden"
+        logout: "Abmelden",
       },
       common: {
         save: "Speichern",
