@@ -678,7 +678,7 @@ export const translations = {
         provider: {
           title: "1. Provider name and contact information",
           content:
-            "Bermuda Guesthouse\nEmail: info@bermunda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu",
+            "Bermuda Guesthouse\nEmail: info@bermuda-vendeghaz.hu\nWebsite: www.bermuda-vendeghaz.hu",
         },
         services: {
           title: "2. Description of accommodation services",
@@ -772,7 +772,7 @@ export const translations = {
         provider: {
           title: "1. Controller name and contact information",
           content:
-            "Bermuda Guesthouse\nEmail: info@bermunda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu",
+            "Bermuda Guesthouse\nEmail: info@bermuda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu",
         },
         dataScope: {
           title: "2. Scope and purpose of processed data",
@@ -833,7 +833,7 @@ export const translations = {
         contact: {
           title: "9. Contact",
           content:
-            "For privacy matters, please contact our staff:\nEmail: info@bermunda-vendeghaz.hu",
+            "For privacy matters, please contact our staff:\nEmail: info@bermuda-vendeghaz.hu",
         },
       },
       effectiveDate: "Effective date: January 28, 2026.",
@@ -1146,7 +1146,7 @@ export const translations = {
         provider: {
           title: "1. Name und Kontaktdaten des Anbieters",
           content:
-            "Bermuda Gästehaus\nEmail: info@bermunda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
+            "Bermuda Gästehaus\nEmail: info@bermuda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
         },
         services: {
           title: "2. Beschreibung der Unterkunftsdienstleistungen",
@@ -1240,7 +1240,7 @@ export const translations = {
         provider: {
           title: "1. Name und Kontaktdaten des Verantwortlichen",
           content:
-            "Bermuda Gästehaus\nEmail: info@bermunda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
+            "Bermuda Gästehaus\nEmail: info@bermuda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
         },
         dataScope: {
           title: "2. Umfang und Zweck der verarbeiteten Daten",
@@ -1302,7 +1302,7 @@ export const translations = {
         contact: {
           title: "9. Kontakt",
           content:
-            "Für Datenschutzfragen wenden Sie sich bitte an unsere Mitarbeiter:\nEmail: info@bermunda-vendeghaz.hu",
+            "Für Datenschutzfragen wenden Sie sich bitte an unsere Mitarbeiter:\nEmail: info@bermuda-vendeghaz.hu",
         },
       },
       effectiveDate: "Gültig ab: 28. Januar 2026.",
