@@ -54,18 +54,27 @@ const Modal = ({
     };
   }, [isOpen]);
 
-  // Scroll lock (NEM timeoutos, cleanup-pal biztos)
+  // Scroll lock - only on desktop, mobile uses internal scrolling
   useEffect(() => {
     if (!shouldRender) return;
 
+    // Check if mobile device (768px and below)
+    const isMobile = window.innerWidth <= 768;
+    
     // nyitáskor mentjük a fókuszt és a body overflow-t
     previousFocusRef.current = document.activeElement;
     prevBodyOverflowRef.current = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    
+    // Only apply body scroll lock on desktop
+    if (!isMobile) {
+      document.body.style.overflow = "hidden";
+    }
 
     return () => {
       // zárás/unmount esetén biztos visszaáll
-      document.body.style.overflow = prevBodyOverflowRef.current || "";
+      if (!isMobile) {
+        document.body.style.overflow = prevBodyOverflowRef.current || "";
+      }
     };
   }, [shouldRender]);
 
@@ -154,7 +163,7 @@ const Modal = ({
 
   const modalUi = (
     <div
-      className="fixed inset-0 z-[2147483647] isolate flex items-center justify-center p-4"
+      className="fixed inset-0 z-[2147483647] isolate flex items-center justify-center p-2 sm:p-4"
       role="presentation"
     >
       {/* Backdrop */}
@@ -174,14 +183,14 @@ const Modal = ({
         aria-labelledby={title ? `${modalId}-title` : undefined}
         aria-describedby={title ? `${modalId}-description` : undefined}
         tabIndex={-1}
-        className={`relative w-full max-w-lg transform transition-all duration-200 ${
+        className={`relative w-full max-w-lg max-h-[90vh] sm:max-h-[85vh] transform transition-all duration-200 ${
           isVisible ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-4"
         } ${className}`}
       >
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            className="absolute right-3 top-3 sm:right-4 sm:top-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             aria-label="Bezárás"
             type="button"
           >
@@ -197,19 +206,24 @@ const Modal = ({
           </button>
         )}
 
-        <div className="relative w-full rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5 md:p-8">
-          {title && (
-            <div className="mb-6">
-              <h2 id={`${modalId}-title`} className="text-xl font-semibold text-gray-900 md:text-2xl">
-                {title}
-              </h2>
-              <div id={`${modalId}-description`} className="sr-only">
-                {title} dialógus ablak
+        <div className="relative w-full h-full max-h-[90vh] sm:max-h-[85vh] rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 flex flex-col">
+          <div className="p-4 sm:p-6 md:p-8 flex-shrink-0">
+            {title && (
+              <div className="mb-4 sm:mb-6">
+                <h2 id={`${modalId}-title`} className="text-lg font-semibold text-gray-900 sm:text-xl md:text-2xl">
+                  {title}
+                </h2>
+                <div id={`${modalId}-description`} className="sr-only">
+                  {title} dialógus ablak
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div className="relative">{children}</div>
+          {/* Scrollable content area - only on mobile */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
+            <div className="relative">{children}</div>
+          </div>
         </div>
       </div>
     </div>

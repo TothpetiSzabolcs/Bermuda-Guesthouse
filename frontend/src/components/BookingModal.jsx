@@ -88,18 +88,18 @@ const BookingModal = ({ isOpen, onClose, mode = "direct", initialRoom = null }) 
   if (mode === "picker") {
     return (
       <Modal isOpen={isOpen} onClose={handleClose} title={t("booking.picker.title")}>
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {rooms?.map((room) => {
             const key = room.id || room._id || room.slug;
             return (
               <button
                 key={key}
                 onClick={() => handleRoomSelect(room)}
-                className="w-full text-left p-4 border border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all duration-200 group"
+                className="w-full text-left p-3 sm:p-4 border border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all duration-200 group"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-700">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-green-700 truncate">
                       {room.name}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
@@ -111,8 +111,8 @@ const BookingModal = ({ isOpen, onClose, mode = "direct", initialRoom = null }) 
                       </p>
                     )}
                   </div>
-                  <div className="flex-shrink-0 ml-4">
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex-shrink-0 ml-2 sm:ml-4">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
