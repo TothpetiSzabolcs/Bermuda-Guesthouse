@@ -103,36 +103,36 @@ export default function Lightbox({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-2 sm:p-4"
       onClick={handleClose}
     >
       {/* nav gombok */}
       <button
         onClick={(e) => { e.stopPropagation(); onPrev(); }}
-        className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/30 text-white"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/20 hover:bg-white/30 text-white touch-manipulation min-[44px]:min-w-[44px] min-[44px]:min-h-[44px]"
         aria-label="Előző"
       >‹</button>
 
       <button
         onClick={(e) => { e.stopPropagation(); onNext(); }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/30 text-white"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/20 hover:bg-white/30 text-white touch-manipulation min-[44px]:min-w-[44px] min-[44px]:min-h-[44px]"
         aria-label="Következő"
       >›</button>
 
       <button
         onClick={(e) => { e.stopPropagation(); handleClose(); }}
-        className="absolute top-4 right-4 p-2 rounded-md bg-white/20 hover:bg-white/30 text-white"
+        className="absolute top-2 sm:top-4 right-2 sm:right-4 p-2 sm:p-3 rounded-md bg-white/20 hover:bg-white/30 text-white touch-manipulation min-[44px]:min-w-[44px] min-[44px]:min-h-[44px]"
         aria-label="Bezárás"
       >✕</button>
 
-      <div className="max-w-6xl w-full" onClick={(e) => e.stopPropagation()}>
+      <div className="max-w-6xl w-full px-2 sm:px-0" onClick={(e) => e.stopPropagation()}>
         {isVideo ? (
           <video
             ref={videoRef}
             controls
             playsInline
             poster={getPosterSrc?.(item)}
-            className="max-h-[80vh] w-full rounded-xl bg-black"
+            className="max-h-[75vh] sm:max-h-[80vh] w-full rounded-xl bg-black"
           >
             <source src={getVideoSrc(item)} type="video/mp4" />
             <source src={item.url} />
@@ -142,7 +142,7 @@ export default function Lightbox({
           <img
             src={getImgSrc(item)}
             alt={getAlt(item)}
-            className="max-h-[80vh] w-full object-contain rounded-xl"
+            className="max-h-[75vh] sm:max-h-[80vh] w-full object-contain rounded-xl"
           />
         )}
       </div>
