@@ -8,6 +8,7 @@ import Lightbox from "../components/Lightbox";
 import { FaPlay } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
 import SEO from "../components/SEO";
+import Header from "../components/header";
 
 const GALLERY_CATS = [
   "to",
@@ -126,8 +127,10 @@ export default function GalleryPage() {
           canonicalUrl="https://bermuda-vendeghaz.hu/gallery"
         />
 
-        <section className="scroll-mt-24 py-30 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Header />
+
+        <section className="scroll-mt-24 pt-24 pb-12 bg-white">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12">
             <Link
               to="/"
               className="inline-flex items-center text-gray-600 hover:text-green-600 font-medium mb-8 transition-colors"
@@ -188,7 +191,7 @@ export default function GalleryPage() {
         canonicalUrl={`https://bermuda-vendeghaz.hu/gallery/${cat}`}
       />
 
-      <section className="scroll-mt-24 py-20 bg-white">
+      <section className="scroll-mt-24 pt-24 pb-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
             <div>

@@ -101,7 +101,7 @@ export default function Experiences() {
   const t = useMemo(() => TEXT[lang] ?? TEXT.hu, [lang]);
 
   return (
-    <section id="experiences" className="py-20 bg-white/60">
+    <section id="experiences" className="scroll-mt-16 py-20 bg-white/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{t.title}</h2>
@@ -138,7 +138,7 @@ export default function Experiences() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                   <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur px-3 py-1 rounded-full mb-3">
-                    <Icon className="w-4 h-4" aria-hidden />
+                    <Icon className="w-4 h-4 shrink-0" aria-hidden />
                     <span className="text-sm">{copy.title}</span>
                   </div>
 

@@ -66,7 +66,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
                   aria-label={t("rooms.carousel.prev")}
                 >
-                  <MdChevronLeft className="w-5 h-5" />
+                  <MdChevronLeft className="w-5 h-5 shrink-0" />
                 </button>
                 
                 <button
@@ -74,7 +74,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
                   aria-label={t("rooms.carousel.next")}
                 >
-                  <MdChevronRight className="w-5 h-5" />
+                  <MdChevronRight className="w-5 h-5 shrink-0" />
                 </button>
                 
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
@@ -105,7 +105,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
 
         {/* ár badge (ha van ár) */}
         <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
-          <FiTag className="w-4 h-4 mr-1" />
+          <FiTag className="w-4 h-4 mr-1 shrink-0" />
           {t("rooms.price.amount")} {t("rooms.price.unit")}
         </div>
       </div>
@@ -116,7 +116,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
             {room.name}
           </h3>
           <div className="flex items-center text-gray-600">
-            <FiUsers className="w-4 h-4 mr-1" />
+            <FiUsers className="w-4 h-4 mr-1 shrink-0" />
             <span className="text-sm">
               {guests} {t("common.guests")}
             </span>
@@ -140,17 +140,16 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex space-x-3 text-gray-600">
-            <FiWifi className="w-5 h-5" />
-            <FiCoffee className="w-5 h-5" />
-            <MdTv className="w-5 h-5" />
-            <MdOutlineBathroom className="w-5 h-5" />
-            <FaKitchenSet className="w-5 h-5" />
+            <FiWifi className="w-5 h-5 shrink-0" />
+            <FiCoffee className="w-5 h-5 shrink-0" />
+            <MdTv className="w-5 h-5 shrink-0" />
+            <MdOutlineBathroom className="w-5 h-5 shrink-0" />
           </div>
         </div>
 
         <div className="flex space-x-3">
           <Link
-            to={`/rooms/${room.slug || room.id || room._id}?img=${currentImageIndex}`}
+            to={`/rooms/${room.slug}?img=${currentImageIndex}`}
             className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-lg font-medium transition-colors duration-200 text-center"
           >
             {t("common.viewDetails") || "Megtekintés"}

@@ -216,13 +216,13 @@ const Header = () => {
                   className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-600 min-w-[4rem]"
                 >
                   <option value="hu" className="font-medium">
-                    🇭🇺 HU
+                    HU
                   </option>
                   <option value="en" className="font-medium">
-                    🇬🇧 EN
+                    EN
                   </option>
                   <option value="de" className="font-medium">
-                    🇩🇪 DE
+                    DE
                   </option>
                 </select>
               </div>

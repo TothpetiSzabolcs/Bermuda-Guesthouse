@@ -40,7 +40,7 @@ const HeroSection = () => {
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl sm:text-left">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-sm text-white/90">
-              <HiOutlineLocationMarker className="w-8 h-8 text-emerald-400" />
+              <HiOutlineLocationMarker className="w-8 h-8 text-emerald-400 shrink-0" />
               {t("hero.badge")}
             </div>
 

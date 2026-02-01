@@ -497,6 +497,7 @@ export const translations = {
       previous: "Previous",
       next: "Next",
       close: "Close",
+      backToHome: "Back to Home",
       menu: "Menu",
       adminTitle: "Bermuda Guesthouse",
       bookingForm: {

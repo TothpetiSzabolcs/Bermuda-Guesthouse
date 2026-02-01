@@ -1,1 +1,59 @@
 @import "tailwindcss";
+
+/* Global responsive baseline */
+@layer base {
+  html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    overflow-x: hidden;
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+  }
+  
+  #root {
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Text overflow protection */
+  * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Prevent horizontal scroll for specific elements */
+  img, picture, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Icon sizing protection */
+  svg {
+    flex-shrink: 0;
+  }
+
+  /* Better text rendering */
+  p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+}
+
+/* Responsive container utilities */
+@layer utilities {
+  .container-responsive {
+    @apply w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8;
+  }
+  
+  .text-wrap-balance {
+    text-wrap: balance;
+  }
+  
+  .text-wrap-pretty {
+    text-wrap: pretty;
+  }
+}

@@ -31,7 +31,7 @@ const Contact = () => {
       />
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="py-16 px-4 sm:px-6 lg:px-8">
+        <main className="pt-28 pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             {/* Page Header */}
             <div className="text-center mb-12">
@@ -44,12 +44,12 @@ const Contact = () => {
             </div>
 
             {/* Contact Cards Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
               {/* Name Card */}
               <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiMapPin className="w-6 h-6 text-emerald-600" />
+                    <FiMapPin className="w-6 h-6 text-emerald-600 shrink-0" />
                   </div>
                   <h3 className="ml-3 text-lg font-semibold text-gray-900">
                     {t("contact.name")}
@@ -63,7 +63,7 @@ const Contact = () => {
               <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiMapPin className="w-6 h-6 text-emerald-600" />
+                    <FiMapPin className="w-6 h-6 text-emerald-600 shrink-0" />
                   </div>
                   <h3 className="ml-3 text-lg font-semibold text-gray-900">
                     {t("contact.address")}
@@ -76,7 +76,7 @@ const Contact = () => {
               <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiPhone className="w-6 h-6 text-emerald-600" />
+                    <FiPhone className="w-6 h-6 text-emerald-600 shrink-0" />
                   </div>
                   <h3 className="ml-3 text-lg font-semibold text-gray-900">
                     {t("contact.phone")}
@@ -95,7 +95,7 @@ const Contact = () => {
               <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiMail className="w-6 h-6 text-emerald-600" />
+                    <FiMail className="w-6 h-6 text-emerald-600 shrink-0" />
                   </div>
                   <h3 className="ml-3 text-lg font-semibold text-gray-900">
                     {t("contact.email")}
@@ -103,7 +103,7 @@ const Contact = () => {
                 </div>
                 <a
                   href={`mailto:${contactInfo.email}`}
-                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors break-all"
                 >
                   {contactInfo.email}
                 </a>
@@ -114,7 +114,7 @@ const Contact = () => {
               <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 md:col-span-2 lg:col-span-2">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiNavigation className="w-6 h-6 text-emerald-600" />
+                    <FiNavigation className="w-6 h-6 text-emerald-600 shrink-0" />
                   </div>
                   <h3 className="ml-3 text-lg font-semibold text-gray-900">
                     {t("contact.navigation")}
@@ -127,7 +127,7 @@ const Contact = () => {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors"
                 >
-                  <FiNavigation className="w-5 h-5 mr-2" />
+                  <FiNavigation className="w-5 h-5 mr-2 shrink-0" />
                   {t("contact.planRoute")}
                 </a>
               </div>

@@ -30,12 +30,14 @@ const Home = () => {
   return (
     <>
       <SEO />
-      <div>
+      <div className="min-h-screen">
         <Header />
-        <HeroSection />
-        <Experiences />
-        <Rooms />
-        <Gallery />
+        <main className="pt-16">
+          <HeroSection />
+          <Experiences />
+          <Rooms />
+          <Gallery />
+        </main>
         <Footer />
       </div>
     </>

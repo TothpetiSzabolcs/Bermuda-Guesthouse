@@ -33,7 +33,7 @@ const Footer = () => {
                 <strong>{lang === "hu" && "Email:"}
                 {lang === "en" && "Email:"}
                 {lang === "de" && "Email:"}</strong> 
-                <a href="mailto:bermudavendeghazvese@gmail.com" className="hover:text-emerald-400 transition-colors"> bermudavendeghazvese@gmail.com</a>
+                <a href="mailto:bermudavendeghazvese@gmail.com" className="hover:text-emerald-400 transition-colors break-all"> bermudavendeghazvese@gmail.com</a>
               </p>
               <p className="hover:text-emerald-400 transition-colors">
                 <strong>{lang === "hu" && "NTAK Szám:"}

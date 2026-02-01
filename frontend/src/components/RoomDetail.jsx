@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import {
   FiUsers,
   FiWifi,
@@ -16,6 +16,7 @@ import { useI18n } from "../i18n/useI18n";
 import { cld } from "../utils/cloudinary";
 import BookingModal from "./BookingModal";
 import SEO from "../components/SEO";
+import Header from "../components/header";
 
 // Autoplay interval constant (5 seconds)
 const AUTOPLAY_INTERVAL = 5000;
@@ -23,40 +24,31 @@ const AUTOPLAY_INTERVAL = 5000;
 const RoomDetail = () => {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { t, lang } = useI18n();
 
-  const { data: room, loading, error, status } = useRoom(slug, { lang });
+  const { data: room, loading, error } = useRoom(slug, { lang });
 
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [activeImg, setActiveImg] = useState(0);
   const [queryParamApplied, setQueryParamApplied] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  
+
   // Image loading states
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  
+
   // Autoplay state
   const [isHovered, setIsHovered] = useState(false);
   const autoplayTimerRef = useRef(null);
 
-
-  useEffect(() => {
-    if (loading) return;
-    if (status === 404) navigate("/", { replace: true });
-  }, [loading, status, navigate]);
-
-  // Egységes képlista: room.image + room.images (string vagy {url})
   const images = useMemo(() => {
     const arr = [];
-  
+
     const pushUrl = (val) => {
       if (!val) return;
       if (typeof val === "string") arr.push(val);
       else {
-        // backend / cloudinary féle eltérések
         const url =
           val.url ||
           val.secure_url ||
@@ -66,35 +58,33 @@ const RoomDetail = () => {
         if (url) arr.push(url);
       }
     };
-  
+
     pushUrl(room?.image);
-  
+
     if (Array.isArray(room?.images)) {
       room.images.forEach(pushUrl);
     }
-  
-    // kiszűrjük az üreseket + duplikációt
+
     return Array.from(new Set(arr.filter(Boolean)));
   }, [room]);
-  
+
   const hasMany = images.length > 1;
 
   // Apply query parameter for initial image index (only once, before user interaction)
   useEffect(() => {
     if (queryParamApplied || loading || images.length === 0) return;
-    
-    const imgParam = searchParams.get('img');
+
+    const imgParam = searchParams.get("img");
     if (imgParam !== null) {
       const parsedIndex = parseInt(imgParam, 10);
       if (!isNaN(parsedIndex)) {
-        // Clamp index between 0 and images.length - 1
         const clampedIndex = Math.max(0, Math.min(parsedIndex, images.length - 1));
         setActiveImg(clampedIndex);
         setImageLoading(true);
         setImageError(false);
-        setQueryParamApplied(true);
       }
     }
+    setQueryParamApplied(true);
   }, [images.length, loading, queryParamApplied, searchParams]);
 
   // Initialize image loading states when room data loads
@@ -111,12 +101,12 @@ const RoomDetail = () => {
     setQueryParamApplied(false);
     setImageLoading(true);
     setImageError(false);
-  }, [images.length]);
+  }, [slug]);
 
   // Autoplay helper functions
   const startAutoplay = useCallback(() => {
-    if (!hasMany || isHovered || document.visibilityState !== 'visible') return;
-    
+    if (!hasMany || isHovered || document.visibilityState !== "visible") return;
+
     clearInterval(autoplayTimerRef.current);
     autoplayTimerRef.current = setInterval(() => {
       setActiveImg((i) => (i + 1) % images.length);
@@ -134,7 +124,7 @@ const RoomDetail = () => {
 
   const resetAutoplay = useCallback(() => {
     stopAutoplay();
-    if (!isHovered && document.visibilityState === 'visible') {
+    if (!isHovered && document.visibilityState === "visible") {
       startAutoplay();
     }
   }, [stopAutoplay, startAutoplay, isHovered]);
@@ -165,17 +155,17 @@ const RoomDetail = () => {
   // Visibility API effect
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && !isHovered && hasMany) {
+      if (document.visibilityState === "visible" && !isHovered && hasMany) {
         startAutoplay();
       } else {
         stopAutoplay();
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [isHovered, hasMany, startAutoplay, stopAutoplay]);
 
@@ -186,7 +176,7 @@ const RoomDetail = () => {
       return;
     }
 
-    if (!isHovered && document.visibilityState === 'visible') {
+    if (!isHovered && document.visibilityState === "visible") {
       startAutoplay();
     } else {
       stopAutoplay();
@@ -211,19 +201,14 @@ const RoomDetail = () => {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd || !hasMany) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe) {
-      goNext();
-    }
-    if (isRightSwipe) {
-      goPrev();
-    }
-    
-    // Reset autoplay on any swipe action
+    if (isLeftSwipe) goNext();
+    if (isRightSwipe) goPrev();
+
     resetAutoplay();
   };
 
@@ -234,14 +219,12 @@ const RoomDetail = () => {
     img.src = imageUrl;
   }, []);
 
-  // Preload next and previous images when activeImg changes
   useEffect(() => {
     if (images.length <= 1) return;
 
     const nextIndex = (activeImg + 1) % images.length;
     const prevIndex = (activeImg - 1 + images.length) % images.length;
 
-    // Preload next and previous images with w_1200 transformation
     preloadImage(cld(images[nextIndex], "f_auto,q_auto,w_1200"));
     preloadImage(cld(images[prevIndex], "f_auto,q_auto,w_1200"));
   }, [activeImg, images, preloadImage]);
@@ -267,7 +250,7 @@ const RoomDetail = () => {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [hasMany, images.length, goPrev, goNext]);
+  }, [hasMany, goPrev, goNext]);
 
   const handleBookingClick = () => setSelectedRoom(room);
   const handleBookingClose = () => setSelectedRoom(null);
@@ -299,20 +282,14 @@ const RoomDetail = () => {
     );
   }
 
-  console.log("ROOM images raw:", room.images);
-  console.log("ROOM image:", room.image);
-  console.log("NORMALIZED images:", images);
-
   const guests = room.guests ?? room.capacity ?? 0;
   const description = room.description || t("rooms.placeholderDescription");
 
-  // HERO kép most már az images[activeImg]-ból jön
   const heroRaw = images[activeImg] || room?.image || null;
   const hero1200 = heroRaw ? cld(heroRaw, "f_auto,q_auto,w_1200") : null;
   const hero800 = heroRaw ? cld(heroRaw, "f_auto,q_auto,w_800") : null;
   const hero480 = heroRaw ? cld(heroRaw, "f_auto,q_auto,w_480") : null;
 
-  // SEO-hoz stabilan az első kép
   const ogRaw = images[0] || null;
 
   return (
@@ -327,12 +304,15 @@ const RoomDetail = () => {
         ogImage={ogRaw ? cld(ogRaw, "f_auto,q_auto,w_1200") : "/og-image.jpg"}
       />
 
-      <section className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Back button */}
+      <Header />
+
+      <section className="scroll-mt-24 py-30 bg-white">
+        {/* container: mobilon kisebb padding, desktopon nagyobb */}
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12">
+          {/* Back button: mobilon kisebb margó */}
           <Link
             to="/#rooms"
-            className="inline-flex items-center text-gray-600 hover:text-green-600 font-medium mb-8 transition-colors"
+            className="inline-flex items-center text-gray-600 hover:text-green-600 font-medium mb-4 sm:mb-6 lg:mb-8 transition-colors"
           >
             <FiArrowLeft className="w-5 h-5 mr-2" />
             {t("common.backToHome") || "Vissza a szobákhoz"}
@@ -340,8 +320,8 @@ const RoomDetail = () => {
 
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             {/* Image section (CAROUSEL) */}
-            <div 
-              className="relative h-96 md:h-[500px]"
+            <div
+              className="relative h-56 sm:h-72 md:h-96 lg:h-[500px] 2xl:h-[520px]"
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
@@ -354,14 +334,18 @@ const RoomDetail = () => {
                   {imageLoading && (
                     <div className="absolute inset-0 bg-gray-300 animate-pulse" />
                   )}
-                  
+
                   <img
                     src={hero1200}
                     srcSet={`${hero480} 480w, ${hero800} 800w, ${hero1200} 1200w`}
                     sizes="(max-width: 640px) 480px, (max-width: 1024px) 800px, 1200px"
-                    alt={t("rooms.carousel.imageAlt", { roomName: room.name, index: activeImg + 1, total: images.length })}
+                    alt={t("rooms.carousel.imageAlt", {
+                      roomName: room.name,
+                      index: activeImg + 1,
+                      total: images.length,
+                    })}
                     className={`w-full h-full object-cover transition-opacity duration-300 ${
-                      imageLoading ? 'opacity-0' : 'opacity-100'
+                      imageLoading ? "opacity-0" : "opacity-100"
                     }`}
                     onLoad={handleImageLoad}
                     onError={handleImageError}
@@ -371,7 +355,7 @@ const RoomDetail = () => {
                   {imageError && (
                     <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500">
                       <div className="text-center">
-                        <div className="text-4xl mb-2">📷</div>
+                        <div className="text-4xl mb-2">🖼️</div>
                         <p>{t("common.imageLoadError")}</p>
                       </div>
                     </div>
@@ -384,21 +368,21 @@ const RoomDetail = () => {
                         type="button"
                         onClick={goPrev}
                         aria-label={t("rooms.carousel.prev")}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
+                        className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-1.5 sm:p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
                       >
-                        <FiChevronLeft className="h-6 w-6" />
+                        <FiChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
 
                       <button
                         type="button"
                         onClick={goNext}
                         aria-label={t("rooms.carousel.next")}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
+                        className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-1.5 sm:p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
                       >
-                        <FiChevronRight className="h-6 w-6" />
+                        <FiChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
 
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-3 py-1 text-xs text-white">
+                      <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-white">
                         {activeImg + 1}/{images.length}
                       </div>
                     </>
@@ -411,22 +395,22 @@ const RoomDetail = () => {
               )}
 
               {/* Price badge */}
-              <div className="absolute top-6 right-6 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center">
-                <FiTag className="w-4 h-4 mr-1" />
+              <div className="absolute top-3 right-3 sm:top-6 sm:right-6 bg-green-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium flex items-center shadow">
+                <FiTag className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
                 9000 Ft / {t("common.pricePerPersonPerNight")}
               </div>
             </div>
 
             {/* Content section */}
-            <div className="p-8">
+            <div className="p-4 sm:p-6 lg:p-8">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                     {room.name}
                   </h1>
                   <div className="flex items-center text-gray-600">
                     <FiUsers className="w-5 h-5 mr-2" />
-                    <span className="text-lg">
+                    <span className="text-base sm:text-lg">
                       {guests} {t("common.guests")}
                     </span>
                   </div>
@@ -434,7 +418,7 @@ const RoomDetail = () => {
 
                 <button
                   onClick={handleBookingClick}
-                  className="mt-4 md:mt-0 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+                  className="mt-4 md:mt-0 w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 rounded-lg font-medium transition-colors duration-200"
                 >
                   {t("rooms.bookCta")}
                 </button>
@@ -442,23 +426,25 @@ const RoomDetail = () => {
 
               {/* Description */}
               <div className="mb-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
                   {t("rooms.description") || "Leírás"}
                 </h2>
-                <p className="text-gray-600 leading-relaxed">{description}</p>
+                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                  {description}
+                </p>
               </div>
 
               {/* Amenities */}
               {room.amenities && room.amenities.length > 0 && (
                 <div className="mb-8">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-3">
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
                     {t("rooms.amenities")}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {room.amenities.map((amenity, index) => (
                       <span
                         key={index}
-                        className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm"
+                        className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-xs sm:text-sm"
                       >
                         {amenity}
                       </span>
@@ -468,35 +454,34 @@ const RoomDetail = () => {
               )}
 
               {/* Standard amenities icons */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              <div className="mb-2">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
                   {t("rooms.standardAmenities") || "Alap felszereltség"}
                 </h2>
-                <div className="flex space-x-6 text-gray-600">
+
+                {/* SE-n wrap + gap, ne overflow */}
+                <div className="flex flex-wrap gap-x-6 gap-y-3 text-gray-600 text-sm sm:text-base">
                   <div className="flex items-center space-x-2">
-                    <FiWifi className="w-6 h-6" />
+                    <FiWifi className="w-5 h-5 sm:w-6 sm:h-6" />
                     <span>WiFi</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <FiCoffee className="w-6 h-6" />
+                    <FiCoffee className="w-5 h-5 sm:w-6 sm:h-6" />
                     <span>Kávé/Tea</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <MdTv className="w-6 h-6" />
+                    <MdTv className="w-5 h-5 sm:w-6 sm:h-6" />
                     <span>TV</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <MdOutlineBathroom className="w-6 h-6" />
+                    <MdOutlineBathroom className="w-5 h-5 sm:w-6 sm:h-6" />
                     <span>{t("rooms.privateBathroom")}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <FaKitchenSet className="w-6 h-6" />
-                    <span>Konyhai rész</span>
-                  </div>
                 </div>
-              </div>              
+              </div>
             </div>
           </div>
+          {/* end card */}
         </div>
       </section>
 
