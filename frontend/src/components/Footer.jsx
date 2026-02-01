@@ -1,148 +1,271 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/useI18n";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
+
+const FB_URL = "https://www.facebook.com/profile.php?id=61560409597180#";
+
+const scrollToTop = () => {
+  // kis timeout, hogy route váltás után is biztosan felmenjen
+  requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+};
 
 const Footer = () => {
   const { lang } = useI18n();
 
+  const copy = {
+    hu: {
+      about:
+        "Kényelmes szállás a Balaton közelében. Modern felszereltség, barátságos környezet, felejthetetlen élmények.",
+      addressLabel: "Cím:",
+      phoneLabel: "Telefon:",
+      emailLabel: "Email:",
+      ntakLabel: "NTAK Szám:",
+      quick: "Gyors linkek",
+      legal: "Jogi információk",
+      social: "Kövess minket",
+      home: "Főoldal",
+      rooms: "Szobák",
+      experiences: "Élmények",
+      gallery: "Galéria",
+      contact: "Kapcsolat",
+      privacy: "Adatkezelési tájékoztató",
+      terms: "ÁSZF és lemondási feltételek",
+      rights: "Minden jog fenntartva.",
+      igSoon: "Instagram (hamarosan)",
+      socialHint: "Kövess minket a friss képekért és hírekért.",
+    },
+    en: {
+      about:
+        "Comfortable accommodation near Lake Balaton. Modern amenities, friendly atmosphere, unforgettable experiences.",
+      addressLabel: "Address:",
+      phoneLabel: "Phone:",
+      emailLabel: "Email:",
+      ntakLabel: "NTAK Number:",
+      quick: "Quick Links",
+      legal: "Legal Information",
+      social: "Follow us",
+      home: "Home",
+      rooms: "Rooms",
+      experiences: "Experiences",
+      gallery: "Gallery",
+      contact: "Contact",
+      privacy: "Privacy Policy",
+      terms: "Terms and Cancellation Policy",
+      rights: "All rights reserved.",
+      igSoon: "Instagram (soon)",
+      socialHint: "Follow us for updates and photos.",
+    },
+    de: {
+      about:
+        "Bequeme Unterkunft nahe dem Balaton. Moderne Ausstattung, freundliche Atmosphäre, unvergessliche Erlebnisse.",
+      addressLabel: "Adresse:",
+      phoneLabel: "Telefon:",
+      emailLabel: "Email:",
+      ntakLabel: "NTAK Nummer:",
+      quick: "Schnelle Links",
+      legal: "Rechtliche Informationen",
+      social: "Folge uns",
+      home: "Startseite",
+      rooms: "Zimmer",
+      experiences: "Erlebnisse",
+      gallery: "Galerie",
+      contact: "Kontakt",
+      privacy: "Datenschutzerklärung",
+      terms: "AGB und Stornobedingungen",
+      rights: "Alle Rechte vorbehalten.",
+      igSoon: "Instagram (bald)",
+      socialHint: "Folge uns für Updates und Fotos.",
+    },
+  }[lang];
+
+  const aboutText =
+    lang === "hu" ? (
+      <>
+        Kényelmes szállás a Balaton közelében. Modern felszereltség, barátságos
+        {"\u00A0"}
+        környezet, felejthetetlen élmények.
+      </>
+    ) : (
+      copy.about
+    );
+
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Company Info */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <h3 className="text-white font-semibold text-base sm:text-lg mb-3 sm:mb-4">Bermuda Vendégház</h3>
-            <p className="text-sm leading-relaxed">
-              {lang === "hu" && "Kényelmes szállás a Balaton közelében. Modern felszereltség, barátságos környezet, felejthetetlen élmények."}
-              {lang === "en" && "Comfortable accommodation near Lake Balaton. Modern amenities, friendly atmosphere, unforgettable experiences."}
-              {lang === "de" && "Bequeme Unterkunft nahe dem Balaton. Moderne Ausstattung, freundliche Atmosphäre, unvergessliche Erlebnisse."}
+    <footer className="bg-gray-950 text-gray-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* Company */}
+          <div className="sm:col-span-2 lg:col-span-5">
+            <h3 className="text-white font-semibold text-lg tracking-tight">
+              Bermuda Vendégház
+            </h3>
+
+            <p className="mt-4 text-sm leading-relaxed text-gray-400">
+              {aboutText}
             </p>
-            <div className="mt-4 space-y-3 text-sm">
+
+            <div className="mt-5 space-y-3 text-sm">
               <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2">
-                <span className="font-semibold flex-shrink-0 min-w-[60px]">
-                  {lang === "hu" && "Cím:"}
-                  {lang === "en" && "Address:"}
-                  {lang === "de" && "Adresse:"}
+                <span className="font-semibold text-gray-200 flex-shrink-0 min-w-[70px]">
+                  {copy.addressLabel}
                 </span>
-                <span className="break-words">Somogy megye, Vése Zrínyi utca 1.</span>
+                <span className="break-words text-gray-400">
+                  Somogy megye, Vése Zrínyi utca 1.
+                </span>
               </div>
+
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                <span className="font-semibold flex-shrink-0 min-w-[60px]">
-                  {lang === "hu" && "Telefon:"}
-                  {lang === "en" && "Phone:"}
-                  {lang === "de" && "Telefon:"}
+                <span className="font-semibold text-gray-200 flex-shrink-0 min-w-[70px]">
+                  {copy.phoneLabel}
                 </span>
-                <a href="tel:+36302615608" className="hover:text-emerald-400 transition-colors break-words">06/30 261 5608</a>
+                <a
+                  href="tel:+36302615608"
+                  className="text-gray-300 hover:text-emerald-300 transition-colors break-words"
+                >
+                  06/30 261 5608
+                </a>
               </div>
+
               <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2">
-                <span className="font-semibold flex-shrink-0 min-w-[60px]">
-                  {lang === "hu" && "Email:"}
-                  {lang === "en" && "Email:"}
-                  {lang === "de" && "Email:"}
+                <span className="font-semibold text-gray-200 flex-shrink-0 min-w-[70px]">
+                  {copy.emailLabel}
                 </span>
-                <a href="mailto:bermudavendeghazvese@gmail.com" className="hover:text-emerald-400 transition-colors break-all">bermudavendeghazvese@gmail.com</a>
+                <a
+                  href="mailto:bermudavendeghazvese@gmail.com"
+                  className="text-gray-300 hover:text-emerald-300 transition-colors break-all"
+                >
+                  bermudavendeghazvese@gmail.com
+                </a>
               </div>
+
               <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2">
-                <span className="font-semibold flex-shrink-0 min-w-[60px]">
-                  {lang === "hu" && "NTAK Szám:"}
-                  {lang === "en" && "NTAK Number:"}
-                  {lang === "de" && "NTAK Nummer:"}
+                <span className="font-semibold text-gray-200 flex-shrink-0 min-w-[70px]">
+                  {copy.ntakLabel}
                 </span>
-                <span className="break-words">MA24095212</span>
+                <span className="break-words text-gray-400">MA24095212</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-semibold text-base sm:text-lg mb-3 sm:mb-4">
-              {lang === "hu" && "Gyors linkek"}
-              {lang === "en" && "Quick Links"}
-              {lang === "de" && "Schnelle Links"}
+          <div className="lg:col-span-2">
+            <h3 className="text-white font-semibold text-base mb-4">
+              {copy.quick}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
+                <Link
                   to="/"
-                  className="hover:text-emerald-400 transition-colors block py-1"
+                  onClick={scrollToTop}
+                  className="text-gray-300 hover:text-emerald-300 transition-colors block py-1"
                 >
-                  {lang === "hu" && "Főoldal"}
-                  {lang === "en" && "Home"}
-                  {lang === "de" && "Startseite"}
+                  {copy.home}
                 </Link>
               </li>
               <li>
-                <Link 
+                <Link
                   to="/#rooms"
-                  className="hover:text-emerald-400 transition-colors block py-1"
+                  className="text-gray-300 hover:text-emerald-300 transition-colors block py-1"
                 >
-                  {lang === "hu" && "Szobák"}
-                  {lang === "en" && "Rooms"}
-                  {lang === "de" && "Zimmer"}
+                  {copy.rooms}
                 </Link>
               </li>
+
               <li>
-                <Link 
+                <Link
+                  to="/#experiences"
+                  className="text-gray-300 hover:text-emerald-300 transition-colors block py-1"
+                >
+                  {copy.experiences}
+                </Link>
+              </li>
+
+              <li>
+                <Link
                   to="/gallery"
-                  className="hover:text-emerald-400 transition-colors block py-1"
+                  className="text-gray-300 hover:text-emerald-300 transition-colors block py-1"
                 >
-                  {lang === "hu" && "Galéria"}
-                  {lang === "en" && "Gallery"}
-                  {lang === "de" && "Galerie"}
+                  {copy.gallery}
                 </Link>
               </li>
+
+              {/*Contact oldal */}
               <li>
-                <Link 
-                  to="/#contact"
-                  className="hover:text-emerald-400 transition-colors block py-1"
+                <Link
+                  to="/contact"
+                  onClick={scrollToTop}
+                  className="text-gray-300 hover:text-emerald-300 transition-colors block py-1"
                 >
-                  {lang === "hu" && "Kapcsolat"}
-                  {lang === "en" && "Contact"}
-                  {lang === "de" && "Kontakt"}
+                  {copy.contact}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Legal Links */}
-          <div>
-            <h3 className="text-white font-semibold text-base sm:text-lg mb-3 sm:mb-4">
-              {lang === "hu" && "Jogi információk"}
-              {lang === "en" && "Legal Information"}
-              {lang === "de" && "Rechtliche Informationen"}
+          {/* Legal */}
+          <div className="lg:col-span-2">
+            <h3 className="text-white font-semibold text-base mb-4">
+              {copy.legal}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
+                <Link
                   to="/privacy"
-                  className="hover:text-emerald-400 transition-colors block py-1"
+                  className="text-gray-300 hover:text-emerald-300 transition-colors block py-1"
                 >
-                  {lang === "hu" && "Adatkezelési tájékoztató"}
-                  {lang === "en" && "Privacy Policy"}
-                  {lang === "de" && "Datenschutzerklärung"}
+                  {copy.privacy}
                 </Link>
               </li>
               <li>
-                <Link 
+                <Link
                   to="/terms"
-                  className="hover:text-emerald-400 transition-colors block py-1"
+                  className="text-gray-300 hover:text-emerald-300 transition-colors block py-1"
                 >
-                  {lang === "hu" && "ÁSZF és lemondási feltételek"}
-                  {lang === "en" && "Terms and Cancellation Policy"}
-                  {lang === "de" && "AGB und Stornobedingungen"}
+                  {copy.terms}
                 </Link>
               </li>
             </ul>
+          </div>
+
+          {/* Social */}
+          <div className="lg:col-span-3">
+            <h3 className="text-white font-semibold text-base mb-4">
+              {copy.social}
+            </h3>
+
+            <div className="flex items-center gap-3">
+              <a
+                href={FB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-xl border border-gray-800 bg-gray-900/40 text-gray-200 hover:text-emerald-200 hover:border-emerald-500/30 hover:bg-gray-900/70 transition"
+                aria-label="Facebook"
+                title="Facebook"
+              >
+                <FaFacebookF className="w-4 h-4" />
+              </a>
+
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-xl border border-gray-800 bg-gray-900/20 text-gray-500 cursor-not-allowed"
+                aria-label="Instagram"
+                title={copy.igSoon}
+              >
+                <FaInstagram className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="mt-3 text-xs text-gray-500 leading-relaxed">
+              {copy.socialHint}
+            </p>
           </div>
         </div>
 
-        <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-800">
-          <div className="flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-gray-400 gap-2">
+        {/* Bottom bar */}
+        <div className="mt-10 pt-6 border-t border-gray-900">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs sm:text-sm text-gray-500">
             <p className="text-center sm:text-left">
-              © 2026 Bermuda Vendégház. 
-              {lang === "hu" && " Minden jog fenntartva."}
-              {lang === "en" && " All rights reserved."}
-              {lang === "de" && " Alle Rechte vorbehalten."}
+              © 2026 Bermuda Vendégház. {copy.rights}
             </p>
           </div>
         </div>

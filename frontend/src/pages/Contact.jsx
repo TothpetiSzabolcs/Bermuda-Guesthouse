@@ -150,11 +150,14 @@ const Contact = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 {t("contact.additionalInfo.title")}
               </h2>
+
               <div className="prose prose-gray max-w-none">
                 <p className="text-gray-700 mb-4">
                   {t("contact.additionalInfo.description")}
                 </p>
+
                 <div className="grid gap-4 mt-6">
+                  {/* Check-in */}
                   <div className="flex items-start">
                     <div className="w-6 h-6 text-emerald-600 mr-3 mt-0.5">
                       ✓
@@ -163,6 +166,8 @@ const Contact = () => {
                       {t("contact.additionalInfo.checkIn")}
                     </p>
                   </div>
+
+                  {/* Check-out */}
                   <div className="flex items-start">
                     <div className="w-6 h-6 text-emerald-600 mr-3 mt-0.5">
                       ✓
@@ -171,14 +176,17 @@ const Contact = () => {
                       {t("contact.additionalInfo.checkOut")}
                     </p>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 text-emerald-600 mr-3 mt-0.5">
-                      ✓
-                    </div>
-                    <p className="text-gray-700">
-                      {t("contact.additionalInfo.languages")}
-                    </p>
-                  </div>
+
+                  {/* Highlights list */}
+                  {Array.isArray(t("contact.additionalInfo.highlights")) &&
+                    t("contact.additionalInfo.highlights").map((item, idx) => (
+                      <div key={idx} className="flex items-start">
+                        <div className="w-6 h-6 text-emerald-600 mr-3 mt-0.5">
+                          ✓
+                        </div>
+                        <p className="text-gray-700">{item}</p>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>

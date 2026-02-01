@@ -130,7 +130,7 @@ export default function GalleryPage() {
 
         <Header />
 
-        <section className="scroll-mt-24 pt-24 pb-12 bg-white">
+        <section className="scroll-mt-24 pt-24 pb-18 bg-white">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12">
             <Link
               to="/"
@@ -179,6 +179,7 @@ export default function GalleryPage() {
             </div>
           </div>
         </section>
+        <Footer />
       </>
     );
   }
@@ -191,7 +192,7 @@ export default function GalleryPage() {
         description={t("gallery.lead")}
         canonicalUrl={`https://bermuda-vendeghaz.hu/gallery/${cat}`}
       />
-
+      <Header />
       <section className="scroll-mt-24 pt-24 pb-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">

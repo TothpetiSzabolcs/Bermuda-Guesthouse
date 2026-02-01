@@ -175,14 +175,22 @@ export const translations = {
       planRoute: "Útvonal tervezése",
       seo: {
         title: "Kapcsolat - Bermuda Vendégház",
-        description: "Vegye fel a kapcsolatot a Bermuda Vendégházzal. Elérhetőségek: telefon, e-mail, cím. NTAK regisztráció: MA24095212. Somogy megye, Vése Zrínyi utca 1."
+        description:
+          "Vegye fel a kapcsolatot a Bermuda Vendégházzal. Elérhetőségek: telefon, e-mail, cím. NTAK regisztráció: MA24095212. Somogy megye, Vése Zrínyi utca 1.",
       },
       additionalInfo: {
         title: "Tudnivalók",
-        description: "Vendégházunk kényelmes és modern környezetet biztosít vendégeink számára. Többnyelvű személyzetünk áll rendelkezésre a foglalásokhoz és kérdésekhez.",
-        checkIn: "Bejelentkezés: 14:00-tól",
-        checkOut: "Kijelentkezés: 10:00-ig",
-        languages: "Magyar, angol és német nyelven is beszélünk"
+        description:
+          "Vendégházunk kényelmes és modern környezetet biztosít vendégeink számára. Többnyelvű személyzetünk áll rendelkezésre a foglalásokhoz és kérdésekhez.",
+        checkIn: "Érkezés: rugalmas, előzetes egyeztetéssel",
+        checkOut: "Távozás: rugalmas, előzetes egyeztetéssel",
+        highlights: [
+          "Off-road opció: március 1. és augusztus 15. között előzetes egyeztetés kötelező.",
+          "Állatbarát szálláshely: háziállat felár 2000 Ft/éj. Kérjük, érkezés előtt jelezze.",
+          "6 éves korig a szállás díjmentes.",
+          "Euroban történő fizetés lehetséges.",
+          "Idegenforgalmi adó: díjmentes.",
+        ],
       },
       form: {
         name: "Név",
@@ -215,7 +223,7 @@ export const translations = {
         provider: {
           title: "1. A szolgáltató megnevezése és elérhetőségei",
           content:
-            "Bermuda Vendégház\nEmail: info@bermuda-vendeghaz.hu\nWeboldal: www.bermuda-vendeghaz.hu",
+            "Bermuda Vendégház\nEmail: bermudavendeghazvese@gmail.com\nWeboldal: www.bemudavendeghaz.hu",
         },
         services: {
           title: "2. A szállás szolgáltatásainak leírása",
@@ -225,9 +233,9 @@ export const translations = {
         prices: {
           title: "3. Árak és fizetési feltételek",
           prices:
-            "Árak: A weboldalon feltüntetett árak érvényesek. Az ár tartalmazza a szállás díját, nem tartalmazza a helyi idegenforgalmi adót (IAFA), amelynek összege 18 éven felüli vendégek esetén éjelenként 450 Ft.",
+            "Árak: A weboldalon feltüntetett árak érvényesek. Az ár tartalmazza a szállás díját. Idegenforgalmi adó díjmentes.",
           payment:
-            "Fizetés: A fizetés készpénzben történik a szálláshelyen érkezéskor.",
+            "Fizetés: A fizetés készpénzben történik a szálláshelyen érkezéskor, vagy banki előreutalással a foglalás során.",
         },
         bookingProcess: {
           title: "4. Foglalás menete",
@@ -247,8 +255,7 @@ export const translations = {
             "Érkezés előtt 3-6 nappal: 70% az első éjszaka ára",
             "Érkezés előtt 0-2 nappal vagy meg nem jelenés: 100% az első éjszaka ára",
           ],
-          notice:
-            "A lemondást írásban (emailben) kell megtenni a szolgáltató felé.",
+          notice: "A lemondást írásban (emailben) kell megtenni a szolgáltató felé.",
         },
         guestObligations: {
           title: "6. Vendég kötelezettségei",
@@ -257,7 +264,6 @@ export const translations = {
             "A szobák és felszerelés rendeltetésszerű használata",
             "Károkozás esetén a kár megtérítése",
             "Érkezéskor a fennmaradó összeg kifizetése",
-            "Helyi idegenforgalmi adó fizetése",
           ],
         },
         providerObligations: {
@@ -276,13 +282,13 @@ export const translations = {
         },
         houseRules: {
           title: "9. Szállásra vonatkozó házirend",
-          checkin: "Bejelentkezés: 14:00-tól",
-          checkout: "Kijelentkezés: 10:00-ig",
+          checkin: "Érkezés: rugalmas, előzetes egyeztetéssel",
+          checkout: "Távozás: rugalmas, előzetes egyeztetéssel",
           rulesTitle: "Házirend:",
           rules: [
             "A szálláshelyen tilos a dohányzás a szobákban",
             "Rendellenkedések (hangos zene, buli) 22:00 és 8:00 között nem megengedettek",
-            "Házállatot nem tudunk fogadni",
+            "Állatbarát szálláshely: háziállat felár 2000 Ft/éj. Kérjük, érkezés előtt egyeztessen velünk.",
             "Fokozottan figyeljük a környezeti zajszintet",
           ],
         },
@@ -309,7 +315,7 @@ export const translations = {
         provider: {
           title: "1. Az adatkezelő megnevezése és elérhetőségei",
           content:
-            "Bermuda Vendégház\nEmail: info@bermuda-vendeghaz.hu\nWeboldal: www.bermuda-vendeghaz.hu",
+            "Bermuda Vendégház\nEmail: bermudavendeghazvese@gmail.com\nWeboldal: www.bemudavendeghaz.hu",
         },
         dataScope: {
           title: "2. A kezelt adatok köre és célja",
@@ -321,8 +327,7 @@ export const translations = {
             "Vendégek száma",
             "Esetleges üzenet, különleges kérések",
           ],
-          purpose:
-            "Cél: A szállásfoglalás teljesítése, kapcsolattartás, számlázás.",
+          purpose: "Cél: A szállásfoglalás teljesítése, kapcsolattartás, számlázás.",
         },
         legalBasis: {
           title: "3. Adatkezelés jogalapja",
@@ -342,8 +347,7 @@ export const translations = {
             "Email szolgáltatóknak a kommunikáció céljából",
             "Számlázó szoftvernek a számlázás céljából",
           ],
-          disclaimer:
-            "Adatokat nem adunk át harmadik fél számára marketing célokra.",
+          disclaimer: "Adatokat nem adunk át harmadik fél számára marketing célokra.",
         },
         rights: {
           title: "6. Érintetti jogok",
@@ -370,7 +374,7 @@ export const translations = {
         contact: {
           title: "9. Kapcsolat",
           content:
-            "Adatvédelmi kérdésekben keresse munkatársunkat:\nEmail: info@bermuda-vendeghaz.hu",
+            "Adatvédelmi kérdésekben keresse munkatársunkat:\nEmail: bermudavendeghazvese@gmail.com",
         },
       },
       effectiveDate: "Hatályba lépés dátuma: 2026. január 28.",
@@ -646,14 +650,22 @@ export const translations = {
       planRoute: "Plan Route",
       seo: {
         title: "Contact - Bermuda Guesthouse",
-        description: "Contact Bermuda Guesthouse. Contact information: phone, email, address. NTAK registration: MA24095212. Somogy county, Vése Zrínyi street 1."
+        description:
+          "Contact Bermuda Guesthouse. Contact information: phone, email, address. NTAK registration: MA24095212. Somogy county, Vése Zrínyi street 1.",
       },
       additionalInfo: {
         title: "Information",
-        description: "Our guesthouse provides comfortable and modern environment for our guests. Multi-lingual staff is available for bookings and questions.",
-        checkIn: "Check-in: from 14:00",
-        checkOut: "Check-out: until 10:00",
-        languages: "We speak Hungarian, English and German"
+        description:
+          "Our guesthouse provides a comfortable and modern environment for our guests. Multi-lingual staff is available for bookings and questions.",
+        checkIn: "Arrival: flexible, by prior arrangement",
+        checkOut: "Departure: flexible, by prior arrangement",
+        highlights: [
+          "Off-road option: prior arrangement is mandatory between Mar 1 and Aug 15.",
+          "Pet-friendly accommodation: pets are welcome for an additional fee of 2000 HUF/night. Please let us know in advance.",
+          "Accommodation is free of charge for children up to 6 years old.",
+          "Payment in EUR is accepted.",
+          "Tourism tax: free of charge.",
+        ],
       },
       form: {
         name: "Name",
@@ -686,7 +698,7 @@ export const translations = {
         provider: {
           title: "1. Provider name and contact information",
           content:
-            "Bermuda Guesthouse\nEmail: info@bermuda-vendeghaz.hu\nWebsite: www.bermuda-vendeghaz.hu",
+            "Bermuda Guesthouse\nEmail: bermudavendeghazvese@gmail.com\nWebsite: www.bemudavendeghaz.hu",
         },
         services: {
           title: "2. Description of accommodation services",
@@ -696,9 +708,9 @@ export const translations = {
         prices: {
           title: "3. Prices and payment conditions",
           prices:
-            "Prices: The prices listed on the website are valid. The price includes accommodation fee, but does not include the local tourism tax (IAFA), which is 450 HUF per night for guests over 18 years of age.",
+            "Prices: The prices listed on the website are valid. The price includes the accommodation fee. Tourism tax: free of charge.",
           payment:
-            "Payment: Payment is made in cash at the accommodation upon arrival.",
+            "Payment: Payment can be made in cash at the accommodation upon arrival, or by bank transfer in advance during the booking process.",
         },
         bookingProcess: {
           title: "4. Booking process",
@@ -718,8 +730,7 @@ export const translations = {
             "3-6 days before arrival: 70% of first night price",
             "0-2 days before arrival or no-show: 100% of first night price",
           ],
-          notice:
-            "Cancellation must be made in writing (email) to the provider.",
+          notice: "Cancellation must be made in writing (email) to the provider.",
         },
         guestObligations: {
           title: "6. Guest obligations",
@@ -728,7 +739,6 @@ export const translations = {
             "Proper use of rooms and equipment",
             "Compensation for damages caused",
             "Payment of remaining amount upon arrival",
-            "Payment of local tourism tax",
           ],
         },
         providerObligations: {
@@ -747,13 +757,13 @@ export const translations = {
         },
         houseRules: {
           title: "9. House rules for accommodation",
-          checkin: "Check-in: from 14:00",
-          checkout: "Check-out: until 10:00",
+          checkin: "Arrival: flexible, by prior arrangement",
+          checkout: "Departure: flexible, by prior arrangement",
           rulesTitle: "House rules:",
           rules: [
             "Smoking is prohibited in rooms at the accommodation",
             "Disturbances (loud music, parties) are not allowed between 22:00 and 8:00",
-            "Pets cannot be accommodated",
+            "Pet-friendly accommodation: pets are welcome for an additional fee of 2000 HUF/night. Please arrange it with us in advance.",
             "We pay close attention to environmental noise levels",
           ],
         },
@@ -769,8 +779,7 @@ export const translations = {
         },
       },
       effectiveDate: "Effective date: January 28, 2026.",
-      disclaimer:
-        "The provider reserves the right to change these terms and conditions.",
+      disclaimer: "The provider reserves the right to change these terms and conditions.",
       backToHome: "Back to homepage",
     },
 
@@ -780,7 +789,7 @@ export const translations = {
         provider: {
           title: "1. Controller name and contact information",
           content:
-            "Bermuda Guesthouse\nEmail: info@bermuda-vendeghaz.hu\nWebsite: www.bermunda-vendeghaz.hu",
+            "Bermuda Guesthouse\nEmail: bermudavendeghazvese@gmail.com\nWebsite: www.bemudavendeghaz.hu",
         },
         dataScope: {
           title: "2. Scope and purpose of processed data",
@@ -792,8 +801,7 @@ export const translations = {
             "Number of guests",
             "Optional messages, special requests",
           ],
-          purpose:
-            "Purpose: Fulfillment of accommodation booking, contact, invoicing.",
+          purpose: "Purpose: Fulfillment of accommodation booking, contact, invoicing.",
         },
         legalBasis: {
           title: "3. Legal basis of data processing",
@@ -807,14 +815,12 @@ export const translations = {
         },
         dataTransfer: {
           title: "5. Data transfer",
-          intro:
-            "Your email address and contact data are transferred for the following purposes:",
+          intro: "Your email address and contact data are transferred for the following purposes:",
           items: [
             "To email providers for communication purposes",
             "To invoicing software for invoicing purposes",
           ],
-          disclaimer:
-            "Data is not transferred to third parties for marketing purposes.",
+          disclaimer: "Data is not transferred to third parties for marketing purposes.",
         },
         rights: {
           title: "6. Data subject rights",
@@ -841,12 +847,11 @@ export const translations = {
         contact: {
           title: "9. Contact",
           content:
-            "For privacy matters, please contact our staff:\nEmail: info@bermuda-vendeghaz.hu",
+            "For privacy matters, please contact our staff:\nEmail: bermudavendeghazvese@gmail.com",
         },
       },
       effectiveDate: "Effective date: January 28, 2026.",
-      disclaimer:
-        "The controller reserves the right to change this privacy policy.",
+      disclaimer: "The controller reserves the right to change this privacy policy.",
       backToHome: "Back to homepage",
     },
 
@@ -870,8 +875,7 @@ export const translations = {
         selectFile: "Choose file",
         uploading: "Uploading…",
         deleteConfirm: "Are you sure you want to delete this media?",
-        fileTypesHint:
-          "Supported: images and videos (e.g. JPG, PNG, MP4, MOV).",
+        fileTypesHint: "Supported: images and videos (e.g. JPG, PNG, MP4, MOV).",
         uploadSuccess: "Uploaded.",
         deleteSuccess: "Deleted.",
         management: "Gallery Management",
@@ -1014,8 +1018,7 @@ export const translations = {
       lead: "Zuhause, wo Entspannung natürlich ist!",
       guestsLabel: "Gäste",
       bookCta: "Zimmer buchen",
-      placeholderDescription:
-        "Komfortables Zimmer mit grundlegender Ausstattung.",
+      placeholderDescription: "Komfortables Zimmer mit grundlegender Ausstattung.",
       pricePerNight: "Preis/Nacht",
       privateBathroom: "Eigenes Bad",
       amenities: "Ausstattung",
@@ -1118,14 +1121,22 @@ export const translations = {
       planRoute: "Route planen",
       seo: {
         title: "Kontakt - Bermuda Gästehaus",
-        description: "Kontaktieren Sie Bermuda Gästehaus. Kontaktinformationen: Telefon, E-Mail, Adresse. NTAK Registrierung: MA24095212. Komitat Somogy, Vése Zrínyi Straße 1."
+        description:
+          "Kontaktieren Sie Bermuda Gästehaus. Kontaktinformationen: Telefon, E-Mail, Adresse. NTAK Registrierung: MA24095212. Komitat Somogy, Vése Zrínyi Straße 1.",
       },
       additionalInfo: {
         title: "Informationen",
-        description: "Unser Gästehaus bietet komfortable und moderne Umgebung für unsere Gäste. Mehrsprachiges Personal steht für Buchungen und Fragen zur Verfügung.",
-        checkIn: "Check-in: ab 14:00 Uhr",
-        checkOut: "Check-out: bis 10:00 Uhr",
-        languages: "Wir sprechen Ungarisch, Englisch und Deutsch"
+        description:
+          "Unser Gästehaus bietet eine komfortable und moderne Umgebung für unsere Gäste. Mehrsprachiges Personal steht für Buchungen und Fragen zur Verfügung.",
+        checkIn: "Anreise: flexibel, nach vorheriger Absprache",
+        checkOut: "Abreise: flexibel, nach vorheriger Absprache",
+        highlights: [
+          "Offroad-Option: zwischen dem 1. März und dem 15. August ist eine vorherige Absprache verpflichtend.",
+          "Haustierfreundliche Unterkunft: Haustiere sind gegen Aufpreis von 2000 HUF/Nacht willkommen. Bitte vorab anfragen.",
+          "Kinder bis einschließlich 6 Jahre übernachten kostenlos.",
+          "Zahlung in EUR ist möglich.",
+          "Tourismussteuer: kostenlos.",
+        ]
       },
       form: {
         name: "Name",
@@ -1158,7 +1169,7 @@ export const translations = {
         provider: {
           title: "1. Name und Kontaktdaten des Anbieters",
           content:
-            "Bermuda Gästehaus\nEmail: info@bermuda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
+            "Bermuda Gästehaus\nEmail: bermudavendeghazvese@gmail.com\nWebseite: www.bemudavendeghaz.hu",
         },
         services: {
           title: "2. Beschreibung der Unterkunftsdienstleistungen",
@@ -1168,9 +1179,9 @@ export const translations = {
         prices: {
           title: "3. Preise und Zahlungsbedingungen",
           prices:
-            "Preise: Die auf der Website angegebenen Preise sind gültig. Der Preis umfasst die Unterkunftsgebühr, jedoch nicht die lokale Tourismussteuer (IAFA), die 450 HUF pro Nacht für Gäste über 18 Jahre beträgt.",
+            "Preise: Die auf der Website angegebenen Preise sind gültig. Der Preis umfasst die Unterkunftsgebühr. Tourismussteuer: kostenlos.",
           payment:
-            "Zahlung: Die Zahlung erfolgt bar bei der Unterkunft bei Ankunft.",
+            "Zahlung: Die Zahlung erfolgt entweder bar vor Ort bei der Ankunft oder per Banküberweisung im Voraus während des Buchungsvorgangs.",
         },
         bookingProcess: {
           title: "4. Buchungsprozess",
@@ -1190,8 +1201,7 @@ export const translations = {
             "3-6 Tage vor Ankunft: 70% des Preises der ersten Nacht",
             "0-2 Tage vor Ankunft oder Nichterscheinen: 100% des Preises der ersten Nacht",
           ],
-          notice:
-            "Die Stornierung muss schriftlich (E-Mail) beim Anbieter erfolgen.",
+          notice: "Die Stornierung muss schriftlich (E-Mail) beim Anbieter erfolgen.",
         },
         guestObligations: {
           title: "6. Gastpflichten",
@@ -1200,7 +1210,6 @@ export const translations = {
             "ordnungsgemäße Nutzung der Zimmer und Einrichtung",
             "Kompensation von verursachten Schäden",
             "Zahlung des Restbetrags bei Ankunft",
-            "Zahlung der lokalen Tourismussteuer",
           ],
         },
         providerObligations: {
@@ -1219,13 +1228,13 @@ export const translations = {
         },
         houseRules: {
           title: "9. Hausregeln für die Unterkunft",
-          checkin: "Check-in: ab 14:00 Uhr",
-          checkout: "Check-out: bis 10:00 Uhr",
+          checkin: "Anreise: flexibel, nach vorheriger Absprache",
+          checkout: "Abreise: flexibel, nach vorheriger Absprache",
           rulesTitle: "Hausregeln:",
           rules: [
             "Rauchen in den Zimmern der Unterkunft ist verboten",
             "Störungen (laute Musik, Partys) sind zwischen 22:00 und 8:00 Uhr nicht erlaubt",
-            "Haustiere können nicht aufgenommen werden",
+            "Haustierfreundliche Unterkunft: Haustiere sind gegen einen Aufpreis von 2000 HUF/Nacht willkommen. Bitte vorher mit uns abstimmen.",
             "Wir achten genau auf die Umgebungslautstärke",
           ],
         },
@@ -1241,8 +1250,7 @@ export const translations = {
         },
       },
       effectiveDate: "Gültig ab: 28. Januar 2026.",
-      disclaimer:
-        "Der Anbieter behält sich das Recht vor, diese Geschäftsbedingungen zu ändern.",
+      disclaimer: "Der Anbieter behält sich das Recht vor, diese Geschäftsbedingungen zu ändern.",
       backToHome: "Zurück zur Startseite",
     },
 
@@ -1252,12 +1260,11 @@ export const translations = {
         provider: {
           title: "1. Name und Kontaktdaten des Verantwortlichen",
           content:
-            "Bermuda Gästehaus\nEmail: info@bermuda-vendeghaz.hu\nWebseite: www.bermunda-vendeghaz.hu",
+            "Bermuda Gästehaus\nEmail: bermudavendeghazvese@gmail.com\nWebseite: www.bemudavendeghaz.hu",
         },
         dataScope: {
           title: "2. Umfang und Zweck der verarbeiteten Daten",
-          intro:
-            "Während des Buchungsprozesses verarbeiten wir die folgenden Daten:",
+          intro: "Während des Buchungsprozesses verarbeiten wir die folgenden Daten:",
           items: [
             "Name",
             "E-Mail-Adresse",
@@ -1265,8 +1272,7 @@ export const translations = {
             "Anzahl der Gäste",
             "Optionale Nachrichten, besondere Wünsche",
           ],
-          purpose:
-            "Zweck: Erfüllung der Unterkunftsbuchung, Kontakt, Rechnungsstellung.",
+          purpose: "Zweck: Erfüllung der Unterkunftsbuchung, Kontakt, Rechnungsstellung.",
         },
         legalBasis: {
           title: "3. Rechtsgrundlage der Datenverarbeitung",
@@ -1280,14 +1286,12 @@ export const translations = {
         },
         dataTransfer: {
           title: "5. Datenübertragung",
-          intro:
-            "Ihre E-Mail-Adresse und Kontaktdaten werden für folgende Zwecke übertragen:",
+          intro: "Ihre E-Mail-Adresse und Kontaktdaten werden für folgende Zwecke übertragen:",
           items: [
             "An E-Mail-Anbieter für Kommunikationszwecke",
             "An Abrechnungssoftware für Abrechnungszwecke",
           ],
-          disclaimer:
-            "Daten werden nicht für Marketingzwecke an Dritte übertragen.",
+          disclaimer: "Daten werden nicht für Marketingzwecke an Dritte übertragen.",
         },
         rights: {
           title: "6. Betroffenenrechte",
@@ -1314,12 +1318,11 @@ export const translations = {
         contact: {
           title: "9. Kontakt",
           content:
-            "Für Datenschutzfragen wenden Sie sich bitte an unsere Mitarbeiter:\nEmail: info@bermuda-vendeghaz.hu",
+            "Für Datenschutzfragen wenden Sie sich bitte an unsere Mitarbeiter:\nEmail: bermudavendeghazvese@gmail.com",
         },
       },
       effectiveDate: "Gültig ab: 28. Januar 2026.",
-      disclaimer:
-        "Der Verantwortliche behält sich das Recht vor, diese Datenschutzerklärung zu ändern.",
+      disclaimer: "Der Verantwortliche behält sich das Recht vor, diese Datenschutzerklärung zu ändern.",
       backToHome: "Zurück zur Startseite",
     },
 
@@ -1343,8 +1346,7 @@ export const translations = {
         selectFile: "Datei wählen",
         uploading: "Wird hochgeladen…",
         deleteConfirm: "Möchten Sie dieses Medium wirklich löschen?",
-        fileTypesHint:
-          "Unterstützt: Bilder und Videos (z. B. JPG, PNG, MP4, MOV).",
+        fileTypesHint: "Unterstützt: Bilder und Videos (z. B. JPG, PNG, MP4, MOV).",
         uploadSuccess: "Hochgeladen.",
         deleteSuccess: "Gelöscht.",
         management: "Galerie verwalten",
