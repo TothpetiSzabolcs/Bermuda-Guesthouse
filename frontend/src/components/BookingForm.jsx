@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/useI18n";
 
 const BookingForm = ({ room, onClose }) => {
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,7 +11,8 @@ const BookingForm = ({ room, onClose }) => {
     checkOut: "",
     guests: 1,
     message: "",
-    acceptTerms: false
+    acceptTerms: false,
+    offroadOption: false
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,7 +36,9 @@ const BookingForm = ({ room, onClose }) => {
       invalidGuests: "Legalább 1 vendég szükséges",
       acceptTermsRequired: "A foglaláshoz el kell fogadni az ÁSZF-t és adatkezelési tájékoztatót",
       success: "Foglalási igény elküldve! Hamarosan visszajelzünk.",
-      error: "Hiba történt. Kérjük, próbáld újra később."
+      error: "Hiba történt. Kérjük, próbáld újra később.",
+      offroadOption: "Off-road túra",
+      offroadWarning: "Mar 1 – Aug 15 között egyeztetés kötelező"
     },
     en: {
       title: "Booking",
@@ -54,7 +57,9 @@ const BookingForm = ({ room, onClose }) => {
       invalidGuests: "At least 1 guest is required",
       acceptTermsRequired: "You must accept the Terms and Privacy Policy to book",
       success: "Booking request sent! We'll get back to you soon.",
-      error: "An error occurred. Please try again later."
+      error: "An error occurred. Please try again later.",
+      offroadOption: "Off-road tour",
+      offroadWarning: "Mar 1 – Aug 15: coordination required"
     },
     de: {
       title: "Buchung",
@@ -73,7 +78,9 @@ const BookingForm = ({ room, onClose }) => {
       invalidGuests: "Mindestens 1 Gast erforderlich",
       acceptTermsRequired: "Sie müssen die AGB und Datenschutzerklärung akzeptieren",
       success: "Buchungsanfrage gesendet! Wir melden uns bald bei Ihnen.",
-      error: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
+      error: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+      offroadOption: "Offroad-Tour",
+      offroadWarning: "Mar 1 – Aug 15: Absprache erforderlich"
     }
   }[lang] || COPY.hu;
 
@@ -360,6 +367,30 @@ const BookingForm = ({ room, onClose }) => {
             disabled={isSubmitting}
             placeholder={COPY.hu ? "Esetleges megjegyzések..." : "Any special requests..."}
           />
+        </div>
+
+        <div>
+          <div className="flex items-start">
+            <input
+              id="offroadOption"
+              type="checkbox"
+              name="offroadOption"
+              checked={formData.offroadOption}
+              onChange={handleChange}
+              className="mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              disabled={isSubmitting}
+            />
+            <label htmlFor="offroadOption" className="ml-3 text-sm text-gray-700 leading-relaxed">
+              {t("booking.offroad.option") || COPY.offroadOption}
+            </label>
+          </div>
+          {formData.offroadOption && (
+            <div className="mt-2 ml-7 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800 break-words">
+                {t("booking.offroad.warning") || COPY.offroadWarning}
+              </p>
+            </div>
+          )}
         </div>
 
         <div>

@@ -203,6 +203,10 @@ export const translations = {
         title: "Válasszon szobát",
         backToPicker: "Vissza a szobaválasztóhoz",
       },
+      offroad: {
+        option: "Off-road túra",
+        warning: "Mar 1 – Aug 15 között egyeztetés kötelező",
+      },
     },
 
     terms: {
@@ -669,6 +673,10 @@ export const translations = {
       picker: {
         title: "Choose a Room",
         backToPicker: "Back to Room Selection",
+      },
+      offroad: {
+        option: "Off-road tour",
+        warning: "Mar 1 – Aug 15: coordination required",
       },
     },
 
@@ -1137,6 +1145,10 @@ export const translations = {
       picker: {
         title: "Zimmer wählen",
         backToPicker: "Zurück zur Zimmerauswahl",
+      },
+      offroad: {
+        option: "Offroad-Tour",
+        warning: "Mar 1 – Aug 15: Absprache erforderlich",
       },
     },
 
