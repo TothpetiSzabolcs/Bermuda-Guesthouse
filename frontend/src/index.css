@@ -82,4 +82,40 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
+  /* Enhanced prose for legal content - custom implementation */
+  .prose-legal {
+    @apply max-w-none space-y-6 sm:space-y-8;
+  }
+  
+  .prose-legal h1,
+  .prose-legal h2,
+  .prose-legal h3 {
+    @apply text-gray-900 font-semibold tracking-tight scroll-mt-24 leading-snug;
+  }
+  
+  .prose-legal p {
+    @apply text-gray-700 leading-relaxed text-sm sm:text-base;
+  }
+  
+  .prose-legal ul,
+  .prose-legal ol {
+    @apply text-gray-700 space-y-2 sm:space-y-1.5 text-sm sm:text-base;
+  }
+  
+  .prose-legal ul {
+    @apply list-disc;
+  }
+  
+  .prose-legal ol {
+    @apply list-decimal;
+  }
+  
+  .prose-legal li {
+    @apply leading-relaxed pl-5 sm:pl-6 lg:pl-8;
+  }
+  
+  .prose-legal strong {
+    @apply font-semibold text-gray-900;
+  }
 }
