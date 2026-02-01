@@ -46,45 +46,45 @@ const Contact = () => {
             {/* Contact Cards Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
               {/* Name Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiMapPin className="w-6 h-6 text-emerald-600 shrink-0" />
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 overflow-hidden">
+                <div className="flex items-start mb-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FiMapPin className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <h3 className="ml-3 text-lg font-semibold text-gray-900">
+                  <h3 className="ml-3 text-lg font-semibold text-gray-900 break-words min-w-0 flex-1">
                     {t("contact.name")}
                   </h3>
                 </div>
-                <p className="text-gray-700 font-medium">{contactInfo.name}</p>
-                <p className="text-sm text-gray-500 mt-1">{t("contact.ntakLabel")}: {contactInfo.ntakNumber}</p>
+                <p className="text-gray-700 font-medium break-words">{contactInfo.name}</p>
+                <p className="text-sm text-gray-500 mt-1 break-all">{t("contact.ntakLabel")}: {contactInfo.ntakNumber}</p>
               </div>
 
               {/* Address Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiMapPin className="w-6 h-6 text-emerald-600 shrink-0" />
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 overflow-hidden">
+                <div className="flex items-start mb-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FiMapPin className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <h3 className="ml-3 text-lg font-semibold text-gray-900">
+                  <h3 className="ml-3 text-lg font-semibold text-gray-900 break-words min-w-0 flex-1">
                     {t("contact.address")}
                   </h3>
                 </div>
-                <p className="text-gray-700">{contactInfo.address}</p>
+                <p className="text-gray-700 break-words">{contactInfo.address}</p>
               </div>
 
               {/* Phone Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiPhone className="w-6 h-6 text-emerald-600 shrink-0" />
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 overflow-hidden">
+                <div className="flex items-start mb-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FiPhone className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <h3 className="ml-3 text-lg font-semibold text-gray-900">
+                  <h3 className="ml-3 text-lg font-semibold text-gray-900 break-words min-w-0 flex-1">
                     {t("contact.phone")}
                   </h3>
                 </div>
                 <a
                   href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}
-                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors break-words block"
                 >
                   {contactInfo.phone}
                 </a>
@@ -92,18 +92,18 @@ const Contact = () => {
               </div>
 
               {/* Email Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiMail className="w-6 h-6 text-emerald-600 shrink-0" />
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 overflow-hidden">
+                <div className="flex items-start mb-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FiMail className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <h3 className="ml-3 text-lg font-semibold text-gray-900">
+                  <h3 className="ml-3 text-lg font-semibold text-gray-900 break-words min-w-0 flex-1">
                     {t("contact.email")}
                   </h3>
                 </div>
                 <a
                   href={`mailto:${contactInfo.email}`}
-                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors break-all"
+                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors break-all block"
                 >
                   {contactInfo.email}
                 </a>
@@ -111,25 +111,43 @@ const Contact = () => {
               </div>
 
               {/* Map Navigation Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 md:col-span-2 lg:col-span-2">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <FiNavigation className="w-6 h-6 text-emerald-600 shrink-0" />
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 md:col-span-2 lg:col-span-2 overflow-hidden">
+                <div className="flex items-start mb-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FiNavigation className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <h3 className="ml-3 text-lg font-semibold text-gray-900">
+                  <h3 className="ml-3 text-lg font-semibold text-gray-900 break-words min-w-0 flex-1">
                     {t("contact.navigation")}
                   </h3>
                 </div>
-                <p className="text-gray-700 mb-4">{t("contact.navigationDesc")}</p>
-                <a
-                  href={contactInfo.googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors"
-                >
-                  <FiNavigation className="w-5 h-5 mr-2 shrink-0" />
-                  {t("contact.planRoute")}
-                </a>
+                <p className="text-gray-700 mb-4 break-words">{t("contact.navigationDesc")}</p>
+                
+                {/* CTA Buttons - Responsive Grid */}
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <a
+                    href={contactInfo.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors"
+                  >
+                    <FiNavigation className="w-5 h-5 mr-2 flex-shrink-0" />
+                    {t("contact.planRoute")}
+                  </a>
+                  <a
+                    href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}
+                    className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                  >
+                    <FiPhone className="w-5 h-5 mr-2 flex-shrink-0" />
+                    {t("contact.call")}
+                  </a>
+                  <a
+                    href={`mailto:${contactInfo.email}`}
+                    className="inline-flex items-center justify-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors sm:col-span-2 lg:col-span-1"
+                  >
+                    <FiMail className="w-5 h-5 mr-2 flex-shrink-0" />
+                    {t("contact.email")}
+                  </a>
+                </div>
               </div>
             </div>
 
