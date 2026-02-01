@@ -101,14 +101,14 @@ export default function Experiences() {
   const t = useMemo(() => TEXT[lang] ?? TEXT.hu, [lang]);
 
   return (
-    <section id="experiences" className="scroll-mt-16 py-20 bg-white/60">
+    <section id="experiences" className="scroll-mt-16 py-12 sm:py-16 md:py-20 bg-white/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{t.title}</h2>
-          <p className="mt-3 text-lg text-gray-600">{t.lead}</p>
+        <div className="text-center mb-8 sm:mb-10 md:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{t.title}</h2>
+          <p className="mt-2 sm:mt-3 text-base sm:text-lg text-gray-600 leading-relaxed">{t.lead}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {CARDS.map((card) => {
             const { key, icon: Icon, coverId, toPrimary, toSecondary } = card;
             const copy = t.items[key];

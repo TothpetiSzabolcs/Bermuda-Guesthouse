@@ -26,19 +26,19 @@ const Rooms = () => {
   return (
     <section
       id="rooms"
-      className="relative isolate scroll-mt-16 mt-6 md:mt-10 py-20 bg-gray-50"
+      className="relative isolate scroll-mt-16 mt-6 md:mt-10 py-12 sm:py-16 md:py-20 bg-gray-50"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-10 sm:mb-12 md:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             {t("rooms.title")}
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             {t("rooms.lead")}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {(rooms ?? []).map((room) => {
             const key = room.id || room._id || room.slug;
             return (

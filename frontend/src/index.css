@@ -33,6 +33,17 @@
   /* Icon sizing protection */
   svg {
     flex-shrink: 0;
+    max-width: 100%;
+  }
+
+  /* Prevent horizontal scroll in flex containers */
+  .flex {
+    min-width: 0;
+  }
+
+  /* Safe min-width for clickable elements */
+  button, a {
+    min-width: 0;
   }
 
   /* Better text rendering */
@@ -40,6 +51,11 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
     hyphens: auto;
+  }
+
+  /* Anchor scroll offset for fixed header */
+  [id] {
+    scroll-margin-top: 64px;
   }
 }
 

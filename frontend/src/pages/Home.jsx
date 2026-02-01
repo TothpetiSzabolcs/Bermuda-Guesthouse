@@ -20,7 +20,11 @@ const Home = () => {
     if (scrollTo === "rooms") {
       setTimeout(() => {
         const el = document.getElementById("rooms");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (el) {
+          const headerHeight = 64;
+          const y = el.getBoundingClientRect().top + window.scrollY - headerHeight;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
 
         navigate("/", { replace: true });
       }, 50);

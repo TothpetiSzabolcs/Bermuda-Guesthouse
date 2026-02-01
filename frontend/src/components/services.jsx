@@ -71,16 +71,16 @@ export default function Services() {
     };
 
     return (
-      <section id="services" className="scroll-mt-24 py-30 bg-white">
+      <section id="services" className="scroll-mt-16 py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+          <div className="text-center mb-12 sm:mb-16 md:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
               {t("services.title")}
             </h2>
-            <p className="mt-3 text-gray-600">{t("services.lead")}</p>
+            <p className="mt-3 text-base sm:text-lg text-gray-600 leading-relaxed">{t("services.lead")}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {SERVICE_CATS.map((key) => {
               const coverRaw = covers?.[key]?.coverRaw || null;
               const coverSrc = coverRaw
@@ -115,14 +115,14 @@ export default function Services() {
 
   // ========== 2) CATEGORY DETAIL VIEW ==========
   return (
-    <section id="services" className="scroll-mt-24 py-20 bg-white">
+    <section id="services" className="scroll-mt-16 py-12 sm:py-16 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 sm:mb-8">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
               {t(`services.categories.${cat}`)}
             </h2>
-            <p className="mt-2 text-gray-600">{t("services.lead")}</p>
+            <p className="mt-2 text-sm sm:text-base text-gray-600">{t("services.lead")}</p>
           </div>
           <button
             onClick={() => setCat(null)}
