@@ -9,6 +9,7 @@ import { FaPlay } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
 import SEO from "../components/SEO";
 import Header from "../components/header";
+import Footer from "../components/Footer";
 
 const GALLERY_CATS = [
   "to",
@@ -286,6 +287,7 @@ export default function GalleryPage() {
           />
         )}
       </section>
+      <Footer />
     </>
   );
 }

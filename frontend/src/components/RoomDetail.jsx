@@ -17,6 +17,7 @@ import { cld } from "../utils/cloudinary";
 import BookingModal from "./BookingModal";
 import SEO from "../components/SEO";
 import Header from "../components/header";
+import Footer from "../components/Footer";
 
 // Autoplay interval constant (5 seconds)
 const AUTOPLAY_INTERVAL = 5000;
@@ -491,6 +492,7 @@ const RoomDetail = () => {
         mode="direct"
         initialRoom={selectedRoom}
       />
+      <Footer />
     </>
   );
 };

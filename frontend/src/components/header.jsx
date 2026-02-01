@@ -105,14 +105,14 @@ const Header = () => {
         {/* Felső sor */}
         <div className="flex h-16 items-center justify-between">
           {/* Logó + márka */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <img
               src={logo}
               alt={t("common.adminTitle")}
-              className="w-20 h-15"
+              className="w-16 h-12 sm:w-20 sm:h-15 object-contain"
             />
             <span
-              className={`text-lg font-bold transition-colors duration-300 ${
+              className={`text-base sm:text-lg font-bold transition-colors duration-300 ${
                 isHome && !scrolled
                   ? "text-white drop-shadow-lg"
                   : "text-gray-900"
@@ -171,7 +171,7 @@ const Header = () => {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className={`md:hidden inline-flex items-center justify-center p-2 rounded-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600 ${
+            className={`md:hidden inline-flex items-center justify-center p-3 rounded-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600 min-h-[44px] min-w-[44px] ${
               isHome && !scrolled
                 ? "text-white hover:text-emerald-300"
                 : "text-gray-700 hover:text-gray-900"
@@ -200,9 +200,9 @@ const Header = () => {
               isHome && !scrolled ? "bg-white/95 backdrop-blur-sm" : "bg-white"
             }`}
           >
-            <div className="px-2 pt-2 pb-3 space-y-1">
+            <div className="px-2 pt-2 pb-3 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
               {/* Nyelvválasztó */}
-              <div className="flex items-center gap-2 px-3 py-2">
+              <div className="flex items-center gap-2 px-3 py-2 flex-wrap">
                 <label
                   className={`text-sm transition-colors duration-300 ${
                     isHome && !scrolled ? "text-gray-800" : "text-gray-600"
@@ -213,7 +213,7 @@ const Header = () => {
                 <select
                   value={lang}
                   onChange={(e) => setLang(e.target.value)}
-                  className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-600 min-w-[4rem]"
+                  className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-600 min-w-[4rem] flex-shrink-0"
                 >
                   <option value="hu" className="font-medium">
                     HU
@@ -230,7 +230,7 @@ const Header = () => {
               {navItems.map((item) =>
                 renderNav(
                   item,
-                  `block w-full text-left px-3 py-2 text-base font-medium transition-colors rounded-md ${
+                  `block w-full text-left px-3 py-3 text-base font-medium transition-colors rounded-md min-h-[44px] flex items-center ${
                     isHome && !scrolled
                       ? "text-gray-800 hover:text-green-700 hover:bg-gray-50"
                       : "text-gray-700 hover:text-green-700 hover:bg-gray-50"
@@ -245,7 +245,7 @@ const Header = () => {
                   setOpen(false);
                   setBookingModalOpen(true);
                 }}
-                className="mt-2 block w-full text-left bg-green-700 text-white px-3 py-2 rounded-lg hover:bg-green-800 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                className="mt-2 block w-full text-left bg-green-700 text-white px-3 py-3 rounded-lg hover:bg-green-800 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-green-500/50 min-h-[44px] flex items-center justify-center"
               >
                 {t("nav.book")}
               </button>
