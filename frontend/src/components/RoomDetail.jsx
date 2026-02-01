@@ -306,9 +306,9 @@ const RoomDetail = () => {
 
       <Header />
 
-      <section className="scroll-mt-24 py-30 bg-white">
+      <section className="scroll-mt-24 py-30 bg-white overflow-x-hidden">
         {/* container: mobilon kisebb padding, desktopon nagyobb */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12 w-full overflow-x-hidden">
           {/* Back button: mobilon kisebb margó */}
           <Link
             to="/#rooms"
@@ -318,10 +318,10 @@ const RoomDetail = () => {
             {t("common.backToHome") || "Vissza a szobákhoz"}
           </Link>
 
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden w-full overflow-x-hidden">
             {/* Image section (CAROUSEL) */}
             <div
-              className="relative h-56 sm:h-72 md:h-96 lg:h-[500px] 2xl:h-[520px]"
+              className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] 2xl:h-[520px] w-full"
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
@@ -368,21 +368,21 @@ const RoomDetail = () => {
                         type="button"
                         onClick={goPrev}
                         aria-label={t("rooms.carousel.prev")}
-                        className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-1.5 sm:p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
+                        className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-1.5 sm:p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70 z-20"
                       >
-                        <FiChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                        <FiChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
 
                       <button
                         type="button"
                         onClick={goNext}
                         aria-label={t("rooms.carousel.next")}
-                        className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-1.5 sm:p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70"
+                        className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/45 p-1.5 sm:p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/70 z-20"
                       >
-                        <FiChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                        <FiChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
 
-                      <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-white">
+                      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs text-white z-20">
                         {activeImg + 1}/{images.length}
                       </div>
                     </>
@@ -395,22 +395,22 @@ const RoomDetail = () => {
               )}
 
               {/* Price badge */}
-              <div className="absolute top-3 right-3 sm:top-6 sm:right-6 bg-green-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium flex items-center shadow">
-                <FiTag className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
-                9000 Ft / {t("common.pricePerPersonPerNight")}
+              <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-green-600 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium flex items-center shadow z-10 max-w-[calc(100%-2rem)] sm:max-w-none">
+                <FiTag className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1 flex-shrink-0" />
+                <span className="truncate">9000 Ft / {t("common.pricePerPersonPerNight")}</span>
               </div>
             </div>
 
             {/* Content section */}
             <div className="p-4 sm:p-6 lg:p-8">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-6 gap-4">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 break-words pr-2">
                     {room.name}
                   </h1>
                   <div className="flex items-center text-gray-600">
-                    <FiUsers className="w-5 h-5 mr-2" />
-                    <span className="text-base sm:text-lg">
+                    <FiUsers className="w-5 h-5 mr-2 flex-shrink-0" />
+                    <span className="text-base sm:text-lg truncate">
                       {guests} {t("common.guests")}
                     </span>
                   </div>
@@ -418,7 +418,7 @@ const RoomDetail = () => {
 
                 <button
                   onClick={handleBookingClick}
-                  className="mt-4 md:mt-0 w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+                  className="mt-2 md:mt-0 w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 rounded-lg font-medium transition-colors duration-200 flex-shrink-0"
                 >
                   {t("rooms.bookCta")}
                 </button>
@@ -440,16 +440,16 @@ const RoomDetail = () => {
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
                     {t("rooms.amenities")}
                   </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {room.amenities.map((amenity, index) => (
-                      <span
-                        key={index}
-                        className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-xs sm:text-sm"
-                      >
-                        {amenity}
-                      </span>
-                    ))}
-                  </div>
+                   <div className="flex flex-wrap gap-2 w-full">
+                     {room.amenities.map((amenity, index) => (
+                       <span
+                         key={index}
+                         className="bg-gray-100 text-gray-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm break-all max-w-full"
+                       >
+                         {amenity}
+                       </span>
+                     ))}
+                   </div>
                 </div>
               )}
 
@@ -459,25 +459,25 @@ const RoomDetail = () => {
                   {t("rooms.standardAmenities") || "Alap felszereltség"}
                 </h2>
 
-                {/* SE-n wrap + gap, ne overflow */}
-                <div className="flex flex-wrap gap-x-6 gap-y-3 text-gray-600 text-sm sm:text-base">
-                  <div className="flex items-center space-x-2">
-                    <FiWifi className="w-5 h-5 sm:w-6 sm:h-6" />
-                    <span>WiFi</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FiCoffee className="w-5 h-5 sm:w-6 sm:h-6" />
-                    <span>Kávé/Tea</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MdTv className="w-5 h-5 sm:w-6 sm:h-6" />
-                    <span>TV</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MdOutlineBathroom className="w-5 h-5 sm:w-6 sm:h-6" />
-                    <span>{t("rooms.privateBathroom")}</span>
-                  </div>
-                </div>
+                 {/* SE-n wrap + gap, ne overflow */}
+                 <div className="flex flex-wrap gap-3 sm:gap-4 text-gray-600 text-xs sm:text-sm w-full">
+                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                     <FiWifi className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                     <span className="truncate">WiFi</span>
+                   </div>
+                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                     <FiCoffee className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                     <span className="truncate">Kávé/Tea</span>
+                   </div>
+                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                     <MdTv className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                     <span className="truncate">TV</span>
+                   </div>
+                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                     <MdOutlineBathroom className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                     <span className="truncate">{t("rooms.privateBathroom")}</span>
+                   </div>
+                 </div>
               </div>
             </div>
           </div>
