@@ -39,6 +39,7 @@ export const listRooms = async (req, res) => {
       const mapped = rooms.map((r) => {
         return {
           id: r._id,
+          slug: r.slug,
           name: pickLang(r.name, lang),
           description: pickLang(r.description, lang),
           guests: r.capacity,
@@ -52,6 +53,7 @@ export const listRooms = async (req, res) => {
           active: r.active,
         };
       });
+      
 
     res.json(mapped);
   } catch (e) {
