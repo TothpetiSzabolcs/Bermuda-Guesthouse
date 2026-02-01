@@ -63,7 +63,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
               <>
                 <button
                   onClick={handlePrevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 sm:p-2"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/40 hover:bg-white/80 text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 sm:p-2"
                   aria-label={t("rooms.carousel.prev")}
                 >
                   <MdChevronLeft className="w-6 h-6 shrink-0 sm:w-5 sm:h-5" />
@@ -71,7 +71,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                 
                 <button
                   onClick={handleNextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 sm:p-2"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/40 hover:bg-white/80 text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 sm:p-2"
                   aria-label={t("rooms.carousel.next")}
                 >
                   <MdChevronRight className="w-6 h-6 shrink-0 sm:w-5 sm:h-5" />
@@ -85,9 +85,9 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                         e.stopPropagation();
                         setCurrentImageIndex(index);
                       }}
-                      className={`h-2 rounded-full transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center ${
+                      className={`h-2 rounded-full transition-all duration-200 min-w-[10px] min-h-[10px] flex items-center justify-center ${
                         index === currentImageIndex
-                          ? "bg-white w-6"
+                          ? "bg-white/80 w-6"
                           : "bg-white/50 hover:bg-white/70 w-2"
                       }`}
                       aria-label={t("rooms.carousel.goToImage", { index: index + 1 })}

@@ -15,7 +15,6 @@ const HeroSection = () => {
   const handleScrollToRooms = (e) => {
     e.preventDefault();
 
-    // ha HOME-on vagyunk, scroll
     if (location.pathname === "/") {
       const el = document.getElementById("rooms");
       if (el) {
@@ -26,7 +25,6 @@ const HeroSection = () => {
       return;
     }
 
-    // ha nem HOME, menjünk át és ott scrollozzunk
     navigate("/?scrollTo=rooms");
   };
 
@@ -48,8 +46,9 @@ const HeroSection = () => {
               <span className="text-xs sm:text-sm">{t("hero.badge")}</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight sm:leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]">
+            <h1 className="hyphens-none break-normal text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]">
               {t("hero.titlePrefix")}
+              {" "}
               <span className="text-emerald-500 text-2xl sm:text-4xl md:text-5xl lg:text-6xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)] block sm:inline">
                 {t("hero.highlight")}
               </span>
@@ -60,7 +59,6 @@ const HeroSection = () => {
             </p>
 
             <div className="mt-5 sm:mt-7 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              {/* ✅ scroll-to-rooms */}
               <a
                 href="#rooms"
                 onClick={handleScrollToRooms}

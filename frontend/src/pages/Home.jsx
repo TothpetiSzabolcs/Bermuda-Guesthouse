@@ -36,7 +36,7 @@ const Home = () => {
       <SEO />
       <div className="min-h-screen">
         <Header />
-        <main className="pt-16">
+        <main>
           <HeroSection />
           <Experiences />
           <Rooms />

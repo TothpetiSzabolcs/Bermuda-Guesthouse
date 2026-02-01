@@ -160,19 +160,19 @@ export default function GalleryPage() {
                     onClick={() => handleCategorySelect(key)}
                     className="group relative overflow-hidden rounded-2xl bg-gray-100 text-left shadow hover:shadow-lg transition"
                   >
-                     <img
-                       src={coverSrc}
-                       alt={t(`gallery.filters.${key}`)}
-                       className="aspect-video h-56 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                       loading="lazy"
-                       decoding="async"
-                     />
+                    <img
+                      src={coverSrc}
+                      alt={t(`gallery.filters.${key}`)}
+                      className="aspect-video h-56 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                     <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                       <h3 className="text-xl font-semibold truncate">
-                         {t(`gallery.filters.${key}`)}
-                       </h3>
-                     </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                      <h3 className="text-xl font-semibold truncate">
+                        {t(`gallery.filters.${key}`)}
+                      </h3>
+                    </div>
                   </button>
                 );
               })}
@@ -208,21 +208,23 @@ export default function GalleryPage() {
               {t("gallery.backToCategories")}
             </button>
           </div>
-          <div className="flex overflow-x-auto scrollbar-hide gap-2 mb-8 pb-2 sm:pb-0 sm:overflow-x-visible sm:flex-wrap sm:justify-center">
-            {GALLERY_CATS.map((c) => (
-              <button
-                key={c}
-                onClick={() => handleCategorySelect(c)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition whitespace-nowrap
-              ${
-                cat === c
-                  ? "bg-emerald-600 text-white border-emerald-600"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-              }`}
-              >
-                {t(`gallery.filters.${c}`)}
-              </button>
-            ))}
+          <div className="mb-8">
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              {GALLERY_CATS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => handleCategorySelect(c)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium border transition
+      ${
+        cat === c
+          ? "bg-emerald-600 text-white border-emerald-600"
+          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+      }`}
+                >
+                  {t(`gallery.filters.${c}`)}
+                </button>
+              ))}
+            </div>
           </div>
 
           {loading ? (
@@ -247,18 +249,19 @@ export default function GalleryPage() {
                     className="group relative overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     aria-label={getAlt(m)}
                   >
-                     <img
-                       src={thumb}
-                       alt={getAlt(m)}
-                       className="aspect-square h-40 sm:h-48 md:h-52 w-full object-center object-cover bg-black/5 transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                       loading="lazy"
-                       decoding="async"
-                     />
-                     {isVideo && (
-                       <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white whitespace-nowrap">
-                         <FaPlay className="h-3 w-3 flex-shrink-0" /> <span className="truncate">{t("common.video")}</span>
-                       </span>
-                     )}
+                    <img
+                      src={thumb}
+                      alt={getAlt(m)}
+                      className="aspect-square h-40 sm:h-48 md:h-52 w-full object-center object-cover bg-black/5 transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    {isVideo && (
+                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white whitespace-nowrap">
+                        <FaPlay className="h-3 w-3 flex-shrink-0" />{" "}
+                        <span className="truncate">{t("common.video")}</span>
+                      </span>
+                    )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                   </button>
                 );
