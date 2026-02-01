@@ -38,7 +38,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
   }, [images.length]);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 max-w-full">
       <div className="relative aspect-[4/3] bg-gray-100">
         {imgSrcRaw ? (
           <>
@@ -63,18 +63,18 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
               <>
                 <button
                   onClick={handlePrevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 sm:p-2"
                   aria-label={t("rooms.carousel.prev")}
                 >
-                  <MdChevronLeft className="w-5 h-5 shrink-0" />
+                  <MdChevronLeft className="w-6 h-6 shrink-0 sm:w-5 sm:h-5" />
                 </button>
                 
                 <button
                   onClick={handleNextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 sm:p-2"
                   aria-label={t("rooms.carousel.next")}
                 >
-                  <MdChevronRight className="w-5 h-5 shrink-0" />
+                  <MdChevronRight className="w-6 h-6 shrink-0 sm:w-5 sm:h-5" />
                 </button>
                 
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
@@ -85,10 +85,10 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                         e.stopPropagation();
                         setCurrentImageIndex(index);
                       }}
-                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                      className={`h-2 rounded-full transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center ${
                         index === currentImageIndex
                           ? "bg-white w-6"
-                          : "bg-white/50 hover:bg-white/70"
+                          : "bg-white/50 hover:bg-white/70 w-2"
                       }`}
                       aria-label={t("rooms.carousel.goToImage", { index: index + 1 })}
                     />
@@ -104,15 +104,15 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
         )}
 
         {/* ár badge (ha van ár) */}
-        <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
-          <FiTag className="w-4 h-4 mr-1 shrink-0" />
+        <div className="absolute top-3 right-3 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center sm:top-4 sm:right-4 sm:px-3 sm:text-sm">
+          <FiTag className="w-3 h-3 mr-1 shrink-0 sm:w-4 sm:h-4" />
           {t("rooms.price.amount")} {t("rooms.price.unit")}
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-2xl font-bold text-gray-900">
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+          <h3 className="text-lg sm:text-2xl font-bold text-gray-900 line-clamp-2 overflow-hidden">
             {room.name}
           </h3>
           <div className="flex items-center text-gray-600">
@@ -123,15 +123,16 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
           </div>
         </div>
 
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-600 mb-4 line-clamp-3 overflow-hidden text-sm sm:text-base">
           {room.description || t("rooms.placeholderDescription")}
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-4 sm:mb-6 max-w-full">
           {(room.amenities ?? []).map((amenity, index) => (
             <span
               key={index}
-              className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
+              className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs sm:px-3 sm:text-sm truncate max-w-[200px] sm:max-w-full"
+              title={amenity}
             >
               {amenity}
             </span>
