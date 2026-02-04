@@ -32,7 +32,7 @@ export const listRooms = async (req, res) => {
     }
 
     const rooms = await Room.find(query)
-      .select("name slug capacity privateBathroom amenities images active description")
+      .select("name slug capacity privateBathroom amenities images active description price")
       .sort({ capacity: -1, [`name.${lang}`]: 1 })
       .lean();
 
@@ -51,6 +51,7 @@ export const listRooms = async (req, res) => {
           image: r.images?.[0]?.url ?? null,
           privateBathroom: r.privateBathroom,
           active: r.active,
+          price: r.price ?? null,
         };
       });
       
@@ -67,7 +68,7 @@ export const getRoomBySlug = async (req, res) => {
     const lang = SUPPORTED_LANGS.includes(req.query.lang) ? req.query.lang : "hu";
 
     const room = await Room.findOne({ slug: req.params.slug, active: true })
-      .select("name slug capacity privateBathroom amenities images description")
+      .select("name slug capacity privateBathroom amenities images description price")
       .lean();
 
     if (!room) return res.status(404).json({ message: "Room not found" });
@@ -84,9 +85,36 @@ export const getRoomBySlug = async (req, res) => {
         alt: pickLang(img.alt, lang),
       })),
       privateBathroom: room.privateBathroom,
+      price: room.price ?? null,
     });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+export const updateRoom = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const allowed = {};
+    if (req.body.price) allowed.price = req.body.price;
+    if (typeof req.body.active === "boolean") allowed.active = req.body.active;
+
+    const room = await Room.findByIdAndUpdate(
+      id,
+      { $set: allowed },
+      { new: true, runValidators: true }
+    ).lean();
+
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    res.json(room);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Update failed" });
   }
 };

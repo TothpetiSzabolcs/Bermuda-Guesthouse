@@ -16,6 +16,7 @@ import adminMediaRouter from "./routes/adminMedia.routes.js";
 import adminRoomsRouter from "./routes/adminRooms.routes.js";
 import adminGalleryRouter from "./routes/adminGallery.routes.js";
 import publicGalleryRouter from "./routes/publicGallery.routes.js";
+import reviewsRoutes from "./routes/reviews.routes.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use("/api/admin/media", adminMediaRouter);
 app.use("/api/admin/rooms", adminRoomsRouter)
 app.use("/api/admin/gallery", adminGalleryRouter);
 app.use("/api/public/gallery", publicGalleryRouter);
+app.use("/api/reviews", reviewsRoutes);
 
 app.set("etag", false);
 
