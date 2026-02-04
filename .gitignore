@@ -26,7 +26,7 @@ Thumbs.db
 **/.env.*.local
 !**/.env.example   # minta mehet repo-ba
 
-# Uploads (ha lenne lokális)
+# Uploads 
 **/uploads/
 tmp/
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useI18n } from "../i18n/useI18n";
 import logo from "../assets/BV_logo.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import BookingModal from "./BookingModal";
 
 const Header = () => {
@@ -11,6 +11,8 @@ const Header = () => {
 
   const { lang, setLang, t } = useI18n();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
   const isHome = pathname === "/" || pathname === "/home";
 
   useEffect(() => {
@@ -42,7 +44,6 @@ const Header = () => {
   const onHero = isHome && !scrolled;
 
   const navItems = [
-    { key: "nav.home", hash: "hero" },
     { key: "nav.rooms", hash: "rooms" },
     { key: "nav.experiences", hash: "experiences" },
     { key: "nav.gallery", to: "/gallery" },
@@ -58,6 +59,25 @@ const Header = () => {
     const y = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top: y, behavior: "smooth" });
     setOpen(false);
+  };
+
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    setOpen(false);
+
+    const scrollToTop = () =>
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+
+    if (isHome) {
+      scrollToTop();
+      return;
+    }
+
+    navigate("/");
+    // kis késleltetés, hogy route-váltás után biztosan scrolloljon
+    requestAnimationFrame(() => {
+      requestAnimationFrame(scrollToTop);
+    });
   };
 
   const renderNav = (item, className, onClick, isHomePage) => {
@@ -105,8 +125,13 @@ const Header = () => {
     <header className={headerClass}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo + brand */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Logo + brand (click => home + scroll top) */}
+          <Link
+            to="/"
+            onClick={handleLogoClick}
+            className="flex items-center gap-2 flex-shrink-0 min-h-[44px]"
+            aria-label={t("nav.home")}
+          >
             <img
               src={logo}
               alt={t("common.adminTitle")}
@@ -119,9 +144,9 @@ const Header = () => {
             >
               {t("common.adminTitle")}
             </span>
-          </div>
+          </Link>
 
-          {/* Desktop nav (>=985px) */}
+          {/* Desktop nav */}
           <nav className="hidden [@media(min-width:1073px)]:flex items-center gap-8">
             {navItems.map((item) =>
               renderNav(
@@ -137,7 +162,7 @@ const Header = () => {
             )}
           </nav>
 
-          {/* Desktop controls (>=985px) */}
+          {/* Desktop controls */}
           <div className="hidden [@media(min-width:1073px)]:flex items-center gap-3">
             <select
               aria-label={t("common.language")}
@@ -166,7 +191,7 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Mobile hamburger (<985px) */}
+          {/* Mobile hamburger */}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -198,7 +223,7 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile menu (<985px) */}
+        {/* Mobile menu */}
         {open && (
           <div
             className={`[@media(min-width:1073px)]:hidden border-t transition-colors duration-300 ${

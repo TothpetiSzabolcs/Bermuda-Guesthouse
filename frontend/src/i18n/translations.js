@@ -21,7 +21,6 @@ export const translations = {
       confirm: "Megerősítés",
       guests: "fő",
       book: "Foglalás",
-      pricePerNight: "éj/ár",
       pricePerPersonPerNight: "fő / éj",
       photos: "kép",
       video: "Video",
@@ -81,8 +80,12 @@ export const translations = {
       standardAmenities: "Alap felszereltség",
       morePhotos: "További képek",
       price: {
-        amount: "9000 Ft",
         unit: "fő / éj",
+      },
+      promo: {
+        badge: "Akció",
+        original: "Eredeti ár",
+        discounted: "Akciós ár",
       },
       carousel: {
         prev: "Előző kép",
@@ -556,8 +559,12 @@ export const translations = {
       standardAmenities: "Standard amenities",
       morePhotos: "More photos",
       price: {
-        amount: "9000 Ft",
         unit: "person / night",
+      },
+      promo: {
+        badge: "Deal",
+        original: "Original price",
+        discounted: "Discounted price",
       },
       carousel: {
         prev: "Previous image",
@@ -1027,9 +1034,13 @@ export const translations = {
       standardAmenities: "Grundausstattung",
       morePhotos: "Weitere Fotos",
       price: {
-        amount: "9000 Ft",
         unit: "Person / Nacht",
       },
+      promo: {
+        badge: "Aktion",
+        original: "Originalpreis",
+        discounted: "Aktionspreis",
+      },      
       carousel: {
         prev: "Vorheriges Bild",
         next: "Nächstes Bild",

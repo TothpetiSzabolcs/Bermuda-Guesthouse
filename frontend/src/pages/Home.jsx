@@ -8,6 +8,7 @@ import Gallery from "../components/services";
 import SEO from "../components/SEO";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import ReviewsHero from "../components/ReviewHero";
 
 const Home = () => {
   const location = useLocation();
@@ -38,6 +39,7 @@ const Home = () => {
         <Header />
         <main>
           <HeroSection />
+          <ReviewsHero />
           <Experiences />
           <Rooms />
           <Gallery />

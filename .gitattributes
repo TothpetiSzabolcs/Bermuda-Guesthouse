@@ -1,5 +1,6 @@
 # Default: normalize text files to LF in repo
 * text=auto eol=lf
+*.bat text eol=crlf
 
 # JS/TS/React
 *.js   text eol=lf

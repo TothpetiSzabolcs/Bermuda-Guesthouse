@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import {
   FiUsers,
@@ -10,7 +16,6 @@ import {
   FiTag,
 } from "react-icons/fi";
 import { MdTv, MdOutlineBathroom } from "react-icons/md";
-import { FaKitchenSet } from "react-icons/fa6";
 import { useRoom } from "../hooks/useRoom";
 import { useI18n } from "../i18n/useI18n";
 import { cld } from "../utils/cloudinary";
@@ -18,6 +23,7 @@ import BookingModal from "./BookingModal";
 import SEO from "../components/SEO";
 import Header from "../components/header";
 import Footer from "../components/Footer";
+import { getDisplayPrice } from "../utils/price";
 
 // Autoplay interval constant (5 seconds)
 const AUTOPLAY_INTERVAL = 5000;
@@ -42,6 +48,8 @@ const RoomDetail = () => {
   // Autoplay state
   const [isHovered, setIsHovered] = useState(false);
   const autoplayTimerRef = useRef(null);
+
+  const p = getDisplayPrice(room);
 
   const images = useMemo(() => {
     const arr = [];
@@ -79,7 +87,10 @@ const RoomDetail = () => {
     if (imgParam !== null) {
       const parsedIndex = parseInt(imgParam, 10);
       if (!isNaN(parsedIndex)) {
-        const clampedIndex = Math.max(0, Math.min(parsedIndex, images.length - 1));
+        const clampedIndex = Math.max(
+          0,
+          Math.min(parsedIndex, images.length - 1),
+        );
         setActiveImg(clampedIndex);
         setImageLoading(true);
         setImageError(false);
@@ -396,10 +407,31 @@ const RoomDetail = () => {
               )}
 
               {/* Price badge */}
-              <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-green-600 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium flex items-center shadow z-10 max-w-[calc(100%-2rem)] sm:max-w-none">
-                <FiTag className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1 flex-shrink-0" />
-                <span className="truncate">9000 Ft / {t("common.pricePerPersonPerNight")}</span>
-              </div>
+              {typeof p.amount === "number" && (
+                <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-green-600 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium flex items-center shadow z-10 max-w-[calc(100%-2rem)] sm:max-w-none">
+                  <FiTag className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1 flex-shrink-0" />
+
+                  <span className="truncate">
+                    {p.isPromo ? (
+                      <>
+                        <span className="line-through opacity-80">
+                          {p.baseAmount} Ft
+                        </span>
+                        <span className="ml-2 font-semibold">
+                          {p.amount} Ft
+                        </span>
+                      </>
+                    ) : (
+                      <span className="font-semibold">{p.amount} Ft</span>
+                    )}
+                    <span className="ml-2 opacity-90">
+                      {room?.price?.unit === "room_night"
+                        ? t("rooms.price.unit")
+                        : t("common.pricePerPersonPerNight")}
+                    </span>
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Content section */}
@@ -441,16 +473,16 @@ const RoomDetail = () => {
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
                     {t("rooms.amenities")}
                   </h2>
-                   <div className="flex flex-wrap gap-2 w-full">
-                     {room.amenities.map((amenity, index) => (
-                       <span
-                         key={index}
-                         className="bg-gray-100 text-gray-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm break-all max-w-full"
-                       >
-                         {amenity}
-                       </span>
-                     ))}
-                   </div>
+                  <div className="flex flex-wrap gap-2 w-full">
+                    {room.amenities.map((amenity, index) => (
+                      <span
+                        key={index}
+                        className="bg-gray-100 text-gray-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm break-all max-w-full"
+                      >
+                        {amenity}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -460,25 +492,27 @@ const RoomDetail = () => {
                   {t("rooms.standardAmenities") || "Alap felszereltség"}
                 </h2>
 
-                 {/* SE-n wrap + gap, ne overflow */}
-                 <div className="flex flex-wrap gap-3 sm:gap-4 text-gray-600 text-xs sm:text-sm w-full">
-                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
-                     <FiWifi className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                     <span className="truncate">WiFi</span>
-                   </div>
-                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
-                     <FiCoffee className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                     <span className="truncate">Kávé/Tea</span>
-                   </div>
-                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
-                     <MdTv className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                     <span className="truncate">TV</span>
-                   </div>
-                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
-                     <MdOutlineBathroom className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                     <span className="truncate">{t("rooms.privateBathroom")}</span>
-                   </div>
-                 </div>
+                {/* SE-n wrap + gap, ne overflow */}
+                <div className="flex flex-wrap gap-3 sm:gap-4 text-gray-600 text-xs sm:text-sm w-full">
+                  <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                    <FiWifi className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="truncate">WiFi</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                    <FiCoffee className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="truncate">Kávé/Tea</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                    <MdTv className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="truncate">TV</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                    <MdOutlineBathroom className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="truncate">
+                      {t("rooms.privateBathroom")}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

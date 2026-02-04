@@ -5,8 +5,8 @@ import { useI18n } from "../i18n/useI18n";
 const PAYMENT_DETAILS = {
   beneficiary: "Bermuda Vendégház", // TODO
   bankName: "Bank neve", // TODO
-  accountNumber: "12345678-12345678-12345678", // TODO
-  iban: "HU00 0000 0000 0000 0000 0000 0000", // TODO
+  accountNumber: "50466113-10001356-00000000",
+  iban: "HU89 5046 6113 1000 1356 0000 0000",
   swift: "ABCDEFGH", // TODO
 };
 
@@ -67,7 +67,8 @@ const BookingForm = ({ room, onClose }) => {
         invalidEmail: "Please enter a valid email",
         invalidDate: "Please enter a valid date",
         invalidGuests: "At least 1 guest is required",
-        acceptTermsRequired: "You must accept the Terms and Privacy Policy to book",
+        acceptTermsRequired:
+          "You must accept the Terms and Privacy Policy to book",
         success: "Booking request sent! We'll get back to you soon.",
         error: "An error occurred. Please try again later.",
         offroadOption: "Off-road tour",
@@ -103,9 +104,11 @@ const BookingForm = ({ room, onClose }) => {
         invalidEmail: "Bitte gültige Email eingeben",
         invalidDate: "Bitte gültiges Datum eingeben",
         invalidGuests: "Mindestens 1 Gast erforderlich",
-        acceptTermsRequired: "Sie müssen die AGB und Datenschutzerklärung akzeptieren",
+        acceptTermsRequired:
+          "Sie müssen die AGB und Datenschutzerklärung akzeptieren",
         success: "Buchungsanfrage gesendet! Wir melden uns bald bei Ihnen.",
-        error: "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+        error:
+          "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
         offroadOption: "Offroad-Tour",
         offroadWarning: "Mar 1 – Aug 15: Absprache erforderlich",
 
@@ -122,7 +125,8 @@ const BookingForm = ({ room, onClose }) => {
         copyDetails: "Daten kopieren",
         copied: "Kopiert!",
         reference: "Verwendungszweck",
-        referenceHint: "Empfohlener Verwendungszweck: Buchung – Name – Anreisedatum",
+        referenceHint:
+          "Empfohlener Verwendungszweck: Buchung – Name – Anreisedatum",
       },
     };
 
@@ -174,7 +178,8 @@ const BookingForm = ({ room, onClose }) => {
       if (checkOutDate <= checkInDate) newErrors.checkOut = COPY.invalidDate;
     }
 
-    if (!formData.guests || formData.guests < 1) newErrors.guests = COPY.invalidGuests;
+    if (!formData.guests || formData.guests < 1)
+      newErrors.guests = COPY.invalidGuests;
 
     if (!formData.acceptTerms) newErrors.acceptTerms = COPY.acceptTermsRequired;
 
@@ -196,9 +201,12 @@ const BookingForm = ({ room, onClose }) => {
   };
 
   const handleCopy = async () => {
-    const base = lang === "hu" ? "Foglalás" : lang === "de" ? "Buchung" : "Booking";
+    const base =
+      lang === "hu" ? "Foglalás" : lang === "de" ? "Buchung" : "Booking";
     const namePart = formData.name?.trim() || "-";
-    const reference = `${base} – ${namePart}${formData.checkIn ? ` – ${formData.checkIn}` : ""}`;
+    const reference = `${base} – ${namePart}${
+      formData.checkIn ? ` – ${formData.checkIn}` : ""
+    }`;
 
     const text = [
       `${COPY.transferDetailsTitle}`,
@@ -279,7 +287,10 @@ const BookingForm = ({ room, onClose }) => {
         }));
       } else {
         const errorData = await response.json().catch(() => ({}));
-        setSubmitStatus({ type: "error", message: errorData.error || COPY.error });
+        setSubmitStatus({
+          type: "error",
+          message: errorData.error || COPY.error,
+        });
       }
     } catch {
       setSubmitStatus({ type: "error", message: COPY.error });
@@ -293,30 +304,47 @@ const BookingForm = ({ room, onClose }) => {
     setFormData((prev) => ({
       ...prev,
       [name]:
-        type === "checkbox" ? checked : name === "guests" ? parseInt(value) || 1 : value,
+        type === "checkbox"
+          ? checked
+          : name === "guests"
+          ? parseInt(value) || 1
+          : value,
     }));
 
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
   if (submitStatus?.type === "success") {
-    const closeLabel = lang === "hu" ? "Bezárás" : lang === "de" ? "Schließen" : "Close";
+    const closeLabel =
+      lang === "hu" ? "Bezárás" : lang === "de" ? "Schließen" : "Close";
 
     const codeLine =
       lang === "hu"
         ? `Foglalási kód: ${submitStatus.data.code}`
         : lang === "de"
-          ? `Buchungscode: ${submitStatus.data.code}`
-          : `Booking code: ${submitStatus.data.code}`;
+        ? `Buchungscode: ${submitStatus.data.code}`
+        : `Booking code: ${submitStatus.data.code}`;
 
     return (
       <div className="text-center py-8">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+          <svg
+            className="w-8 h-8 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">{COPY.success}</h3>
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">
+          {COPY.success}
+        </h3>
         <p className="text-gray-600 mb-6 text-lg">{codeLine}</p>
         <button
           onClick={onClose}
@@ -332,18 +360,23 @@ const BookingForm = ({ room, onClose }) => {
     lang === "hu"
       ? "Esetleges megjegyzések..."
       : lang === "de"
-        ? "Besondere Wünsche..."
-        : "Any special requests...";
+      ? "Besondere Wünsche..."
+      : "Any special requests...";
 
-  const base = lang === "hu" ? "Foglalás" : lang === "de" ? "Buchung" : "Booking";
+  const base =
+    lang === "hu" ? "Foglalás" : lang === "de" ? "Buchung" : "Booking";
   const namePart = formData.name?.trim() || "-";
-  const reference = `${base} – ${namePart}${formData.checkIn ? ` – ${formData.checkIn}` : ""}`;
+  const reference = `${base} – ${namePart}${
+    formData.checkIn ? ` – ${formData.checkIn}` : ""
+  }`;
 
   return (
     <>
       {/* Room Information */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <label className="block text-sm font-medium text-gray-700 mb-2">{COPY.roomLabel}</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {COPY.roomLabel}
+        </label>
         <div className="text-lg font-medium text-gray-900">{room.name}</div>
       </div>
 
@@ -357,7 +390,10 @@ const BookingForm = ({ room, onClose }) => {
       {/* Booking Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="name">
+          <label
+            className="block text-sm font-medium text-gray-700 mb-2"
+            htmlFor="name"
+          >
             {COPY.nameLabel} *
           </label>
           <input
@@ -372,11 +408,16 @@ const BookingForm = ({ room, onClose }) => {
             disabled={isSubmitting}
             required
           />
-          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="email">
+          <label
+            className="block text-sm font-medium text-gray-700 mb-2"
+            htmlFor="email"
+          >
             {COPY.emailLabel} *
           </label>
           <input
@@ -391,12 +432,17 @@ const BookingForm = ({ room, onClose }) => {
             disabled={isSubmitting}
             required
           />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="checkIn">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-2"
+              htmlFor="checkIn"
+            >
               {COPY.checkInLabel} *
             </label>
             <input
@@ -412,11 +458,16 @@ const BookingForm = ({ room, onClose }) => {
               disabled={isSubmitting}
               required
             />
-            {errors.checkIn && <p className="mt-1 text-sm text-red-600">{errors.checkIn}</p>}
+            {errors.checkIn && (
+              <p className="mt-1 text-sm text-red-600">{errors.checkIn}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="checkOut">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-2"
+              htmlFor="checkOut"
+            >
               {COPY.checkOutLabel} *
             </label>
             <input
@@ -432,12 +483,17 @@ const BookingForm = ({ room, onClose }) => {
               disabled={isSubmitting}
               required
             />
-            {errors.checkOut && <p className="mt-1 text-sm text-red-600">{errors.checkOut}</p>}
+            {errors.checkOut && (
+              <p className="mt-1 text-sm text-red-600">{errors.checkOut}</p>
+            )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="guests">
+          <label
+            className="block text-sm font-medium text-gray-700 mb-2"
+            htmlFor="guests"
+          >
             {COPY.guestsLabel} *
           </label>
           <input
@@ -454,11 +510,16 @@ const BookingForm = ({ room, onClose }) => {
             disabled={isSubmitting}
             required
           />
-          {errors.guests && <p className="mt-1 text-sm text-red-600">{errors.guests}</p>}
+          {errors.guests && (
+            <p className="mt-1 text-sm text-red-600">{errors.guests}</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="message">
+          <label
+            className="block text-sm font-medium text-gray-700 mb-2"
+            htmlFor="message"
+          >
             {COPY.messageLabel}
           </label>
           <textarea
@@ -475,7 +536,9 @@ const BookingForm = ({ room, onClose }) => {
 
         {/* ✅ Payment method */}
         <div className="rounded-lg border border-gray-200 p-4">
-          <div className="text-sm font-semibold text-gray-900 mb-3">{COPY.paymentTitle}</div>
+          <div className="text-sm font-semibold text-gray-900 mb-3">
+            {COPY.paymentTitle}
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <label
@@ -494,7 +557,9 @@ const BookingForm = ({ room, onClose }) => {
                 className="h-4 w-4 text-emerald-600"
                 disabled={isSubmitting}
               />
-              <span className="text-sm font-medium text-gray-800">{COPY.payOnSite}</span>
+              <span className="text-sm font-medium text-gray-800">
+                {COPY.payOnSite}
+              </span>
             </label>
 
             <label
@@ -513,7 +578,9 @@ const BookingForm = ({ room, onClose }) => {
                 className="h-4 w-4 text-emerald-600"
                 disabled={isSubmitting}
               />
-              <span className="text-sm font-medium text-gray-800">{COPY.payByTransfer}</span>
+              <span className="text-sm font-medium text-gray-800">
+                {COPY.payByTransfer}
+              </span>
             </label>
           </div>
 
@@ -523,7 +590,9 @@ const BookingForm = ({ room, onClose }) => {
 
               <div className="mt-3 rounded-lg bg-white border border-amber-200 p-3">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm font-semibold text-gray-900">{COPY.transferDetailsTitle}</div>
+                  <div className="text-sm font-semibold text-gray-900">
+                    {COPY.transferDetailsTitle}
+                  </div>
                   <button
                     type="button"
                     onClick={handleCopy}
@@ -536,31 +605,45 @@ const BookingForm = ({ room, onClose }) => {
                 <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                   <div className="min-w-0">
                     <div className="text-gray-500">{COPY.beneficiary}</div>
-                    <div className="font-medium text-gray-900 break-words">{PAYMENT_DETAILS.beneficiary}</div>
+                    <div className="font-medium text-gray-900 break-words">
+                      {PAYMENT_DETAILS.beneficiary}
+                    </div>
                   </div>
                   <div className="min-w-0">
                     <div className="text-gray-500">{COPY.bankName}</div>
-                    <div className="font-medium text-gray-900 break-words">{PAYMENT_DETAILS.bankName}</div>
+                    <div className="font-medium text-gray-900 break-words">
+                      {PAYMENT_DETAILS.bankName}
+                    </div>
                   </div>
                   <div className="min-w-0">
                     <div className="text-gray-500">{COPY.accountNumber}</div>
-                    <div className="font-medium text-gray-900 break-all">{PAYMENT_DETAILS.accountNumber}</div>
+                    <div className="font-medium text-gray-900 break-all">
+                      {PAYMENT_DETAILS.accountNumber}
+                    </div>
                   </div>
                   <div className="min-w-0">
                     <div className="text-gray-500">{COPY.iban}</div>
-                    <div className="font-medium text-gray-900 break-all">{PAYMENT_DETAILS.iban}</div>
+                    <div className="font-medium text-gray-900 break-all">
+                      {PAYMENT_DETAILS.iban}
+                    </div>
                   </div>
                   <div className="min-w-0">
                     <div className="text-gray-500">{COPY.swift}</div>
-                    <div className="font-medium text-gray-900 break-all">{PAYMENT_DETAILS.swift}</div>
+                    <div className="font-medium text-gray-900 break-all">
+                      {PAYMENT_DETAILS.swift}
+                    </div>
                   </div>
                   <div className="min-w-0">
                     <div className="text-gray-500">{COPY.reference}</div>
-                    <div className="font-medium text-gray-900 break-words">{reference}</div>
+                    <div className="font-medium text-gray-900 break-words">
+                      {reference}
+                    </div>
                   </div>
                 </div>
 
-                <p className="mt-3 text-xs text-gray-600">{COPY.referenceHint}</p>
+                <p className="mt-3 text-xs text-gray-600">
+                  {COPY.referenceHint}
+                </p>
               </div>
             </div>
           )}
@@ -578,7 +661,10 @@ const BookingForm = ({ room, onClose }) => {
               className="mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
               disabled={isSubmitting}
             />
-            <label htmlFor="offroadOption" className="ml-3 text-sm text-gray-700 leading-relaxed">
+            <label
+              htmlFor="offroadOption"
+              className="ml-3 text-sm text-gray-700 leading-relaxed"
+            >
               {t("booking.offroad.option") || COPY.offroadOption}
             </label>
           </div>
@@ -606,12 +692,15 @@ const BookingForm = ({ room, onClose }) => {
               }`}
               disabled={isSubmitting}
             />
-            <label htmlFor="acceptTerms" className="ml-3 text-sm text-gray-700 leading-relaxed">
+            <label
+              htmlFor="acceptTerms"
+              className="ml-3 text-sm text-gray-700 leading-relaxed"
+            >
               {lang === "hu"
                 ? "Elolvastam és elfogadom az "
                 : lang === "de"
-                  ? "Ich habe die "
-                  : "I have read and accept the "}
+                ? "Ich habe die "
+                : "I have read and accept the "}
               <Link
                 to="/privacy"
                 target="_blank"
@@ -622,10 +711,14 @@ const BookingForm = ({ room, onClose }) => {
                 {lang === "hu"
                   ? "Adatkezelési tájékoztatót"
                   : lang === "de"
-                    ? "Datenschutzerklärung"
-                    : "Privacy Policy"}
+                  ? "Datenschutzerklärung"
+                  : "Privacy Policy"}
               </Link>
-              {lang === "hu" ? " és az " : lang === "de" ? " und die " : " and the "}
+              {lang === "hu"
+                ? " és az "
+                : lang === "de"
+                ? " und die "
+                : " and the "}
               <Link
                 to="/terms"
                 target="_blank"
@@ -636,13 +729,15 @@ const BookingForm = ({ room, onClose }) => {
                 {lang === "hu"
                   ? "Általános Szerződési Feltételeket"
                   : lang === "de"
-                    ? "AGB"
-                    : "Terms and Conditions"}
+                  ? "AGB"
+                  : "Terms and Conditions"}
               </Link>
               .
             </label>
           </div>
-          {errors.acceptTerms && <p className="mt-1 text-sm text-red-600">{errors.acceptTerms}</p>}
+          {errors.acceptTerms && (
+            <p className="mt-1 text-sm text-red-600">{errors.acceptTerms}</p>
+          )}
         </div>
 
         {/* Buttons */}
@@ -660,7 +755,13 @@ const BookingForm = ({ room, onClose }) => {
             className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-green-400 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
-            {isSubmitting ? (lang === "hu" ? "Küldés..." : lang === "de" ? "Senden..." : "Sending...") : COPY.submitButton}
+            {isSubmitting
+              ? lang === "hu"
+                ? "Küldés..."
+                : lang === "de"
+                ? "Senden..."
+                : "Sending..."
+              : COPY.submitButton}
           </button>
         </div>
       </form>

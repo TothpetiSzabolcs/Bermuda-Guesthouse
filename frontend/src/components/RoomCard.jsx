@@ -3,19 +3,20 @@ import { FiUsers, FiWifi, FiCoffee, FiTag } from "react-icons/fi";
 import { MdTv, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { MdOutlineBathroom } from "react-icons/md";
-import { FaKitchenSet } from "react-icons/fa6";
 import { useI18n } from "../i18n/useI18n";
 import { cld } from "../utils/cloudinary";
+import { getDisplayPrice } from "../utils/price";
 
 const RoomCard = React.memo(({ room, onBookingClick }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { t } = useI18n();
 
+  const p = getDisplayPrice(room);
 
   const images = room.images || [];
   const hasImages = images.length > 0;
   const hasMultipleImages = images.length > 1;
-  
+
   // Get current image or fallback to single image field
   const currentImage = hasImages ? images[currentImageIndex] : null;
   const fallbackImage = room.image || null;
@@ -27,15 +28,25 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
 
   const guests = room.guests ?? room.capacity ?? 0;
 
-  const handlePrevImage = useCallback((e) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  }, [images.length]);
+  const handlePrevImage = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? images.length - 1 : prev - 1,
+      );
+    },
+    [images.length],
+  );
 
-  const handleNextImage = useCallback((e) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  }, [images.length]);
+  const handleNextImage = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setCurrentImageIndex((prev) =>
+        prev === images.length - 1 ? 0 : prev + 1,
+      );
+    },
+    [images.length],
+  );
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 max-w-full">
@@ -58,7 +69,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
               loading="lazy"
               decoding="async"
             />
-            
+
             {hasMultipleImages && (
               <>
                 <button
@@ -68,7 +79,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                 >
                   <MdChevronLeft className="w-6 h-6 shrink-0 sm:w-5 sm:h-5" />
                 </button>
-                
+
                 <button
                   onClick={handleNextImage}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/40 hover:bg-white/80 text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 sm:p-2"
@@ -76,7 +87,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                 >
                   <MdChevronRight className="w-6 h-6 shrink-0 sm:w-5 sm:h-5" />
                 </button>
-                
+
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
                   {images.map((_, index) => (
                     <button
@@ -90,7 +101,9 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
                           ? "bg-white/80 w-6"
                           : "bg-white/50 hover:bg-white/70 w-2"
                       }`}
-                      aria-label={t("rooms.carousel.goToImage", { index: index + 1 })}
+                      aria-label={t("rooms.carousel.goToImage", {
+                        index: index + 1,
+                      })}
                     />
                   ))}
                 </div>
@@ -104,10 +117,28 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
         )}
 
         {/* ár badge (ha van ár) */}
-        <div className="absolute top-3 right-3 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center sm:top-4 sm:right-4 sm:px-3 sm:text-sm">
-          <FiTag className="w-3 h-3 mr-1 shrink-0 sm:w-4 sm:h-4" />
-          {t("rooms.price.amount")} {t("rooms.price.unit")}
-        </div>
+        {typeof p.amount === "number" && (
+          <div className="absolute top-3 right-3 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center sm:top-4 sm:right-4 sm:px-3 sm:text-sm">
+            <FiTag className="w-3 h-3 mr-1 shrink-0 sm:w-4 sm:h-4" />
+
+            {p.isPromo ? (
+              <span className="flex items-center gap-2">
+                <span className="line-through opacity-80">
+                  {p.baseAmount} Ft
+                </span>
+                <span className="font-semibold">{p.amount} Ft</span>
+              </span>
+            ) : (
+              <span className="font-semibold">{p.amount} Ft</span>
+            )}
+
+            <span className="ml-2 opacity-90">
+              {room?.price?.unit === "room_night"
+                ? t("rooms.price.roomNight")
+                : t("common.pricePerPersonPerNight")}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="p-4 sm:p-6">

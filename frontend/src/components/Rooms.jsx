@@ -6,8 +6,8 @@ import BookingModal from "./BookingModal";
 
 const Rooms = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const { t, lang } = useI18n(); // ✅ lang is kell
-  const { data: rooms, loading, error } = useRooms("bermuda-vendeghaz", { lang }); // ✅ átadjuk
+  const { t, lang } = useI18n();
+  const { data: rooms, loading, error } = useRooms("bermuda-vendeghaz", { lang });
 
   if (loading)
     return (
