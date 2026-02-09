@@ -33,8 +33,6 @@ const PAYMENT_DETAILS = {
 
 const googleUrl =
   process.env.REVIEW_GOOGLE_URL || "https://example.com/google-review";
-const szallasUrl =
-  process.env.REVIEW_SZALLAS_URL || "https://example.com/szallas-review";
 
 let transporter;
 if (SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS) {
@@ -606,9 +604,8 @@ const guestReviewText = `Szia!
   Köszönjük, hogy a Bermuda Vendégházat választottad.
   Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:
   
-  Weboldalon: ${opts.reviewUrl || `${process.env.FRONTEND_URL || 'https://example.com'}/review/write?t=${opts.reviewToken}`}
+  ${opts.reviewUrl ? `Weboldalon: ${opts.reviewUrl}` : ''}
   Google: ${googleUrl}
-  Szállás.hu: ${szallasUrl}
   
   Köszi szépen!
   Bermuda Vendégház`;
@@ -669,9 +666,8 @@ const guestReviewText = `Szia!
   Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:</p>
   
   <p>
-    <a href="${opts.reviewUrl || `${process.env.FRONTEND_URL || 'https://example.com'}/review/write?t=${opts.reviewToken}`}" target="_blank" rel="noopener noreferrer">⭐ Weboldalon értékelés</a><br/>
-    <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">⭐ Google értékelés</a><br/>
-    <a href="${szallasUrl}" target="_blank" rel="noopener noreferrer">⭐ Szállás.hu értékelés</a>
+    ${opts.reviewUrl ? `<a href="${opts.reviewUrl}" target="_blank" rel="noopener noreferrer">⭐ Értékelés a weboldalon</a><br/>` : ''}
+    <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">⭐ Google értékelés</a>
   </p>
   
   <p>Köszi szépen!<br/>Bermuda Vendégház</p>`;

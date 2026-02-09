@@ -26,21 +26,37 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
     }
 
     try {
-      // Generate review token
-      const reviewToken = makeAdminToken();
-      const reviewTokenHash = hashAdminToken(reviewToken);
-      const reviewTokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+      let reviewUrl = null;
+      let reviewToken = null;
+      let reviewTokenHash = null;
+      let reviewTokenExpiresAt = null;
 
-      // Update booking with token
+      // Generate review token and create URL
+      try {
+        reviewToken = makeAdminToken();
+        reviewTokenHash = hashAdminToken(reviewToken);
+        reviewTokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+        
+        const appUrl = String(process.env.APP_URL || "").replace(/\/$/, "");
+        reviewUrl = `${appUrl}/review/write?t=${reviewToken}`;
+      } catch (tokenError) {
+        console.warn("⚠️ Token generation failed for booking", b?.code, ":", tokenError?.message || tokenError);
+        // Fallback: continue without website review URL
+      }
+
+      // Update booking with token (if generated) and review request sent timestamp
+      const updateData = {
+        reviewRequestSentAt: new Date(),
+      };
+
+      if (reviewTokenHash && reviewTokenExpiresAt) {
+        updateData.reviewToken = reviewTokenHash;
+        updateData.reviewTokenExpiresAt = reviewTokenExpiresAt;
+      }
+
       const updateResult = await Booking.updateOne(
         { _id: b._id, reviewRequestSentAt: null },
-        { 
-          $set: { 
-            reviewRequestSentAt: new Date(),
-            reviewToken: reviewTokenHash,
-            reviewTokenExpiresAt: reviewTokenExpiresAt
-          }
-        }
+        { $set: updateData }
       );
 
       if (updateResult.modifiedCount === 0) {
@@ -48,7 +64,7 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
         continue;
       }
 
-      const tpl = bookingMailTemplates(b, reviewToken);
+      const tpl = bookingMailTemplates(b, { reviewUrl });
 
       await sendMail({
         to: guestEmail,
@@ -58,7 +74,7 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
         replyTo: process.env.MAIL_ADMIN,
       });
 
-      console.log(`✅ Review request sent for booking ${b.code}`);
+      console.log(`✅ Review request sent for booking ${b.code} (website URL: ${reviewUrl ? 'enabled' : 'disabled'})`);
     } catch (e) {
       console.error(
         "review request send failed:",
