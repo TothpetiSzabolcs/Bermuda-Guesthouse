@@ -61,27 +61,34 @@ export default function Reviews() {
           <div className="space-y-6">
             {reviews.map((review, index) => (
               <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <span
-                        key={i}
-                        className={`text-xl ${i < Math.ceil(review.rating / 2) ? 'text-yellow-400' : 'text-gray-300'}`}
-                      >
-                        ★
-                      </span>
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    {new Date(review.date).toLocaleDateString('hu-HU')}
-                  </span>
-                </div>
+<div className="flex items-center justify-between mb-4">
+                   <div className="flex items-center gap-1">
+                     {[...Array(5)].map((_, i) => (
+                       <span
+                         key={i}
+                         className={`text-xl ${i < Math.ceil(review.rating / 2) ? 'text-yellow-400' : 'text-gray-300'}`}
+                       >
+                         ★
+                       </span>
+                     ))}
+                   </div>
+                   <div className="flex items-center gap-2">
+                     {review.source && (
+                       <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                         {review.source === 'legacy' ? 'Web' : review.source === 'email' ? 'Email' : review.source}
+                       </span>
+                     )}
+                     <span className="text-sm text-gray-500">
+                       {new Date(review.date).toLocaleDateString('hu-HU')}
+                     </span>
+                   </div>
+                 </div>
                 
                 {review.author && (
                   <p className="font-medium text-gray-900 mb-2">{review.author}</p>
                 )}
                 
-                <p className="text-gray-700 leading-relaxed">{review.text}</p>
+                <p className="text-gray-700 leading-relaxed break-words">{review.text}</p>
               </div>
             ))}
           </div>

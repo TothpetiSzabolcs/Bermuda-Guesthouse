@@ -43,6 +43,8 @@ export const listReviewsByProperty = async (req, res) => {
         rating: r.rating,
         text: r.text,
         date: r.date,
+        author: r.author,
+        source: r.source,
         categories: r.categories,
       })),
     });
