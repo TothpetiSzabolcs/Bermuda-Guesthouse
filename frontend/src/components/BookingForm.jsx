@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/useI18n";
 
 const PAYMENT_DETAILS = {
-  beneficiary: "Bermuda Vendégház", // TODO
-  bankName: "Bank neve", // TODO
+  beneficiary: "Bermuda Vendégház", 
+  bankName: "MBH Bank Nyrt.", 
   accountNumber: "50466113-10001356-00000000",
   iban: "HU89 5046 6113 1000 1356 0000 0000",
-  swift: "ABCDEFGH", // TODO
+  swift: "MKKBHUHB", 
 };
 
 const BookingForm = ({ room, onClose }) => {
@@ -187,7 +187,6 @@ const BookingForm = ({ room, onClose }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ fallback copy (ha clipboard permission nincs)
   const fallbackCopy = (text) => {
     const ta = document.createElement("textarea");
     ta.value = text;
@@ -259,9 +258,10 @@ const BookingForm = ({ room, onClose }) => {
             name: formData.name,
             email: formData.email,
             note: formData.message,
+            lang,
           },
           payment: {
-            method: formData.paymentMethod, // "onsite" | "transfer"
+            method: formData.paymentMethod,
             transferRequested: formData.paymentMethod === "transfer",
           },
           extras: {
@@ -289,7 +289,7 @@ const BookingForm = ({ room, onClose }) => {
         const errorData = await response.json().catch(() => ({}));
         setSubmitStatus({
           type: "error",
-          message: errorData.error || COPY.error,
+          message: errorData.message || COPY.error,
         });
       }
     } catch {

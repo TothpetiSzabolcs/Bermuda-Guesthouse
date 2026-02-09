@@ -9,7 +9,7 @@ const CARDS = [
   {
     key: "offroad",
     icon: FaCarSide,
-    coverId: "bermuda/gallery/programok/zuxioypowra8liky04uf",
+    coverId: "bermuda/gallery/egyeb/mhl48bk0ycmaiourn0rg",
   },
   {
     key: "lakeside",
@@ -19,12 +19,12 @@ const CARDS = [
   {
     key: "village",
     icon: GiVillage,
-    coverId: "",
+    coverId: "bermuda/gallery/egyeb/hmbjv6gywkrhsddhgs5m",
   },
   {
     key: "family",
     icon: FaTableTennis,
-    coverId: "",
+    coverId: "bermuda/gallery/egyeb/vxzdo0ewxigri9kivhyo",
   },
   {
     key: "wellness",
