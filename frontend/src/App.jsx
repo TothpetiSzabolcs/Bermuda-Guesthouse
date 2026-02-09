@@ -11,6 +11,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminGallery from "./pages/admin/AdminGallery";
 import AdminRooms from "./pages/admin/AdminRooms";
+import AdminReviews from "./pages/admin/AdminReviews";
 import RoomDetail from "./components/RoomDetail";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 import HashScroller from "./components/HashScroller";
@@ -43,6 +44,7 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="gallery" element={<AdminGallery />} />
           <Route path="rooms" element={<AdminRooms />} />
+          <Route path="reviews" element={<AdminReviews />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

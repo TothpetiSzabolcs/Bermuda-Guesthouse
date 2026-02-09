@@ -59,6 +59,14 @@ export default function AdminLayout() {
             >
               {t("admin.nav.rooms")}
             </NavLink>
+            <NavLink
+              to="/admin/reviews"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
+              }
+            >
+              {t("admin.nav.reviews")}
+            </NavLink>
           </nav>
         </aside>
 

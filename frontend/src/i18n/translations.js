@@ -392,6 +392,7 @@ export const translations = {
         rooms: "Szobák",
         gallery: "Galéria",
         bookings: "Foglalások",
+        reviews: "Vélemények",
         logout: "Kijelentkezés",
       },
       login: {
@@ -868,6 +869,7 @@ export const translations = {
         rooms: "Rooms",
         gallery: "Gallery",
         bookings: "Bookings",
+        reviews: "Reviews",
         logout: "Logout",
       },
       login: {
@@ -1343,6 +1345,7 @@ export const translations = {
         rooms: "Zimmer",
         gallery: "Galerie",
         bookings: "Buchungen",
+        reviews: "Bewertungen",
         logout: "Abmelden",
       },
       login: {

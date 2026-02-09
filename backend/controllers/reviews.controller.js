@@ -303,3 +303,95 @@ export const submitWebReview = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Admin endpoints
+export const listReviews = async (req, res) => {
+  try {
+    const { status = "pending", page = 1, limit = 20 } = req.query;
+    
+    const filter = status && status !== "all" ? { status } : {};
+    
+    const reviews = await Review.find(filter)
+      .populate("bookingId", "code email")
+      .populate("property", "name slug")
+      .sort({ createdAt: -1 })
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit))
+      .lean();
+
+    const total = await Review.countDocuments(filter);
+
+    res.json({
+      reviews: reviews.map((r) => ({
+        id: r._id,
+        rating: r.rating,
+        text: r.text,
+        name: r.name,
+        code: r.bookingId?.code || r.code,
+        email: r.bookingId?.email, // Note: this will be excluded from UI per requirements
+        source: r.source,
+        status: r.status,
+        createdAt: r.createdAt,
+        propertyName: r.property?.name,
+        propertySlug: r.property?.slug,
+      })),
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit)),
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const approveReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const review = await Review.findByIdAndUpdate(
+      id,
+      { 
+        status: "approved",
+        approved: true // Update legacy field
+      },
+      { new: true }
+    );
+
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    res.json({ success: true, message: "Review approved" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const rejectReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const review = await Review.findByIdAndUpdate(
+      id,
+      { 
+        status: "rejected",
+        approved: false // Update legacy field
+      },
+      { new: true }
+    );
+
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    res.json({ success: true, message: "Review rejected" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Server error" });
+  }
+};

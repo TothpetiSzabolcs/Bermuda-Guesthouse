@@ -19,6 +19,7 @@ import adminRoomsRouter from "./routes/adminRooms.routes.js";
 import adminGalleryRouter from "./routes/adminGallery.routes.js";
 import publicGalleryRouter from "./routes/publicGallery.routes.js";
 import reviewsRoutes from "./routes/reviews.routes.js";
+import adminReviewsRouter from "./routes/adminReviews.routes.js";
 import { startReviewRequestJob } from "./jobs/reviewRequest.job.js";
 
 dotenv.config();
@@ -45,6 +46,7 @@ app.use("/api/admin/rooms", adminRoomsRouter);
 app.use("/api/admin/gallery", adminGalleryRouter);
 app.use("/api/public/gallery", publicGalleryRouter);
 app.use("/api/reviews", reviewsRoutes);
+app.use("/api/admin/reviews", adminReviewsRouter);
 
 app.set("etag", false);
 
