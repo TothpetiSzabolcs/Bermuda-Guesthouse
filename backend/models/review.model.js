@@ -2,15 +2,42 @@ import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema(
   {
-    property: {
+    bookingId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Property",
+      ref: "Booking",
       required: true,
       index: true,
     },
 
+    code: { type: String, required: true, trim: true, uppercase: true },
+    
+    rating: { type: Number, required: true, min: 1, max: 5 },
+
+    text: { type: String, required: true, trim: true },
+    
+    name: { type: String, trim: true },
+
+    source: {
+      type: String,
+      enum: ["legacy", "email", "onsite", "web"],
+      default: "legacy",
+    },
+
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+      index: true,
+    },
+
+    // Legacy fields for backward compatibility
+    property: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Property",
+      index: true,
+    },
+
     author: { type: String, default: "" },
-    rating: { type: Number, required: true, min: 1, max: 10 },
 
     categories: {
       cleanliness: { type: Number, min: 1, max: 10 },
@@ -19,14 +46,7 @@ const reviewSchema = new mongoose.Schema(
       staff: { type: Number, min: 1, max: 10 },
     },
 
-    text: { type: String, default: "" },
     date: { type: Date, required: true },
-
-    source: {
-      type: String,
-      enum: ["legacy", "email", "onsite"],
-      default: "legacy",
-    },
 
     approved: { type: Boolean, default: true },
   },

@@ -25,3 +25,11 @@ export const adminActionLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "TOO_MANY_REQUESTS", where: "admin_action" }
 });
+
+export const reviewSubmitLimiter = rateLimit({
+  windowMs: toMs(process.env.RATE_WINDOW_REVIEW_SUBMIT_MIN, 15),
+  max: Number(process.env.RATE_MAX_REVIEW_SUBMIT || 5),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "TOO_MANY_REQUESTS", where: "review_submit" }
+});

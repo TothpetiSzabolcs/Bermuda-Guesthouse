@@ -83,6 +83,7 @@ const bookingSchema = new mongoose.Schema(
     reviewToken: { type: String, default: null },
     reviewTokenExpiresAt: { type: Date, default: null },
     reviewSubmittedAt: { type: Date, default: null },
+    reviewWebSubmittedAt: { type: Date, default: null },
 
     channel: { type: String, default: "direct" },
   },
