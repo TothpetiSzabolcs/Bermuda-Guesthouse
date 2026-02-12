@@ -38,7 +38,9 @@ export default function AdminLayout() {
               to="/admin"
               end
               className={({ isActive }) =>
-                `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
+                `px-3 py-2 rounded ${
+                  isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"
+                }`
               }
             >
               {t("admin.nav.dashboard")}
@@ -46,7 +48,9 @@ export default function AdminLayout() {
             <NavLink
               to="/admin/gallery"
               className={({ isActive }) =>
-                `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
+                `px-3 py-2 rounded ${
+                  isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"
+                }`
               }
             >
               {t("admin.nav.gallery")}
@@ -54,15 +58,29 @@ export default function AdminLayout() {
             <NavLink
               to="/admin/rooms"
               className={({ isActive }) =>
-                `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
+                `px-3 py-2 rounded ${
+                  isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"
+                }`
               }
             >
               {t("admin.nav.rooms")}
             </NavLink>
             <NavLink
+              to="/admin/bookings"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded ${
+                  isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"
+                }`
+              }
+            >
+              Foglalások
+            </NavLink>
+            <NavLink
               to="/admin/reviews"
               className={({ isActive }) =>
-                `px-3 py-2 rounded ${isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"}`
+                `px-3 py-2 rounded ${
+                  isActive ? "bg-gray-900 text-white" : "hover:bg-gray-100"
+                }`
               }
             >
               {t("admin.nav.reviews")}

@@ -10,7 +10,8 @@ export function useReviews(propertySlug, limit = 6) {
     (async () => {
       setL(true);
       try {
-        const url = new URL("/api/reviews", API || window.location.origin);
+        const url = new URL("/api/reviews/property", API || window.location.origin);
+        if (!propertySlug) { setData(null); setL(false); return; }
         url.searchParams.set("propertySlug", propertySlug);
         url.searchParams.set("limit", limit);
         const r = await fetch(url);

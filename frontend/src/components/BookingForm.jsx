@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/useI18n";
 
 const PAYMENT_DETAILS = {
-  beneficiary: "Bermuda Vendégház", 
-  bankName: "MBH Bank Nyrt.", 
+  beneficiary: "Bermuda Vendégház",
+  bankName: "MBH Bank Nyrt.",
   accountNumber: "50466113-10001356-00000000",
   iban: "HU89 5046 6113 1000 1356 0000 0000",
-  swift: "MKKBHUHB", 
+  swift: "MKKBHUHB",
 };
 
 const BookingForm = ({ room, onClose }) => {
@@ -30,6 +30,8 @@ const BookingForm = ({ room, onClose }) => {
         invalidEmail: "Érvényes email címet adj meg",
         invalidDate: "Érvényes dátumot adj meg",
         invalidGuests: "Legalább 1 vendég szükséges",
+        guestsOverCapacity: (max) =>
+          `Legfeljebb ${max} vendég fér el ebben a szobában`,
         acceptTermsRequired:
           "A foglaláshoz el kell fogadni az ÁSZF-t és adatkezelési tájékoztatót",
         success: "Foglalási igény elküldve! Hamarosan visszajelzünk.",
@@ -67,6 +69,8 @@ const BookingForm = ({ room, onClose }) => {
         invalidEmail: "Please enter a valid email",
         invalidDate: "Please enter a valid date",
         invalidGuests: "At least 1 guest is required",
+        guestsOverCapacity: (max) =>
+          `Maximum ${max} guests are allowed for this room`,
         acceptTermsRequired:
           "You must accept the Terms and Privacy Policy to book",
         success: "Booking request sent! We'll get back to you soon.",
@@ -104,6 +108,8 @@ const BookingForm = ({ room, onClose }) => {
         invalidEmail: "Bitte gültige Email eingeben",
         invalidDate: "Bitte gültiges Datum eingeben",
         invalidGuests: "Mindestens 1 Gast erforderlich",
+        guestsOverCapacity: (max) =>
+          `Maximal ${max} Gäste sind in diesem Zimmer möglich`,
         acceptTermsRequired:
           "Sie müssen die AGB und Datenschutzerklärung akzeptieren",
         success: "Buchungsanfrage gesendet! Wir melden uns bald bei Ihnen.",
@@ -138,7 +144,7 @@ const BookingForm = ({ room, onClose }) => {
     email: "",
     checkIn: "",
     checkOut: "",
-    guests: 1,
+    guests: "",
     message: "",
     acceptTerms: false,
     offroadOption: false,
@@ -149,6 +155,8 @@ const BookingForm = ({ room, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  const maxGuests = Number(room?.capacity || room?.guests || 10);
 
   const validateForm = () => {
     const newErrors = {};
@@ -178,8 +186,14 @@ const BookingForm = ({ room, onClose }) => {
       if (checkOutDate <= checkInDate) newErrors.checkOut = COPY.invalidDate;
     }
 
-    if (!formData.guests || formData.guests < 1)
+    const guestsNum = Number(formData.guests);
+    if (!formData.guests || !Number.isFinite(guestsNum) || guestsNum < 1) {
       newErrors.guests = COPY.invalidGuests;
+    } else if (guestsNum > maxGuests) {
+      newErrors.guests = COPY.guestsOverCapacity
+        ? COPY.guestsOverCapacity(maxGuests)
+        : `Max ${maxGuests}`;
+    }
 
     if (!formData.acceptTerms) newErrors.acceptTerms = COPY.acceptTermsRequired;
 
@@ -251,7 +265,7 @@ const BookingForm = ({ room, onClose }) => {
           items: [
             {
               room: room._id || room.id,
-              guests: formData.guests,
+              guests: Number(formData.guests),
             },
           ],
           customer: {
@@ -279,7 +293,7 @@ const BookingForm = ({ room, onClose }) => {
           email: "",
           checkIn: "",
           checkOut: "",
-          guests: 1,
+          guests: "",
           message: "",
           acceptTerms: false,
           offroadOption: false,
@@ -299,15 +313,62 @@ const BookingForm = ({ room, onClose }) => {
     }
   };
 
+  const blockNonDigitsKeyDown = (e) => {
+    const allowed = [
+      "Backspace",
+      "Delete",
+      "Tab",
+      "Escape",
+      "Enter",
+      "ArrowLeft",
+      "ArrowRight",
+      "Home",
+      "End",
+    ];
+    if (allowed.includes(e.key)) return;
+
+    if (
+      (e.ctrlKey || e.metaKey) &&
+      ["a", "c", "v", "x"].includes(e.key.toLowerCase())
+    )
+      return;
+
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleGuestsPaste = (e) => {
+    const text = e.clipboardData?.getData("text") ?? "";
+    if (!/^\d+$/.test(text.trim())) {
+      e.preventDefault();
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]:
         type === "checkbox"
           ? checked
           : name === "guests"
-          ? parseInt(value) || 1
+          ? (() => {
+              // ✅ lehessen törölni
+              if (value === "") return "";
+
+              // ✅ csak számjegyek
+              const cleaned = String(value).replace(/[^\d]/g, "");
+              if (cleaned === "") return "";
+
+              const n = Number(cleaned);
+              if (!Number.isFinite(n)) return "";
+
+              // ✅ 1..max közé szorítás
+              const clamped = Math.min(Math.max(n, 1), maxGuests);
+              return String(clamped);
+            })()
           : value,
     }));
 
@@ -498,12 +559,16 @@ const BookingForm = ({ room, onClose }) => {
           </label>
           <input
             id="guests"
-            type="number"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             name="guests"
             value={formData.guests}
             onChange={handleChange}
+            onKeyDown={blockNonDigitsKeyDown}
+            onPaste={handleGuestsPaste}
             min="1"
-            max={room.capacity || room.guests || 10}
+            max={maxGuests}
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors ${
               errors.guests ? "border-red-500" : "border-gray-300"
             }`}

@@ -11,8 +11,8 @@ const router = express.Router();
 const isValidEmail = (s = "") =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
 
-
 router.get("/action", adminActionLimiter, async (req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
   try {
     const code = String(req.query.code || "")
       .trim()
@@ -109,13 +109,16 @@ router.get("/action", adminActionLimiter, async (req, res) => {
             .populate("items.room", "name")
             .lean();
           if (!populated) return;
-    
+
           const guestEmail = populated?.customer?.email?.trim();
           if (!isValidEmail(guestEmail)) {
-            console.warn("⚠️ No valid guest email for cancel mail, skipping:", guestEmail);
+            console.warn(
+              "⚠️ No valid guest email for cancel mail, skipping:",
+              guestEmail
+            );
             return;
           }
-    
+
           const tpl = bookingMailTemplates(populated);
           await sendMail({
             to: guestEmail,
@@ -123,13 +126,13 @@ router.get("/action", adminActionLimiter, async (req, res) => {
             text: tpl.guestCancelled.text,
             html: tpl.guestCancelled.html,
             replyTo: process.env.MAIL_ADMIN,
+            kind: "guest",
           });
         } catch (e) {
           console.error("cancel mail send failed:", e?.message || e);
         }
       });
     }
-    
 
     const now = new Date();
     const $set = {};
@@ -172,67 +175,74 @@ router.get("/action", adminActionLimiter, async (req, res) => {
         ? "Foglalás törölve ❌"
         : "Utalás megérkezett – fizetettnek jelölve 💰";
 
-        if (action === "confirm") {
-          setImmediate(async () => {
-            try {
-              const populated = await Booking.findOne({ code })
-                .populate("items.room", "name")
-                .lean();
-        
-              if (!populated) return;
-        
-              const guestEmail = populated?.customer?.email?.trim();
-        
-              if (!isValidEmail(guestEmail)) {
-                console.warn("⚠️ No valid guest email for confirm mail, skipping:", guestEmail);
-                return;
-              }
-        
-              const tpl = bookingMailTemplates(populated);
-        
-              await sendMail({
-                to: guestEmail,
-                subject: tpl.guestConfirmed.subject,
-                text: tpl.guestConfirmed.text,
-                html: tpl.guestConfirmed.html,
-                replyTo: process.env.MAIL_ADMIN,
-              });
-            } catch (e) {
-              console.error("confirm mail send failed:", e?.message || e);
-            }
-          });
-        }
+    if (action === "confirm") {
+      setImmediate(async () => {
+        try {
+          const populated = await Booking.findOne({ code })
+            .populate("items.room", "name")
+            .lean();
 
-        if (action === "paid") {
-          setImmediate(async () => {
-            try {
-              const populated = await Booking.findOne({ code })
-                .populate("items.room", "name")
-                .lean();
-        
-              if (!populated) return;
-        
-              const guestEmail = populated?.customer?.email?.trim();
-              if (!isValidEmail(guestEmail)) {
-                console.warn("⚠️ No valid guest email for paid mail, skipping:", guestEmail);
-                return;
-              }
-        
-              const tpl = bookingMailTemplates(populated);
-        
-              await sendMail({
-                to: guestEmail,
-                subject: tpl.guestPaid.subject,
-                text: tpl.guestPaid.text,
-                html: tpl.guestPaid.html,
-                replyTo: process.env.MAIL_ADMIN,
-              });
-            } catch (e) {
-              console.error("paid mail send failed:", e?.message || e);
-            }
+          if (!populated) return;
+
+          const guestEmail = populated?.customer?.email?.trim();
+
+          if (!isValidEmail(guestEmail)) {
+            console.warn(
+              "⚠️ No valid guest email for confirm mail, skipping:",
+              guestEmail
+            );
+            return;
+          }
+
+          const tpl = bookingMailTemplates(populated);
+
+          await sendMail({
+            to: guestEmail,
+            subject: tpl.guestConfirmed.subject,
+            text: tpl.guestConfirmed.text,
+            html: tpl.guestConfirmed.html,
+            replyTo: process.env.MAIL_ADMIN,
+            kind: "guest",
           });
+        } catch (e) {
+          console.error("confirm mail send failed:", e?.message || e);
         }
-        
+      });
+    }
+
+    if (action === "paid") {
+      setImmediate(async () => {
+        try {
+          const populated = await Booking.findOne({ code })
+            .populate("items.room", "name")
+            .lean();
+
+          if (!populated) return;
+
+          const guestEmail = populated?.customer?.email?.trim();
+          if (!isValidEmail(guestEmail)) {
+            console.warn(
+              "⚠️ No valid guest email for paid mail, skipping:",
+              guestEmail
+            );
+            return;
+          }
+
+          const tpl = bookingMailTemplates(populated);
+
+          await sendMail({
+            to: guestEmail,
+            subject: tpl.guestPaid.subject,
+            text: tpl.guestPaid.text,
+            html: tpl.guestPaid.html,
+            replyTo: process.env.MAIL_ADMIN,
+            kind: "guest",
+          });
+        } catch (e) {
+          console.error("paid mail send failed:", e?.message || e);
+        }
+      });
+    }
 
     return res.status(200).send(html(okText));
   } catch (e) {
@@ -247,7 +257,11 @@ router.use(requireAdmin);
 router.get("/", async (req, res) => {
   try {
     const n = Math.min(Number(req.query.limit) || 100, 500);
-    const list = await Booking.find().sort({ createdAt: -1 }).limit(n).lean();
+    const list = await Booking.find()
+      .sort({ createdAt: -1 })
+      .limit(n)
+      .populate("items.room", "name")
+      .lean();
     res.json(list);
   } catch {
     res.status(500).json({ error: "INTERNAL_ERROR" });
@@ -260,7 +274,10 @@ router.get("/:id", async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(400).json({ error: "INVALID_ID" });
 
-    const doc = await Booking.findById(id).lean();
+    const doc = await Booking.findById(id)
+      .populate("items.room", "name slug")
+      .lean();
+
     if (!doc) return res.status(404).json({ error: "NOT_FOUND" });
     res.json(doc);
   } catch {
@@ -268,11 +285,113 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.post("/:id/confirm", adminActionLimiter, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ error: "INVALID_ID" });
+
+    const current = await Booking.findById(id).select("status").lean();
+    if (!current) return res.status(404).json({ error: "NOT_FOUND" });
+
+    if (current.status !== "pending")
+      return res.status(409).json({ error: "ONLY_PENDING_CAN_BE_CONFIRMED" });
+
+    const doc = await Booking.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status: "confirmed",
+          "adminAction.confirmAt": new Date(),
+        },
+      },
+      { new: true }
+    ).lean();
+
+    // (opcionális) ugyanaz a confirmed email, mint az action linknél
+    setImmediate(async () => {
+      try {
+        const populated = await Booking.findById(id)
+          .populate("items.room", "name")
+          .lean();
+
+        if (!populated) return;
+
+        const guestEmail = populated?.customer?.email?.trim();
+        if (!isValidEmail(guestEmail)) {
+          console.warn(
+            "⚠️ No valid guest email for confirm mail, skipping:",
+            guestEmail
+          );
+          return;
+        }
+
+        const tpl = bookingMailTemplates(populated);
+        await sendMail({
+          to: guestEmail,
+          subject: tpl.guestConfirmed.subject,
+          text: tpl.guestConfirmed.text,
+          html: tpl.guestConfirmed.html,
+          replyTo: process.env.MAIL_ADMIN,
+        });
+      } catch (e) {
+        console.error("confirm mail send failed (dashboard):", e?.message || e);
+      }
+    });
+
+    res.json(doc);
+  } catch (e) {
+    console.error("confirm error:", e?.message || e);
+    res.status(500).json({ error: "INTERNAL_ERROR" });
+  }
+});
+
 /**
- * ✅ Admin manuális "paid" (dashboardból)
- * - csak transfer esetén engedjük
- * - csak confirmed esetén (javasolt)
+ * ✅ Admin manuális "paid onsite" (dashboardból)
+ * - csak onsite esetén engedjük
+ * - csak confirmed esetén
+ * - ha már paid -> 409
  */
+router.patch("/:id/paid-onsite", adminActionLimiter, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ error: "INVALID_ID" });
+
+    const current = await Booking.findById(id).select("status payment").lean();
+    if (!current) return res.status(404).json({ error: "NOT_FOUND" });
+
+    if (current.status === "paid")
+      return res.status(409).json({ error: "ALREADY_PAID" });
+
+    if (current.status !== "confirmed")
+      return res.status(409).json({ error: "ONLY_CONFIRMED_CAN_BE_PAID" });
+
+    if (current?.payment?.method !== "onsite")
+      return res.status(400).json({ error: "ONLY_ONSITE_CAN_BE_PAID_ONSITE" });
+
+    const now = new Date();
+
+    const doc = await Booking.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status: "paid",
+          "payment.provider": "cash",
+          "payment.paidAt": now,
+          "adminAction.paidAt": now,
+        },
+      },
+      { new: true }
+    ).lean();
+
+    res.json(doc);
+  } catch (e) {
+    console.error("paid-onsite error:", e?.message || e);
+    res.status(500).json({ error: "INTERNAL_ERROR" });
+  }
+});
+
 router.post("/:id/pay", adminActionLimiter, async (req, res) => {
   try {
     const { id } = req.params;
@@ -280,7 +399,6 @@ router.post("/:id/pay", adminActionLimiter, async (req, res) => {
       return res.status(400).json({ error: "INVALID_ID" });
 
     const current = await Booking.findById(id).select("status payment").lean();
-
     if (!current) return res.status(404).json({ error: "NOT_FOUND" });
 
     const isTransfer =
@@ -292,28 +410,61 @@ router.post("/:id/pay", adminActionLimiter, async (req, res) => {
     if (current.status !== "confirmed")
       return res.status(409).json({ error: "ONLY_CONFIRMED_CAN_BE_PAID" });
 
+    const now = new Date();
+
     const doc = await Booking.findByIdAndUpdate(
       id,
       {
         $set: {
           status: "paid",
           "payment.provider": "bank",
-          "payment.paidAt": new Date(),
-          "adminAction.paidAt": new Date(),
+          "payment.paidAt": now,
+          "adminAction.paidAt": now,
         },
       },
       { new: true }
     ).lean();
 
+    // ✅ vendég "paid" email (dashboardból is)
+    setImmediate(async () => {
+      try {
+        const populated = await Booking.findById(id)
+          .populate("items.room", "name")
+          .lean();
+
+        if (!populated) return;
+
+        const guestEmail = populated?.customer?.email?.trim();
+        if (!isValidEmail(guestEmail)) {
+          console.warn(
+            "⚠️ No valid guest email for paid mail, skipping:",
+            guestEmail
+          );
+          return;
+        }
+
+        const tpl = bookingMailTemplates(populated);
+
+        await sendMail({
+          to: guestEmail,
+          subject: tpl.guestPaid.subject,
+          text: tpl.guestPaid.text,
+          html: tpl.guestPaid.html,
+          replyTo: process.env.MAIL_ADMIN,
+          kind: "guest",
+        });
+      } catch (e) {
+        console.error("paid mail send failed (dashboard):", e?.message || e);
+      }
+    });
+
     res.json(doc);
-  } catch {
+  } catch (e) {
+    console.error("pay error:", e?.message || e);
     res.status(500).json({ error: "INTERNAL_ERROR" });
   }
 });
 
-/**
- * ✅ Admin manuális cancel (dashboardból)
- */
 router.post("/:id/cancel", adminActionLimiter, async (req, res) => {
   try {
     const { id } = req.params;
@@ -325,22 +476,55 @@ router.post("/:id/cancel", adminActionLimiter, async (req, res) => {
     if (current.status === "paid")
       return res.status(409).json({ error: "CANNOT_CANCEL_PAID" });
 
+    const now = new Date();
+
     const doc = await Booking.findByIdAndUpdate(
       id,
       {
         $set: {
           status: "cancelled",
-          "adminAction.cancelAt": new Date(),
+          "adminAction.cancelAt": now,
         },
       },
       { new: true }
     ).lean();
 
+    setImmediate(async () => {
+      try {
+        const populated = await Booking.findById(id)
+          .populate("items.room", "name")
+          .lean();
+
+        if (!populated) return;
+
+        const guestEmail = populated?.customer?.email?.trim();
+        if (!isValidEmail(guestEmail)) {
+          console.warn("⚠️ No valid guest email for cancel mail, skipping:", guestEmail);
+          return;
+        }
+
+        const tpl = bookingMailTemplates(populated);
+
+        await sendMail({
+          to: guestEmail,
+          subject: tpl.guestCancelled.subject,
+          text: tpl.guestCancelled.text,
+          html: tpl.guestCancelled.html,
+          replyTo: process.env.MAIL_ADMIN,
+          kind: "guest",
+        });
+      } catch (e) {
+        console.error("cancel mail send failed (dashboard):", e?.message || e);
+      }
+    });
+
     res.json(doc);
-  } catch {
+  } catch (e) {
+    console.error("cancel error:", e?.message || e);
     res.status(500).json({ error: "INTERNAL_ERROR" });
   }
 });
+
 
 function html(message) {
   return `<!doctype html>

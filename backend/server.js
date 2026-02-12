@@ -1,7 +1,9 @@
 process.env.TZ = "Europe/Budapest";
+import "dotenv/config";
 
 import express from "express";
-import dotenv from "dotenv";
+
+
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
@@ -22,7 +24,7 @@ import reviewsRoutes from "./routes/reviews.routes.js";
 import adminReviewsRouter from "./routes/adminReviews.routes.js";
 import { startReviewRequestJob } from "./jobs/reviewRequest.job.js";
 
-dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 5555;
@@ -60,6 +62,8 @@ app.use((err, _req, res, _next) => {
 async function bootstrap() {
   try {
     await connectDB();
+    console.log("DB NAME =", Booking.db.name);
+
     console.log("✅ MongoDB connected");
 
     if (process.env.NODE_ENV !== "production") {

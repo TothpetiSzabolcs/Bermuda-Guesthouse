@@ -1,6 +1,6 @@
 import Booking from "../models/booking.model.js";
 import { createBookingAtomic } from "../services/booking.service.js";
-import { sendMail, bookingMailTemplates } from "../lib/mailer.js";
+import { sendMail, bookingMailTemplates, MAIL_ADMIN } from "../lib/mailer.js";
 import mongoose from "mongoose";
 import Property from "../models/property.model.js";
 import { makeAdminToken, hashAdminToken } from "../lib/adminActionToken.js";
@@ -110,7 +110,8 @@ export async function createBooking(req, res) {
               subject: tpl.guest.subject,
               text: tpl.guest.text,
               html: tpl.guest.html,
-              replyTo: process.env.MAIL_ADMIN,
+              replyTo: MAIL_ADMIN,
+              kind: "guest",
             })
           );
         } else if (guestEmail) {
@@ -125,6 +126,7 @@ export async function createBooking(req, res) {
               subject: tpl.admin.subject,
               text: tpl.admin.text,
               html: tpl.admin.html,
+              kind: "admin",
             })
           );
         } else {

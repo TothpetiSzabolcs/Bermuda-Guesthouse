@@ -119,13 +119,13 @@ export const submitReview = async (req, res) => {
       return res.status(403).json({ message: "Invalid or expired token" });
     }
 
-    // Mark token as used
+
     await Booking.updateOne(
       { _id: booking._id },
       { $set: { reviewSubmittedAt: new Date() } }
     );
 
-    // Create review
+
     const property = await Property.findById(booking.property);
     if (!property) {
       return res.status(404).json({ message: "Property not found" });
@@ -134,11 +134,11 @@ export const submitReview = async (req, res) => {
     const review = new Review({
       property: booking.property,
       author: author?.trim() || "",
-      rating: rating * 2, // Convert 1-5 to 2-10 scale
+      rating: rating * 2, 
       text: text.trim(),
       date: new Date(),
       source: "email",
-      approved: false, // Requires moderation
+      approved: false, 
     });
 
     await review.save();
@@ -150,30 +150,39 @@ export const submitReview = async (req, res) => {
   }
 };
 
-// New public endpoint for approved reviews only
 export const listApprovedReviews = async (req, res) => {
   try {
-    const { limit = 10 } = req.query;
+    const { limit = 10, propertySlug } = req.query;
 
-    const reviews = await Review.find({
-      status: "approved"
-    })
-      .populate("bookingId", "code property")
-      .populate("bookingId.property", "slug name")
-      .sort({ createdAt: -1 })
+    let propertyId = null;
+    if (propertySlug) {
+      const prop = await Property.findOne({ slug: propertySlug }).select("_id").lean();
+      if (!prop) return res.status(404).json({ message: "Property not found" });
+      propertyId = prop._id;
+    }
+
+    const filter = {
+      $and: [
+        propertyId ? { property: propertyId } : {},
+        {
+          $or: [
+            { status: "approved" },   
+            { approved: true },       
+          ],
+        },
+      ],
+    };
+
+    const reviews = await Review.find(filter)
+      .sort({ createdAt: -1, date: -1 })
       .limit(Number(limit))
       .lean();
 
-    const count = await Review.countDocuments({
-      status: "approved"
-    });
+    const count = await Review.countDocuments(filter);
 
     const avg =
       reviews.length > 0
-        ? (
-            reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
-            reviews.length
-          ).toFixed(1)
+        ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length).toFixed(1)
         : null;
 
     res.json({
@@ -183,11 +192,9 @@ export const listApprovedReviews = async (req, res) => {
         id: r._id,
         rating: r.rating,
         text: r.text,
-        name: r.name,
-        code: r.bookingId?.code,
-        propertySlug: r.bookingId?.property?.slug,
-        propertyName: r.bookingId?.property?.name,
+        name: r.name || r.author || "",
         source: r.source,
+        date: r.date || r.createdAt,
         createdAt: r.createdAt,
       })),
     });
@@ -196,6 +203,7 @@ export const listApprovedReviews = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // New web validation endpoint
 export const validateWebReviewToken = async (req, res) => {

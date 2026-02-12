@@ -10,7 +10,14 @@ const CATS = [
   { value: "wellness", label: "Wellness" },
   { value: "programok", label: "Programok" },
   { value: "egyeb", label: "Egyéb" },
+  { value: "konyha", label: "Konyha" },
+  { value: "etkezo", label: "Étkező" },
+  { value: "nappali", label: "Nappali" },
+  { value: "nagyterem", label: "Nagyterem" },
+  { value: "kavezo-teazo", label: "Kávézó/Teázó" },
+  { value: "terasz", label: "Terasz" },
 ];
+
 
 const TYPE_OPTS = [
   { value: "all", label: "Összes" },
@@ -30,13 +37,13 @@ export default function AdminGallery() {
 
   // szűrők, lapozás
   const [catFilter, setCatFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all"); // image|video|all
+  const [typeFilter, setTypeFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const [q, setQ] = useState(""); // címke/alt kereső (egyszerű kliens oldali)
+  const [q, setQ] = useState("");
 
   // feltöltés
   const [file, setFile] = useState(null);
-  const [category, setCat] = useState("to");
+  const [category, setCat] = useState("konyha");
   const [altHu, setAltHu] = useState("");
   const [altEn, setAltEn] = useState("");
   const [altDe, setAltDe] = useState("");

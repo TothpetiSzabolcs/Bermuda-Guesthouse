@@ -11,14 +11,20 @@ const {
   APP_URL: ENV_APP_URL,
 } = process.env;
 
-const MAIL_FROM =
+export const MAIL_FROM =
   ENV_MAIL_FROM ||
   (SMTP_USER
     ? `Bermuda Vendégház <${SMTP_USER}>`
     : "Bermuda Vendégház <no-reply@bermuda.hu>");
 
-const MAIL_ADMIN =
+export const MAIL_ADMIN =
   ENV_MAIL_ADMIN || SMTP_USER || "bermudavendeghazvese@gmail.com";
+
+if (process.env.NODE_ENV === "production" && !ENV_MAIL_ADMIN && !SMTP_USER) {
+  console.warn(
+    "⚠️ [mailer] PRODUCTION: MAIL_ADMIN nincs beállítva (MAIL_ADMIN / SMTP_USER hiányzik). Admin emailek nem fognak menni!"
+  );
+}
 
 const APP_URL = String(ENV_APP_URL || "").replace(/\/$/, "");
 
@@ -53,43 +59,80 @@ if (SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS) {
 const isValidEmail = (s = "") =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
 
-const fmtDate = (d) => {
-  const dt = d ? new Date(d) : null;
-  if (!dt || !Number.isFinite(dt.getTime())) return "—";
-  return dt.toLocaleDateString("hu-HU");
+const normalizeRecipients = (to) => {
+  // támogatja: string, tömb, "a@a.com, b@b.com" / "a@a.com; b@b.com"
+  const arr = Array.isArray(to) ? to : [to];
+  return arr
+    .flatMap((x) =>
+      String(x || "")
+        .split(/[;,]/g)
+        .map((p) => p.trim())
+    )
+    .filter(Boolean);
 };
 
-const getRoomName = (room) => {
-  if (!room) return "Szoba";
-  if (typeof room === "string") return room;
+const emailEq = (a, b) =>
+  String(a || "")
+    .trim()
+    .toLowerCase() ===
+  String(b || "")
+    .trim()
+    .toLowerCase();
 
-  if (room.name) {
-    if (typeof room.name === "string") return room.name;
-    if (room.name.hu) return room.name.hu;
-    if (room.name.en) return room.name.en;
-    if (room.name.de) return room.name.de;
+const ADMIN_ADDRESSES = [MAIL_ADMIN, ENV_MAIL_ADMIN, SMTP_USER].filter(Boolean);
+
+// ✅ ÚJ: kind = "guest" | "admin" | "system"
+export async function sendMail({
+  to,
+  subject,
+  text,
+  html,
+  replyTo,
+  kind = "system",
+}) {
+  const raw = normalizeRecipients(to);
+
+  let valid = raw
+    .map((x) => String(x || "").trim())
+    .filter((x) => isValidEmail(x));
+
+  // ✅ Vendég levélből kivágjuk az admin címeket (akkor is, ha véletlenül bekerültek)
+  if (kind === "guest") {
+    valid = valid.filter(
+      (addr) => !ADMIN_ADDRESSES.some((a) => emailEq(a, addr))
+    );
   }
 
-  return "Szoba";
-};
+  // ✅ Admin levélből kivágjuk a vendég címeket nem tudjuk, de legalább legyen valid
+  // (itt nem szűrünk semmit, csak validálunk)
 
-export async function sendMail({ to, subject, text, html, replyTo }) {
-  const finalTo = isValidEmail(to) ? to : MAIL_ADMIN;
+  if (valid.length === 0) {
+    console.warn("⚠️ sendMail skipped (no valid recipient after filters):", {
+      to,
+      subject,
+      kind,
+    });
+    return null;
+  }
+
+  // Debug (hasznos, hogy lásd hova megy)
+  console.log("📮 sendMail:", { kind, to: valid, subject });
 
   const info = await transporter.sendMail({
     from: MAIL_FROM,
-    to: finalTo,
+    to: valid.length === 1 ? valid[0] : valid,
     subject,
     text,
     html,
     replyTo: replyTo || MAIL_ADMIN,
   });
 
-  if (info.message) {
+  if (info?.message) {
     console.log("📧 Mail (dev):\n" + info.message.toString());
   } else {
     console.log("📨 Mail sent via SMTP →", {
-      to: finalTo,
+      kind,
+      to: valid,
       subject,
       accepted: info.accepted,
       response: info.response,
@@ -108,7 +151,8 @@ const tByLang = (lang = "hu") => {
       subjectGuestConfirmed: (code) => `Foglalás elfogadva – ${code}`,
       subjectGuestPaid: (code) => `Foglalás fizetve – ${code}`,
       subjectGuestCancelled: (code) => `Foglalás elutasítva – ${code}`,
-      subjectGuestReview : (code) => `Köszönjük, hogy nálunk szállt meg! ⭐ - ${code}`,
+      subjectGuestReview: (code) =>
+        `Köszönjük, hogy nálunk szállt meg! ⭐ - ${code}`,
 
       titlePending: "Foglalás visszaigazolás",
       titleConfirmed: "Foglalás elfogadva",
@@ -116,19 +160,20 @@ const tByLang = (lang = "hu") => {
       titleCancelled: "Foglalás elutasítva",
 
       nextStepsOnsite:
-        "Fizetés a helyszínen. Hamarosan visszaigazolunk emailben.",
+        "Fizetés a helyszínen történik. A foglalásod visszaigazolásáról hamarosan emailben értesítünk.",
       nextStepsTransfer:
-        "Előreutalás választva. A pontos utalási információkat és teendőket a visszaigazolásban küldjük.",
+        "Előreutalás választva. A foglalás visszaigazolásában emailben küldjük a pontos utalási adatokat és a további teendőket.",
 
       confirmedOnsite:
         "A foglalásodat elfogadtuk. Fizetés a helyszínen történik.",
       confirmedTransferIntro:
-        "A foglalásodat elfogadtuk. Kérjük, az alábbi adatok alapján utalj:",
+        "Örömmel visszaigazoljuk a foglalásodat! 😊 Kérjük, az alábbi adatok alapján utald a szállásdíjat:",
 
-      paidMsg: "✅ Fizetés megérkezett, a foglalás fizetett státuszba került.",
+      paidMsg:
+        "✅ Köszönjük, az összeg megérkezett. A foglalásod fizetett státuszba került — várunk szeretettel a megérkezéskor!",
 
       cancelledMsg:
-        "Sajnáljuk, a foglalásodat nem tudtuk elfogadni a kiválasztott időszakra. Kérjük, válassz másik dátumot, vagy írj nekünk és segítünk.",
+        "Sajnáljuk, de a kiválasztott időszakra a foglalást nem tudjuk visszaigazolni. Kérjük, válassz másik dátumot, vagy vedd fel velünk a kapcsolatot — szívesen segítünk alternatívát találni.",
 
       transferDetailsTitle: "Utalási adatok",
       beneficiary: "Kedvezményezett",
@@ -138,7 +183,7 @@ const tByLang = (lang = "hu") => {
       swift: "SWIFT / BIC",
       reference: "Közlemény",
       referenceHint:
-        "Kérjük a közleménybe írd be a foglalási kódot (és nevet, ha szeretnéd).",
+        "Kérjük, a közleményben mindenképp tüntesd fel a foglalási kódot.",
 
       method: { onsite: "Helyszínen", transfer: "Banki előreutalás" },
     },
@@ -148,7 +193,8 @@ const tByLang = (lang = "hu") => {
       subjectGuestConfirmed: (code) => `Booking confirmed – ${code}`,
       subjectGuestPaid: (code) => `Booking paid – ${code}`,
       subjectGuestCancelled: (code) => `Booking declined – ${code}`,
-      subjectGuestReview: (code) => `Thank you for staying with us! ⭐ - ${code}`,
+      subjectGuestReview: (code) =>
+        `Thank you for staying with us! ⭐ - ${code}`,
 
       titlePending: "Booking confirmation",
       titleConfirmed: "Booking confirmed",
@@ -156,19 +202,20 @@ const tByLang = (lang = "hu") => {
       titleCancelled: "Booking declined",
 
       nextStepsOnsite:
-        "Payment on site. We’ll confirm your request via email soon.",
+        "Payment will be made on site. We’ll confirm your booking shortly via email.",
       nextStepsTransfer:
-        "Bank transfer selected. We’ll send the transfer details and next steps in the confirmation email.",
+        "Bank transfer selected. The payment details and next steps will be sent in the booking confirmation email.",
 
       confirmedOnsite:
         "Your booking has been confirmed. Payment will be made on site.",
       confirmedTransferIntro:
-        "Your booking has been confirmed. Please use the following bank transfer details:",
+        "We’re happy to confirm your booking! 😊 Please use the following details to complete the bank transfer:",
 
-      paidMsg: "✅ Payment received — your booking is now marked as paid.",
+      paidMsg:
+        "✅ Thank you — we’ve received your payment. Your booking is now marked as paid, and we look forward to welcoming you!",
 
       cancelledMsg:
-        "Sorry — we couldn’t accept your booking for the selected dates. Please choose different dates, or contact us and we’ll help you.",
+        "We’re sorry, but we’re unable to confirm your booking for the selected dates. Please choose different dates, or contact us — we’ll be happy to help you find an alternative.",
 
       transferDetailsTitle: "Bank transfer details",
       beneficiary: "Beneficiary",
@@ -178,7 +225,7 @@ const tByLang = (lang = "hu") => {
       swift: "SWIFT / BIC",
       reference: "Reference",
       referenceHint:
-        "Please include the booking code in the reference (and name if you want).",
+        "Please make sure to include the booking code in the transfer reference.",
 
       method: { onsite: "On site", transfer: "Bank transfer" },
     },
@@ -188,7 +235,8 @@ const tByLang = (lang = "hu") => {
       subjectGuestConfirmed: (code) => `Buchung bestätigt – ${code}`,
       subjectGuestPaid: (code) => `Buchung bezahlt – ${code}`,
       subjectGuestCancelled: (code) => `Buchung abgelehnt – ${code}`,
-      subjectGuestReview : (code) => `Vielen Dank für Ihren Aufenthalt bei uns! ⭐ - ${code}`,
+      subjectGuestReview: (code) =>
+        `Vielen Dank für Ihren Aufenthalt bei uns! ⭐ - ${code}`,
 
       titlePending: "Buchungsbestätigung",
       titleConfirmed: "Buchung bestätigt",
@@ -196,20 +244,20 @@ const tByLang = (lang = "hu") => {
       titleCancelled: "Buchung abgelehnt",
 
       nextStepsOnsite:
-        "Zahlung vor Ort. Wir bestätigen die Anfrage bald per E-Mail.",
+        "Die Zahlung erfolgt vor Ort. Die Bestätigung Ihrer Buchung senden wir Ihnen in Kürze per E-Mail.",
       nextStepsTransfer:
-        "Überweisung gewählt. Die Zahlungsdaten und nächsten Schritte senden wir in der Bestätigung.",
+        "Überweisung gewählt. Die Zahlungsdaten und weiteren Schritte senden wir Ihnen mit der Buchungsbestätigung per E-Mail.",
 
       confirmedOnsite:
         "Ihre Buchung wurde bestätigt. Die Zahlung erfolgt vor Ort.",
       confirmedTransferIntro:
-        "Ihre Buchung wurde bestätigt. Bitte überweisen Sie mit folgenden Daten:",
+        "Wir freuen uns, Ihre Buchung zu bestätigen! 😊 Bitte überweisen Sie den Betrag anhand der folgenden Daten:",
 
       paidMsg:
-        "✅ Zahlung erhalten — Ihre Buchung ist nun als bezahlt markiert.",
+        "✅ Vielen Dank — der Betrag ist eingegangen. Ihre Buchung ist nun als bezahlt markiert. Wir freuen uns auf Ihre Anreise!",
 
       cancelledMsg:
-        "Leider konnten wir Ihre Buchung für die ausgewählten Daten nicht annehmen. Bitte wählen Sie andere Daten oder kontaktieren Sie uns — wir helfen gerne weiter.",
+        "Leider können wir Ihre Buchung für den ausgewählten Zeitraum nicht bestätigen. Bitte wählen Sie andere Daten oder kontaktieren Sie uns — wir helfen Ihnen gerne, eine Alternative zu finden.",
 
       transferDetailsTitle: "Überweisungsdaten",
       beneficiary: "Begünstigter",
@@ -219,7 +267,7 @@ const tByLang = (lang = "hu") => {
       swift: "SWIFT / BIC",
       reference: "Verwendungszweck",
       referenceHint:
-        "Bitte geben Sie den Buchungscode im Verwendungszweck an (und Name, wenn Sie möchten).",
+        "Bitte geben Sie im Verwendungszweck unbedingt den Buchungscode an.",
 
       method: { onsite: "Vor Ort", transfer: "Überweisung" },
     },
@@ -233,8 +281,38 @@ const buildReference = (b) => {
   return name ? `${code} – ${name}` : code;
 };
 
+const paymentMethodHu = (booking) => {
+  const method = booking?.payment?.method;
+  const isTransfer =
+    method === "transfer" || booking?.payment?.transferRequested === true;
+
+  if (method === "onsite") return "Helyszínen";
+  if (isTransfer) return "Előre utalással";
+  return "—";
+};
+
+const fmtDate = (d) => {
+  const dt = d ? new Date(d) : null;
+  if (!dt || !Number.isFinite(dt.getTime())) return "—";
+  return dt.toLocaleDateString("hu-HU");
+};
+
 const escapeHtml = (s = "") =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const getRoomName = (room) => {
+  if (!room) return "Szoba";
+  if (typeof room === "string") return room;
+
+  if (room.name) {
+    if (typeof room.name === "string") return room.name;
+    if (room.name.hu) return room.name.hu;
+    if (room.name.en) return room.name.en;
+    if (room.name.de) return room.name.de;
+  }
+
+  return "Szoba";
+};
 
 export function bookingMailTemplates(b, opts = {}) {
   const lang = b?.customer?.lang || "hu";
@@ -370,7 +448,7 @@ ${isTransfer ? L.nextStepsTransfer : L.nextStepsOnsite}
       </div>
 
       <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • NTAK: MA24095212
+        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
       </div>
     </div>
   </body>
@@ -474,7 +552,7 @@ ${isTransfer ? transferDetailsText : ""}
       </div>
 
       <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • NTAK: MA24095212
+        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
       </div>
     </div>
   </body>
@@ -526,7 +604,7 @@ ${roomsListText}
       </div>
 
       <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • NTAK: MA24095212
+        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
       </div>
     </div>
   </body>
@@ -570,13 +648,12 @@ ${roomsListText}
       </div>
 
       <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • NTAK: MA24095212
+        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
       </div>
     </div>
   </body>
 </html>`;
 
-  // ✅ admin mail (csak új foglaláskor küldöd)
   const adminText = `Új foglalás érkezett
 Kód: ${b.code}
 Időszak: ${fmtDate(b.checkIn)} → ${fmtDate(b.checkOut)}
@@ -587,8 +664,7 @@ Foglaló:
 - Név: ${b?.customer?.name || "-"}
 - Email: ${b?.customer?.email || "-"}
 
-Fizetés:
-- Mód: ${payMethod}
+Fizetés módja: ${paymentMethodHu(b)}
 
 Szobák:
 ${roomsListText}
@@ -599,12 +675,12 @@ ${b?.customer?.note || "-"}
 ${actionsText}
 `;
 
-const guestReviewText = `Szia!
+  const guestReviewText = `Szia!
   
   Köszönjük, hogy a Bermuda Vendégházat választottad.
   Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:
   
-  ${opts.reviewUrl ? `Weboldalon: ${opts.reviewUrl}` : ''}
+  ${opts.reviewUrl ? `Weboldalon: ${opts.reviewUrl}` : ""}
   Google: ${googleUrl}
   
   Köszi szépen!
@@ -640,8 +716,8 @@ const guestReviewText = `Szia!
           <li>Email: ${escapeHtml(b?.customer?.email || "-")}</li>
         </ul>
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Fizetés:</div>
-        <div>Mód: <strong>${escapeHtml(payMethod)}</strong></div>
+        <div style="margin:12px 0 6px;font-weight:bold;">Fizetés módja:</div>
+        <div><strong>${escapeHtml(paymentMethodHu(b))}</strong></div>
 
         ${actionsHtml}
 
@@ -655,7 +731,7 @@ const guestReviewText = `Szia!
       </div>
 
       <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • NTAK: MA24095212
+        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
       </div>
     </div>
   </body>
@@ -666,7 +742,11 @@ const guestReviewText = `Szia!
   Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:</p>
   
   <p>
-    ${opts.reviewUrl ? `<a href="${opts.reviewUrl}" target="_blank" rel="noopener noreferrer">⭐ Értékelés a weboldalon</a><br/>` : ''}
+    ${
+      opts.reviewUrl
+        ? `<a href="${opts.reviewUrl}" target="_blank" rel="noopener noreferrer">⭐ Értékelés a weboldalon</a><br/>`
+        : ""
+    }
     <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">⭐ Google értékelés</a>
   </p>
   
@@ -703,7 +783,7 @@ const guestReviewText = `Szia!
       html: adminHtml,
     },
     guestReviewRequest: {
-      subject:L.subjectGuestReview(b.code),
+      subject: L.subjectGuestReview(b.code),
       text: guestReviewText,
       html: guestReviewHtml,
     },

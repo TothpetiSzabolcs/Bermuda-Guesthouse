@@ -16,11 +16,15 @@ import RoomDetail from "./components/RoomDetail";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 import HashScroller from "./components/HashScroller";
 import NotFound from "./pages/NotFound";
+import AdminBookings from "./pages/admin/AdminBookings";
+import AdminBookingDetails from "./pages/admin/AdminBookingDetails";
+import CookieBanner from "./components/CookieBanner";
 
 export default function App() {
   return (
     <>
       <HashScroller />
+      <CookieBanner privacyUrl="/privacy" />
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
@@ -41,6 +45,12 @@ export default function App() {
             </ProtectedRoute>
           }
         >
+          <Route index element={<AdminDashboard />} />
+          <Route path="bookings" element={<AdminBookings />} />
+          <Route path="bookings/:id" element={<AdminBookingDetails />} />
+          <Route path="gallery" element={<AdminGallery />} />
+          <Route path="rooms" element={<AdminRooms />} />
+          <Route path="reviews" element={<AdminReviews />} />
           <Route index element={<AdminDashboard />} />
           <Route path="gallery" element={<AdminGallery />} />
           <Route path="rooms" element={<AdminRooms />} />

@@ -6,11 +6,23 @@ import { cld } from "../utils/cloudinary";
 import Lightbox from "./Lightbox";
 import { FaPlay } from "react-icons/fa";
 
-const SERVICE_CATS = ["konyha", "etkezo", "nappali", "nagyterem", "kavezoteazo", "terasz"];
+const SERVICE_CATS = ["konyha", "etkezo", "nappali", "nagyterem", "kavezo-teazo", "terasz"];
+const CAT_LABEL_KEY = {
+  konyha: "konyha",
+  etkezo: "etkezo",
+  nappali: "nappali",
+  nagyterem: "nagyterem",
+  "kavezo-teazo": "kavezoteazo",
+  terasz: "terasz",
+};
+
 const PROPERTY_SLUG = "bermuda-vendeghaz";
 
 export default function Services() {
   const { lang, t } = useI18n();
+  const label = (cat) =>
+    t(`services.categories.${CAT_LABEL_KEY[cat] || cat}`);
+  
 
   const [cat, setCat] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
@@ -95,14 +107,14 @@ export default function Services() {
                 >
                   <img
                     src={coverSrc}
-                    alt={t(`services.categories.${key}`)}
+                    alt={label(key)}
                     className="h-56 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     loading="lazy"
                     decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                    <h3 className="text-xl font-semibold">{t(`services.categories.${key}`)}</h3>
+                    <h3 className="text-xl font-semibold">{label(key)}</h3>
                   </div>
                 </button>
               );
@@ -120,7 +132,8 @@ export default function Services() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 sm:mb-8">
           <div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
-              {t(`services.categories.${cat}`)}
+              {label(cat)
+              }
             </h2>
             <p className="mt-2 text-sm sm:text-base text-gray-600">{t("services.lead")}</p>
           </div>
@@ -144,7 +157,7 @@ export default function Services() {
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
               }`}
             >
-              {t(`services.categories.${c}`)}
+              {label(c)}
             </button>
           ))}
         </div>

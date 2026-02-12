@@ -26,7 +26,7 @@ export default function ReviewWrite() {
 
     const validateToken = async () => {
       try {
-        const response = await fetch(`/api/reviews/validate?t=${encodeURIComponent(token)}`);
+        const response = await fetch(`/api/reviews/web/validate?t=${encodeURIComponent(token)}`);
         const data = await response.json();
 
         if (!data.valid) {
@@ -52,12 +52,17 @@ export default function ReviewWrite() {
     setSubmitting(true);
     
     try {
-      const response = await fetch(`/api/reviews/submit?t=${encodeURIComponent(token)}`, {
+      const payload = {
+        token,                
+        rating: formData.rating,
+        text: formData.text,
+        name: formData.author, 
+      };
+      
+      const response = await fetch(`/api/reviews/web/submit`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -169,7 +174,7 @@ export default function ReviewWrite() {
                 placeholder="Legalább 20 karakter..."
               />
               <p className="text-sm text-gray-500 mt-1">
-                {formData.text.length}/20 karakter minimum
+              {formData.text.length} karakter (min. 20)
               </p>
             </div>
 
