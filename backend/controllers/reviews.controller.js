@@ -107,6 +107,10 @@ export const submitReview = async (req, res) => {
       return res.status(400).json({ message: "Review text must be at least 20 characters" });
     }
 
+    if (text.trim().length > 1000) {
+      return res.status(400).json({ message: "Review text must not exceed 1000 characters" });
+    }
+
     const tokenHash = hashAdminToken(token);
     
     const booking = await Booking.findOne({
@@ -119,12 +123,17 @@ export const submitReview = async (req, res) => {
       return res.status(403).json({ message: "Invalid or expired token" });
     }
 
-
+    // Mark token as used for single-use enforcement
     await Booking.updateOne(
       { _id: booking._id },
-      { $set: { reviewSubmittedAt: new Date() } }
+      { 
+        $set: { 
+          reviewSubmittedAt: new Date(),
+          reviewToken: null, // Clear token
+          reviewTokenExpiresAt: null // Clear expiry
+        } 
+      }
     );
-
 
     const property = await Property.findById(booking.property);
     if (!property) {
@@ -161,6 +170,7 @@ export const listApprovedReviews = async (req, res) => {
       propertyId = prop._id;
     }
 
+    // Only show approved reviews, checking both new status field and legacy approved field
     const filter = {
       $and: [
         propertyId ? { property: propertyId } : {},
@@ -320,7 +330,7 @@ export const listReviews = async (req, res) => {
     const filter = status && status !== "all" ? { status } : {};
     
     const reviews = await Review.find(filter)
-      .populate("bookingId", "code email")
+      .populate("bookingId", "code") // Removed email to prevent PII exposure
       .populate("property", "name slug")
       .sort({ createdAt: -1 })
       .limit(Number(limit))
@@ -336,7 +346,7 @@ export const listReviews = async (req, res) => {
         text: r.text,
         name: r.name,
         code: r.bookingId?.code || r.code,
-        email: r.bookingId?.email, // Note: this will be excluded from UI per requirements
+        // Email excluded for PII protection
         source: r.source,
         status: r.status,
         createdAt: r.createdAt,

@@ -162,7 +162,6 @@ export default function AdminReviews() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
                       <span className="font-medium text-gray-900">{review.name || "Névtelen"}</span>
-                      <span className="text-sm text-gray-500">{review.code}</span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(review.status)}`}>
                         {review.status === "pending" && "Függőben"}
                         {review.status === "approved" && "Jóváhagyott"}

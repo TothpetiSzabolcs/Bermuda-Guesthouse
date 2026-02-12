@@ -135,6 +135,8 @@ export default function ReviewWrite() {
         description="Ossza tapasztalatait a Bermuda Vendégházban. Írjon értékelést foglalásáról és segítson másoknak dönteni."
         canonicalUrl="https://bermuda-vendeghaz.hu/review/write"
         noindex={true}
+        // Prevent token exposure in metadata
+        meta={[]}
       />
       <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
