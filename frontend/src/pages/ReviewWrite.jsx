@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import SEO from "../components/SEO";
 
 export default function ReviewWrite() {
   const [searchParams] = useSearchParams();
@@ -128,7 +129,14 @@ export default function ReviewWrite() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <>
+      <SEO
+        title="Értékelés írása | Bermuda Vendégház"
+        description="Ossza tapasztalatait a Bermuda Vendégházban. Írjon értékelést foglalásáról és segítson másoknak dönteni."
+        canonicalUrl="https://bermuda-vendeghaz.hu/review/write"
+        noindex={true}
+      />
+      <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -204,6 +212,7 @@ export default function ReviewWrite() {
           </form>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

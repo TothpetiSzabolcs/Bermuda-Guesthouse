@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import bg from "../assets/welcome_screen_bg.jpg";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 const TEXT = {
   hu: {
@@ -38,7 +39,13 @@ const WelcomePage = () => {
   }, [lang]);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <>
+      <SEO
+        title="Bermuda Vendégház - Kikapcsolódás Somogy szívében"
+        description="Legyen szó baráti összejövetelről, családi pihenésről vagy különleges programokról, nálunk megtalálja. Fürdőtó, grill, off-road túrák és hagyományos falusi élmények."
+        canonicalUrl="https://bermuda-vendeghaz.hu/welcome"
+      />
+      <div className="relative h-screen w-full overflow-hidden">
       <img
         src={bg}
         alt="background"
@@ -99,6 +106,7 @@ const WelcomePage = () => {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-t-2xl" />
       </section>
     </div>
+    </>
   );
 };
 

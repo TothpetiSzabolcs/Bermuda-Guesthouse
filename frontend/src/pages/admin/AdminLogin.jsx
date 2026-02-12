@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 import { useI18n } from "../../i18n/useI18n";
+import SEO from "../../components/SEO";
 
 export default function AdminLogin() {
   const [username, setU] = useState("");
@@ -22,8 +23,13 @@ export default function AdminLogin() {
     }
   };
 
-return (
-    <div className="min-h-screen grid place-items-center bg-gray-50">
+ return (
+    <>
+      <SEO
+        title="Admin Bejelentkezés | Bermuda Vendégház"
+        noindex={true}
+      />
+      <div className="min-h-screen grid place-items-center bg-gray-50">
       <form onSubmit={onSubmit} className="w-full max-w-sm bg-white p-6 rounded-xl shadow">
         <h1 className="text-xl font-semibold mb-4">{t('admin.login.title')}</h1>
         {err && <div className="mb-3 text-sm text-red-600">{err}</div>}
@@ -38,5 +44,6 @@ return (
         </button>
       </form>
     </div>
+    </>
   );
 }

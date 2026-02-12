@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /review/write
 Sitemap: https://bermuda-vendeghaz.hu/sitemap.xml

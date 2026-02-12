@@ -72,7 +72,7 @@ export default function AdminReviews() {
 
   useEffect(() => {
     fetchReviews();
-  }, [statusFilter, currentPage]);
+  }, [fetchReviews]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("hu-HU", {

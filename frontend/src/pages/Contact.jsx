@@ -23,7 +23,7 @@ const Contact = () => {
       <SEO
         title={t("contact.seo.title")}
         description={t("contact.seo.description")}
-        canonicalUrl="/contact"
+        canonicalUrl="https://bermuda-vendeghaz.hu/contact"
       />
       <div className="min-h-screen bg-gray-50">
         <Header />

@@ -2,13 +2,37 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 import { useI18n } from "../i18n/useI18n";
 
 const Privacy = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  
+  // SEO titles and descriptions for each language
+  const seoData = {
+    hu: {
+      title: "Adatvédelmi Tájékoztató - Bermuda Vendégház",
+      description: "Bermuda Vendégház adatvédelmi tájékoztatója. Részletes információk személyes adatok kezeléséről, adatkezelési célokról és jogairól."
+    },
+    en: {
+      title: "Privacy Policy - Bermuda Guesthouse",
+      description: "Bermuda Guesthouse privacy policy. Detailed information about personal data processing, data processing purposes and your rights."
+    },
+    de: {
+      title: "Datenschutzerklärung - Bermuda Gästehaus",
+      description: "Bermuda Gästehaus Datenschutzerklärung. Detaillierte Informationen über die Verarbeitung personenbezogener Daten, Verarbeitungszwecke und Ihre Rechte."
+    }
+  };
+  
+  const currentSeo = seoData[lang] || seoData.hu;
   
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO 
+        title={currentSeo.title}
+        description={currentSeo.description}
+        canonicalUrl="https://bermuda-vendeghaz.hu/privacy"
+      />
       <Header />
       <main className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6 sm:p-8 lg:p-10">

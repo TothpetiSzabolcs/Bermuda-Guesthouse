@@ -5,7 +5,6 @@ const KEY = "cookieConsent_v1";
 
 export default function CookieBanner({ privacyUrl = "/privacy" }) {
   const { pathname } = useLocation();
-  if (pathname.startsWith("/admin")) return null;
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -27,12 +26,14 @@ export default function CookieBanner({ privacyUrl = "/privacy" }) {
           ts: Date.now(),
         })
       );
-    } catch {}
+    } catch {
+      // Silently fail if localStorage is not available
+    }
     setOpen(false);
     window.dispatchEvent(new Event("cookie-consent-changed"));
   };
 
-  if (!open) return null;
+  if (!open || pathname.startsWith("/admin")) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/50 p-4">
