@@ -37,7 +37,7 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
         reviewTokenHash = hashAdminToken(reviewToken);
         reviewTokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
         
-        const appUrl = String(process.env.APP_URL || "").replace(/\/$/, "");
+        const appUrl = String(process.env.APP_URL || "").replace(/\/+/g, "/").replace(/\/$/, "");
         reviewUrl = `${appUrl}/review/write?t=${reviewToken}`;
       } catch (tokenError) {
         console.warn("⚠️ Token generation failed for booking", b?.code, ":", tokenError?.message || tokenError);

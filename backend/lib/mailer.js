@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === "production" && !ENV_MAIL_ADMIN && !SMTP_USER) {
   );
 }
 
-const APP_URL = String(ENV_APP_URL || "").replace(/\/$/, "");
+const APP_URL = String(ENV_APP_URL || "").replace(/\/+/g, "/").replace(/\/$/, "");
 
 // ✅ FIX utalási adatok
 const PAYMENT_DETAILS = {
@@ -186,6 +186,23 @@ const tByLang = (lang = "hu") => {
         "Kérjük, a közleményben mindenképp tüntesd fel a foglalási kódot.",
 
       method: { onsite: "Helyszínen", transfer: "Banki előreutalás" },
+      
+      // Admin actions
+      adminActions: "Műveletek:",
+      adminConfirm: "Elfogadom",
+      adminCancel: "Elutasítom / törlöm",
+      adminPaid: "Megjött az utalás",
+      adminLinkSingleUse: "(A link egyszer használatos.)",
+      adminActionsMissing: "APP_URL vagy token hiányzik (nem készültek linkek)",
+      
+      // Review request
+      reviewGreeting: "Szia!",
+      reviewThanks: `Köszönjük, hogy a Bermuda Vendégházat választottad.`,
+      reviewRequest: "Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:",
+      reviewWebsite: "Weboldalon:",
+      reviewGoogle: "Google:",
+      reviewThanks2: "Köszi szépen!",
+      reviewSignature: "Bermuda Vendégház",
     },
     en: {
       subjectGuest: (code) => `Booking received – ${code}`,
@@ -202,20 +219,20 @@ const tByLang = (lang = "hu") => {
       titleCancelled: "Booking declined",
 
       nextStepsOnsite:
-        "Payment will be made on site. We’ll confirm your booking shortly via email.",
+        "Payment will be made on site. We'll confirm your booking shortly via email.",
       nextStepsTransfer:
         "Bank transfer selected. The payment details and next steps will be sent in the booking confirmation email.",
 
       confirmedOnsite:
         "Your booking has been confirmed. Payment will be made on site.",
       confirmedTransferIntro:
-        "We’re happy to confirm your booking! 😊 Please use the following details to complete the bank transfer:",
+        "We're happy to confirm your booking! 😊 Please use the following details to complete the bank transfer:",
 
       paidMsg:
-        "✅ Thank you — we’ve received your payment. Your booking is now marked as paid, and we look forward to welcoming you!",
+        "✅ Thank you — we've received your payment. Your booking is now marked as paid, and we look forward to welcoming you!",
 
       cancelledMsg:
-        "We’re sorry, but we’re unable to confirm your booking for the selected dates. Please choose different dates, or contact us — we’ll be happy to help you find an alternative.",
+        "We're sorry, but we're unable to confirm your booking for the selected dates. Please choose different dates, or contact us — we'll be happy to help you find an alternative.",
 
       transferDetailsTitle: "Bank transfer details",
       beneficiary: "Beneficiary",
@@ -228,6 +245,23 @@ const tByLang = (lang = "hu") => {
         "Please make sure to include the booking code in the transfer reference.",
 
       method: { onsite: "On site", transfer: "Bank transfer" },
+      
+      // Admin actions
+      adminActions: "Actions:",
+      adminConfirm: "Accept",
+      adminCancel: "Decline / Delete",
+      adminPaid: "Payment received",
+      adminLinkSingleUse: "(This link is single-use.)",
+      adminActionsMissing: "APP_URL or token missing (no links created)",
+      
+      // Review request
+      reviewGreeting: "Hi!",
+      reviewThanks: "Thank you for choosing Bermuda Vendégház.",
+      reviewRequest: "If you have a minute, we'd really appreciate a short review:",
+      reviewWebsite: "Website:",
+      reviewGoogle: "Google:",
+      reviewThanks2: "Thanks a lot!",
+      reviewSignature: "Bermuda Vendégház",
     },
     de: {
       subjectGuest: (code) => `Buchung eingegangen – ${code}`,
@@ -270,6 +304,23 @@ const tByLang = (lang = "hu") => {
         "Bitte geben Sie im Verwendungszweck unbedingt den Buchungscode an.",
 
       method: { onsite: "Vor Ort", transfer: "Überweisung" },
+      
+      // Admin actions
+      adminActions: "Aktionen:",
+      adminConfirm: "Akzeptieren",
+      adminCancel: "Ablehnen / Löschen",
+      adminPaid: "Zahlung erhalten",
+      adminLinkSingleUse: "(Dieser Link ist einmalig verwendbar.)",
+      adminActionsMissing: "APP_URL oder Token fehlt (keine Links erstellt)",
+      
+      // Review request
+      reviewGreeting: "Hallo!",
+      reviewThanks: "Vielen Dank, dass Sie sich für das Bermuda Vendégház entschieden haben.",
+      reviewRequest: "Wenn Sie eine Minute Zeit haben, würden wir uns über eine kurze Bewertung freuen:",
+      reviewWebsite: "Webseite:",
+      reviewGoogle: "Google:",
+      reviewThanks2: "Vielen Dank!",
+      reviewSignature: "Bermuda Vendégház",
     },
   };
   return dict[L] || dict.hu;
@@ -359,47 +410,47 @@ export function bookingMailTemplates(b, opts = {}) {
 
   const actionsHtml = canShowActions
     ? `
-    <div style="margin:16px 0 6px;font-weight:bold;">Műveletek:</div>
+    <div style="margin:16px 0 6px;font-weight:bold;">${L.adminActions}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
       <a href="${confirmUrl}"
          style="display:inline-block;background:#16a34a;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:bold;">
-        ✅ Elfogadom
+        ✅ ${L.adminConfirm}
       </a>
 
       <a href="${cancelUrl}"
          style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:bold;">
-        ❌ Elutasítom / törlöm
+        ❌ ${L.adminCancel}
       </a>
 
       ${
         isTransfer
           ? `<a href="${paidUrl}"
          style="display:inline-block;background:#0ea5e9;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:bold;">
-        💰 Megjött az utalás
+        💰 ${L.adminPaid}
       </a>`
           : ""
       }
     </div>
     <div style="color:#666;font-size:12px;margin-bottom:6px;">
-      (A link egyszer használatos.)
+      ${L.adminLinkSingleUse}
     </div>
   `
     : `
     <div style="margin:16px 0 6px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;padding:10px;border-radius:10px;">
-      ⚠️ Admin gombok nem elérhetők (hiányzik az APP_URL vagy a token).
+      ⚠️ ${L.adminActionsMissing}
     </div>
   `;
 
   const actionsText = canShowActions
     ? `
-MŰVELETEK (linkek):
-- Elfogadom: ${confirmUrl}
-- Elutasítom: ${cancelUrl}
-${isTransfer ? `- Megjött az utalás: ${paidUrl}` : ""}
-(A link egyszer használatos.)
+${L.adminActions} (linkek):
+- ${L.adminConfirm}: ${confirmUrl}
+- ${L.adminCancel}: ${cancelUrl}
+${isTransfer ? `- ${L.adminPaid}: ${paidUrl}` : ""}
+${L.adminLinkSingleUse}
 `
     : `
-MŰVELETEK: APP_URL vagy token hiányzik (nem készültek linkek)
+${L.adminActions}: ${L.adminActionsMissing}
 `;
 
   // ✅ 1) vendég “pending” mail (azonnal)
@@ -675,16 +726,16 @@ ${b?.customer?.note || "-"}
 ${actionsText}
 `;
 
-  const guestReviewText = `Szia!
+  const guestReviewText = `${L.reviewGreeting}
   
-  Köszönjük, hogy a Bermuda Vendégházat választottad.
-  Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:
+  ${L.reviewThanks}
+  ${L.reviewRequest}
   
-  ${opts.reviewUrl ? `Weboldalon: ${opts.reviewUrl}` : ""}
-  Google: ${googleUrl}
+  ${opts.reviewUrl ? `${L.reviewWebsite} ${opts.reviewUrl}` : ""}
+  ${L.reviewGoogle} ${googleUrl}
   
-  Köszi szépen!
-  Bermuda Vendégház`;
+  ${L.reviewThanks2}
+  ${L.reviewSignature}`;
 
   const safeNote = escapeHtml(b?.customer?.note || "-");
 
@@ -737,20 +788,20 @@ ${actionsText}
   </body>
 </html>`;
 
-  const guestReviewHtml = `<p>Szia!</p>
-  <p>Köszönjük, hogy a <strong>Bermuda Vendégházat</strong> választottad.<br/>
-  Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:</p>
+  const guestReviewHtml = `<p>${L.reviewGreeting}</p>
+  <p>${L.reviewThanks.replace("Bermuda Vendégház", "<strong>Bermuda Vendégház</strong>")}<br/>
+  ${L.reviewRequest}</p>
   
   <p>
     ${
       opts.reviewUrl
-        ? `<a href="${opts.reviewUrl}" target="_blank" rel="noopener noreferrer">⭐ Értékelés a weboldalon</a><br/>`
+        ? `<a href="${opts.reviewUrl}" target="_blank" rel="noopener noreferrer">⭐ ${L.reviewWebsite.replace(":", "")}</a><br/>`
         : ""
     }
-    <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">⭐ Google értékelés</a>
+    <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">⭐ ${L.reviewGoogle.replace(":", "")}</a>
   </p>
   
-  <p>Köszi szépen!<br/>Bermuda Vendégház</p>`;
+  <p>${L.reviewThanks2}<br/>${L.reviewSignature}</p>`;
 
   return {
     guest: {
