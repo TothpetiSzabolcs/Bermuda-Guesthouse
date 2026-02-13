@@ -34,7 +34,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
-        <Route path="/review/write" element={<ReviewWrite />} />
+        <Route path="/reviews/write" element={<Navigate to="/review/write" replace />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
