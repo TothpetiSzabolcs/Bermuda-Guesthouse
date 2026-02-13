@@ -123,14 +123,13 @@ export const submitReview = async (req, res) => {
       return res.status(403).json({ message: "Invalid or expired token" });
     }
 
-    // Mark token as used for single-use enforcement
     await Booking.updateOne(
       { _id: booking._id },
       { 
         $set: { 
           reviewSubmittedAt: new Date(),
-          reviewToken: null, // Clear token
-          reviewTokenExpiresAt: null // Clear expiry
+          reviewToken: null, 
+          reviewTokenExpiresAt: null 
         } 
       }
     );
@@ -170,7 +169,6 @@ export const listApprovedReviews = async (req, res) => {
       propertyId = prop._id;
     }
 
-    // Only show approved reviews, checking both new status field and legacy approved field
     const filter = {
       $and: [
         propertyId ? { property: propertyId } : {},
@@ -291,13 +289,12 @@ export const submitWebReview = async (req, res) => {
       { 
         $set: { 
           reviewWebSubmittedAt: new Date(),
-          reviewToken: null, // Clear token
-          reviewTokenExpiresAt: null // Clear expiry
+          reviewToken: null, 
+          reviewTokenExpiresAt: null 
         } 
       }
     );
 
-    // Create review with new schema
     const review = new Review({
       bookingId: booking._id,
       code: booking.code,
@@ -305,12 +302,10 @@ export const submitWebReview = async (req, res) => {
       text: text.trim(),
       name: name?.trim() || "",
       source: "web",
-      status: "pending", // Default to pending
-      // Legacy fields for backward compatibility
-      property: booking.property,
+      status: "pending",      property: booking.property,
       author: name?.trim() || "",
       date: new Date(),
-      approved: false, // Requires moderation
+      approved: false, 
     });
 
     await review.save();
@@ -326,38 +321,70 @@ export const submitWebReview = async (req, res) => {
 export const listReviews = async (req, res) => {
   try {
     const { status = "pending", page = 1, limit = 20 } = req.query;
-    
-    const filter = status && status !== "all" ? { status } : {};
-    
+
+    let filter = {};
+    if (status && status !== "all") {
+      if (status === "approved") {
+        filter = {
+          $or: [{ status: "approved" }, { approved: true }],
+        };
+      } else if (status === "pending") {
+        filter = {
+          $or: [
+            { status: "pending" },
+            { status: { $exists: false }, approved: { $ne: true } },
+          ],
+        };
+      } else if (status === "rejected") {
+        filter = {
+          $or: [
+            { status: "rejected" },
+          ],
+        };
+      } else {
+        filter = { status };
+      }
+    }
+
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+
     const reviews = await Review.find(filter)
-      .populate("bookingId", "code") // Removed email to prevent PII exposure
+      .populate("bookingId", "code")
       .populate("property", "name slug")
-      .sort({ createdAt: -1 })
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit))
+      .sort({ createdAt: -1, date: -1 })
+      .limit(limitNum)
+      .skip((pageNum - 1) * limitNum)
       .lean();
 
     const total = await Review.countDocuments(filter);
 
-    res.json({
-      reviews: reviews.map((r) => ({
+    const normalized = reviews.map((r) => {
+      const derivedStatus =
+        r.status ||
+        (r.approved === true ? "approved" : r.approved === false ? "pending" : "pending");
+
+      return {
         id: r._id,
         rating: r.rating,
         text: r.text,
-        name: r.name,
+        name: r.name || r.author || "",
         code: r.bookingId?.code || r.code,
-        // Email excluded for PII protection
         source: r.source,
-        status: r.status,
-        createdAt: r.createdAt,
+        status: derivedStatus,
+        createdAt: r.createdAt || r.date,
         propertyName: r.property?.name,
         propertySlug: r.property?.slug,
-      })),
+      };
+    });
+
+    res.json({
+      reviews: normalized,
       pagination: {
-        page: Number(page),
-        limit: Number(limit),
+        page: pageNum,
+        limit: limitNum,
         total,
-        pages: Math.ceil(total / Number(limit)),
+        pages: Math.ceil(total / limitNum),
       },
     });
   } catch (e) {
@@ -374,7 +401,7 @@ export const approveReview = async (req, res) => {
       id,
       { 
         status: "approved",
-        approved: true // Update legacy field
+        approved: true
       },
       { new: true }
     );
@@ -398,7 +425,7 @@ export const rejectReview = async (req, res) => {
       id,
       { 
         status: "rejected",
-        approved: false // Update legacy field
+        approved: false
       },
       { new: true }
     );
