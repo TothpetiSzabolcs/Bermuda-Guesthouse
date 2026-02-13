@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import bg from "../assets/welcome_screen_bg.jpg";
+import bg from "../assets/welcome_screen_bg.webp";
 import { Link } from "react-router-dom";
 import SEO from "../components/SEO";
 
