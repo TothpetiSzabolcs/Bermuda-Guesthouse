@@ -21,7 +21,10 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
   for (const b of bookings) {
     const guestEmail = b?.customer?.email?.trim();
     if (!isValidEmail(guestEmail)) {
-      console.warn("⚠️ No valid guest email for review request, skipping:", guestEmail);
+      console.warn(
+        "⚠️ No valid guest email for review request, skipping:",
+        guestEmail,
+      );
       continue;
     }
 
@@ -36,11 +39,18 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
         reviewToken = makeAdminToken();
         reviewTokenHash = hashAdminToken(reviewToken);
         reviewTokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-        
-        const appUrl = String(process.env.APP_URL || "").replace(/\/+/g, "/").replace(/\/$/, "");
+
+        const appUrl = String(process.env.APP_URL || "")
+          .trim()
+          .replace(/\/$/, "");
         reviewUrl = `${appUrl}/review/write?t=${reviewToken}`;
       } catch (tokenError) {
-        console.warn("⚠️ Token generation failed for booking", b?.code, ":", tokenError?.message || tokenError);
+        console.warn(
+          "⚠️ Token generation failed for booking",
+          b?.code,
+          ":",
+          tokenError?.message || tokenError,
+        );
         // Fallback: continue without website review URL
       }
 
@@ -56,7 +66,7 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
 
       const updateResult = await Booking.updateOne(
         { _id: b._id, reviewRequestSentAt: null },
-        { $set: updateData }
+        { $set: updateData },
       );
 
       if (updateResult.modifiedCount === 0) {
@@ -71,20 +81,17 @@ async function runOnce({ daysAfterCheckout = 1 } = {}) {
         subject: tpl.guestReviewRequest.subject,
         text: tpl.guestReviewRequest.text,
         html: tpl.guestReviewRequest.html,
-        replyTo: process.env.MAIL_ADMIN,
+        replyTo: process.env.MAIL_ADMIN || process.env.SMTP_USER,
       });
 
-      console.log(`✅ Review request sent for booking ${b.code} (website URL: ${reviewUrl ? 'enabled' : 'disabled'})`);
-    } catch (e) {
-      console.error(
-        "review request send failed:",
-        b?.code,
-        e?.message || e
+      console.log(
+        `✅ Review request sent for booking ${b.code} (website URL: ${reviewUrl ? "enabled" : "disabled"})`,
       );
+    } catch (e) {
+      console.error("review request send failed:", b?.code, e?.message || e);
     }
   }
 }
-
 
 export function startReviewRequestJob({
   intervalMs = 60 * 60 * 1000,
@@ -92,22 +99,21 @@ export function startReviewRequestJob({
 } = {}) {
   setImmediate(() => {
     runOnce({ daysAfterCheckout }).catch((e) =>
-      console.error("reviewRequest job initial run failed:", e?.message || e)
+      console.error("reviewRequest job initial run failed:", e?.message || e),
     );
   });
 
   const intervalId = setInterval(() => {
     runOnce({ daysAfterCheckout }).catch((e) =>
-      console.error("reviewRequest job interval run failed:", e?.message || e)
+      console.error("reviewRequest job interval run failed:", e?.message || e),
     );
   }, intervalMs);
 
   console.log(
     `✅ reviewRequest job started (every ${Math.round(
-      intervalMs / 60000
-    )} min, after checkout: ${daysAfterCheckout} day)`
+      intervalMs / 60000,
+    )} min, after checkout: ${daysAfterCheckout} day)`,
   );
 
   return intervalId;
 }
-
