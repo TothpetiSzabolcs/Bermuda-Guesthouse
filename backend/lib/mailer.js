@@ -1,5 +1,11 @@
 import "dotenv/config";
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const {
   SMTP_HOST,
@@ -9,6 +15,7 @@ const {
   MAIL_ADMIN: ENV_MAIL_ADMIN,
   MAIL_FROM: ENV_MAIL_FROM,
   APP_URL: ENV_APP_URL,
+  MAIL_LOGO_PATH: ENV_MAIL_LOGO_PATH,
 } = process.env;
 
 export const MAIL_FROM =
@@ -28,6 +35,54 @@ if (process.env.NODE_ENV === "production" && !ENV_MAIL_ADMIN && !SMTP_USER) {
 
 const APP_URL = String(ENV_APP_URL || "").replace(/\/$/, "");
 
+// ----------------------
+// ✅ LOGÓ (CID attachment)
+// ----------------------
+// Ajánlott: backend/assets/BV_logo.png
+// Beállítható env-ből is: MAIL_LOGO_PATH=backend/assets/BV_logo.png (vagy abs path)
+const DEFAULT_LOGO_CANDIDATES = [
+  ENV_MAIL_LOGO_PATH, // ha beállítod
+  path.resolve(process.cwd(), "backend/assets/BV_logo.png"),
+  path.resolve(process.cwd(), "assets/BV_logo.png"),
+  // ha monorepo és a backend mellett ott a frontend is:
+  path.resolve(process.cwd(), "frontend/src/assets/BV_logo.png"),
+].filter(Boolean);
+
+const LOGO_CID = "bvlogo@bermuda";
+const pickExistingPath = (cands) =>
+  cands.find((p) => {
+    try {
+      return p && fs.existsSync(p);
+    } catch {
+      return false;
+    }
+  });
+
+const LOGO_PATH = pickExistingPath(DEFAULT_LOGO_CANDIDATES);
+if (!LOGO_PATH) {
+  console.warn(
+    "⚠️ [mailer] Logo not found. Tedd ide: backend/assets/BV_logo.png vagy állítsd be: MAIL_LOGO_PATH",
+  );
+} else {
+  console.log("🖼️ [mailer] Logo path:", LOGO_PATH);
+}
+
+const getLogoAttachment = () => {
+  if (!LOGO_PATH) return null;
+  return {
+    filename: "BV_logo.png",
+    path: LOGO_PATH,
+    cid: LOGO_CID,
+  };
+};
+
+// ----------------------
+// ✅ Üzleti adatok
+// ----------------------
+const BRAND = {
+  name: "Bermuda Vendégház",
+  address: "Vése, Zrínyi u. 1, 8721",
+};
 
 const PAYMENT_DETAILS = {
   beneficiary: "Bermuda Vendégház",
@@ -60,7 +115,6 @@ const isValidEmail = (s = "") =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
 
 const normalizeRecipients = (to) => {
-  // támogatja: string, tömb, "a@a.com, b@b.com" / "a@a.com; b@b.com"
   const arr = Array.isArray(to) ? to : [to];
   return arr
     .flatMap((x) =>
@@ -81,7 +135,7 @@ const emailEq = (a, b) =>
 
 const ADMIN_ADDRESSES = [MAIL_ADMIN, ENV_MAIL_ADMIN, SMTP_USER].filter(Boolean);
 
-// ✅ ÚJ: kind = "guest" | "admin" | "system"
+// ✅ ÚJ: attachments támogatás + egységes logo csatolás (ha van)
 export async function sendMail({
   to,
   subject,
@@ -89,6 +143,7 @@ export async function sendMail({
   html,
   replyTo,
   kind = "system",
+  attachments = [],
 }) {
   const raw = normalizeRecipients(to);
 
@@ -96,15 +151,11 @@ export async function sendMail({
     .map((x) => String(x || "").trim())
     .filter((x) => isValidEmail(x));
 
-  // ✅ Vendég levélből kivágjuk az admin címeket (akkor is, ha véletlenül bekerültek)
   if (kind === "guest") {
     valid = valid.filter(
       (addr) => !ADMIN_ADDRESSES.some((a) => emailEq(a, addr)),
     );
   }
-
-  // ✅ Admin levélből kivágjuk a vendég címeket nem tudjuk, de legalább legyen valid
-  // (itt nem szűrünk semmit, csak validálunk)
 
   if (valid.length === 0) {
     console.warn("⚠️ sendMail skipped (no valid recipient after filters):", {
@@ -115,8 +166,13 @@ export async function sendMail({
     return null;
   }
 
-  // Debug (hasznos, hogy lásd hova megy)
   console.log("📮 sendMail:", { kind, to: valid, subject });
+
+  const logoAtt = getLogoAttachment();
+  const mergedAttachments = [
+    ...(logoAtt ? [logoAtt] : []),
+    ...(Array.isArray(attachments) ? attachments : []),
+  ];
 
   const info = await transporter.sendMail({
     from: MAIL_FROM,
@@ -125,6 +181,7 @@ export async function sendMail({
     text,
     html,
     replyTo: replyTo || MAIL_ADMIN,
+    attachments: mergedAttachments,
   });
 
   if (info?.message) {
@@ -142,6 +199,9 @@ export async function sendMail({
   return info;
 }
 
+// ----------------------
+// ✅ Helper: i18n
+// ----------------------
 const tByLang = (lang = "hu") => {
   const L = (lang || "hu").toLowerCase();
   const dict = {
@@ -187,7 +247,6 @@ const tByLang = (lang = "hu") => {
 
       method: { onsite: "Helyszínen", transfer: "Banki előreutalás" },
 
-      // Admin actions
       adminActions: "Műveletek:",
       adminConfirm: "Elfogadom",
       adminCancel: "Elutasítom / törlöm",
@@ -195,7 +254,6 @@ const tByLang = (lang = "hu") => {
       adminLinkSingleUse: "(A link egyszer használatos.)",
       adminActionsMissing: "APP_URL vagy token hiányzik (nem készültek linkek)",
 
-      // Review request
       reviewGreeting: "Szia!",
       reviewThanks: `Köszönjük, hogy a Bermuda Vendégházat választottad.`,
       reviewRequest: "Ha van 1 perced, nagyon örülnénk egy rövid értékelésnek:",
@@ -203,6 +261,20 @@ const tByLang = (lang = "hu") => {
       reviewGoogle: "Google:",
       reviewThanks2: "Köszi szépen!",
       reviewSignature: "Bermuda Vendégház",
+
+      // UI labels
+      labelPeriod: "Időszak",
+      labelGuests: "Vendégek",
+      labelTotal: "Végösszeg",
+      labelRooms: "Szobák",
+      labelCode: "Foglalási kód",
+      labelBooker: "Foglaló",
+      labelNote: "Megjegyzés",
+      labelPayment: "Fizetés módja",
+      pillPending: "Rögzítve",
+      pillConfirmed: "Elfogadva",
+      pillPaid: "Fizetve",
+      pillCancelled: "Elutasítva",
     },
     en: {
       subjectGuest: (code) => `Booking received – ${code}`,
@@ -246,7 +318,6 @@ const tByLang = (lang = "hu") => {
 
       method: { onsite: "On site", transfer: "Bank transfer" },
 
-      // Admin actions
       adminActions: "Actions:",
       adminConfirm: "Accept",
       adminCancel: "Decline / Delete",
@@ -254,7 +325,6 @@ const tByLang = (lang = "hu") => {
       adminLinkSingleUse: "(This link is single-use.)",
       adminActionsMissing: "APP_URL or token missing (no links created)",
 
-      // Review request
       reviewGreeting: "Hi!",
       reviewThanks: "Thank you for choosing Bermuda Vendégház.",
       reviewRequest:
@@ -263,6 +333,19 @@ const tByLang = (lang = "hu") => {
       reviewGoogle: "Google:",
       reviewThanks2: "Thanks a lot!",
       reviewSignature: "Bermuda Vendégház",
+
+      labelPeriod: "Period",
+      labelGuests: "Guests",
+      labelTotal: "Total",
+      labelRooms: "Rooms",
+      labelCode: "Booking code",
+      labelBooker: "Booker",
+      labelNote: "Note",
+      labelPayment: "Payment method",
+      pillPending: "Received",
+      pillConfirmed: "Confirmed",
+      pillPaid: "Paid",
+      pillCancelled: "Declined",
     },
     de: {
       subjectGuest: (code) => `Buchung eingegangen – ${code}`,
@@ -306,7 +389,6 @@ const tByLang = (lang = "hu") => {
 
       method: { onsite: "Vor Ort", transfer: "Überweisung" },
 
-      // Admin actions
       adminActions: "Aktionen:",
       adminConfirm: "Akzeptieren",
       adminCancel: "Ablehnen / Löschen",
@@ -314,7 +396,6 @@ const tByLang = (lang = "hu") => {
       adminLinkSingleUse: "(Dieser Link ist einmalig verwendbar.)",
       adminActionsMissing: "APP_URL oder Token fehlt (keine Links erstellt)",
 
-      // Review request
       reviewGreeting: "Hallo!",
       reviewThanks:
         "Vielen Dank, dass Sie sich für das Bermuda Vendégház entschieden haben.",
@@ -324,9 +405,53 @@ const tByLang = (lang = "hu") => {
       reviewGoogle: "Google:",
       reviewThanks2: "Vielen Dank!",
       reviewSignature: "Bermuda Vendégház",
+
+      labelPeriod: "Zeitraum",
+      labelGuests: "Gäste",
+      labelTotal: "Gesamt",
+      labelRooms: "Zimmer",
+      labelCode: "Buchungscode",
+      labelBooker: "Bucher",
+      labelNote: "Notiz",
+      labelPayment: "Zahlungsart",
+      pillPending: "Eingegangen",
+      pillConfirmed: "Bestätigt",
+      pillPaid: "Bezahlt",
+      pillCancelled: "Abgelehnt",
     },
   };
   return dict[L] || dict.hu;
+};
+
+// ----------------------
+// ✅ Utils
+// ----------------------
+const escapeHtml = (s = "") =>
+  String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+const fmtDate = (d, lang = "hu") => {
+  const dt = d ? new Date(d) : null;
+  if (!dt || !Number.isFinite(dt.getTime())) return "—";
+  const locale = lang === "en" ? "en-GB" : lang === "de" ? "de-DE" : "hu-HU";
+  return dt.toLocaleDateString(locale);
+};
+
+const getRoomName = (room, lang = "hu") => {
+  if (!room) return "Room";
+  if (typeof room === "string") return room;
+
+  if (room.name) {
+    if (typeof room.name === "string") return room.name;
+    if (lang === "hu" && room.name.hu) return room.name.hu;
+    if (lang === "en" && room.name.en) return room.name.en;
+    if (lang === "de" && room.name.de) return room.name.de;
+    return room.name.hu || room.name.en || room.name.de || "Room";
+  }
+
+  return "Room";
 };
 
 const buildReference = (b) => {
@@ -335,41 +460,169 @@ const buildReference = (b) => {
   return name ? `${code} – ${name}` : code;
 };
 
-const paymentMethodHu = (booking) => {
+const paymentMethodLabel = (booking, lang = "hu") => {
   const method = booking?.payment?.method;
   const isTransfer =
     method === "transfer" || booking?.payment?.transferRequested === true;
 
-  if (method === "onsite") return "Helyszínen";
-  if (isTransfer) return "Előre utalással";
+  if (lang === "hu") {
+    if (method === "onsite") return "Helyszínen";
+    if (isTransfer) return "Előre utalással";
+    return "—";
+  }
+  if (lang === "de") {
+    if (method === "onsite") return "Vor Ort";
+    if (isTransfer) return "Überweisung";
+    return "—";
+  }
+  // en
+  if (method === "onsite") return "On site";
+  if (isTransfer) return "Bank transfer";
   return "—";
 };
 
-const fmtDate = (d) => {
-  const dt = d ? new Date(d) : null;
-  if (!dt || !Number.isFinite(dt.getTime())) return "—";
-  return dt.toLocaleDateString("hu-HU");
+// ----------------------
+// ✅ Egységes EMAIL LAYOUT
+// ----------------------
+const ui = {
+  bg: "#f6f7f9",
+  card: "#ffffff",
+  text: "#111827",
+  muted: "#6b7280",
+  border: "#e5e7eb",
+  soft: "#f9fafb",
+  greenBg: "#f0fdf4",
+  greenBorder: "#bbf7d0",
+  redBg: "#fef2f2",
+  redBorder: "#fecaca",
+  warnBg: "#fffbeb",
+  warnBorder: "#fde68a",
+  brand: "#0ea5e9",
 };
 
-const escapeHtml = (s = "") =>
-  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const pillStyle = (tone) => {
+  const map = {
+    info: "background:#e0f2fe;color:#075985;border:1px solid #bae6fd;",
+    ok: "background:#dcfce7;color:#166534;border:1px solid #bbf7d0;",
+    bad: "background:#fee2e2;color:#991b1b;border:1px solid #fecaca;",
+    warn: "background:#ffedd5;color:#9a3412;border:1px solid #fed7aa;",
+  };
+  return map[tone] || map.info;
+};
 
-const getRoomName = (room) => {
-  if (!room) return "Szoba";
-  if (typeof room === "string") return room;
+const wrapEmail = ({ lang = "hu", title, pillText, pillTone = "info", contentHtml }) => {
+  const logoImg = LOGO_PATH
+    ? `<img src="cid:${LOGO_CID}" width="42" height="42" alt="${escapeHtml(
+        BRAND.name,
+      )}" style="display:block;border-radius:10px;" />`
+    : "";
 
-  if (room.name) {
-    if (typeof room.name === "string") return room.name;
-    if (room.name.hu) return room.name.hu;
-    if (room.name.en) return room.name.en;
-    if (room.name.de) return room.name.de;
+  return `<!doctype html>
+<html lang="${lang}">
+  <body style="margin:0;padding:0;background:${ui.bg};font-family:Arial,Helvetica,sans-serif;color:${ui.text};">
+    <div style="padding:22px 12px;">
+      <div style="max-width:640px;margin:0 auto;background:${ui.card};border:1px solid ${ui.border};border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.06);">
+        
+        <!-- Header -->
+        <div style="padding:18px 20px;border-bottom:1px solid ${ui.border};background:linear-gradient(135deg, #ffffff, ${ui.soft});">
+          <table role="presentation" style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td style="width:52px;vertical-align:middle;">
+                ${logoImg}
+              </td>
+              <td style="vertical-align:middle;padding-left:12px;">
+                <div style="font-weight:800;font-size:14px;letter-spacing:.2px;color:${ui.text};">${escapeHtml(
+                  BRAND.name,
+                )}</div>
+                <div style="font-size:12px;color:${ui.muted};margin-top:2px;">${escapeHtml(
+                  BRAND.address,
+                )}</div>
+              </td>
+              <td style="vertical-align:middle;text-align:right;">
+                ${
+                  pillText
+                    ? `<span style="display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;${pillStyle(
+                        pillTone,
+                      )}">${escapeHtml(pillText)}</span>`
+                    : ""
+                }
+              </td>
+            </tr>
+          </table>
+
+          <div style="margin-top:12px;font-size:20px;font-weight:900;line-height:1.2;">${escapeHtml(
+            title || "",
+          )}</div>
+        </div>
+
+        <!-- Content -->
+        <div style="padding:18px 20px;line-height:1.55;">
+          ${contentHtml || ""}
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:14px 20px;border-top:1px solid ${ui.border};background:${ui.soft};color:${ui.muted};font-size:12px;">
+          ${escapeHtml(BRAND.name)} • ${escapeHtml(BRAND.address)}
+        </div>
+      </div>
+
+      <div style="max-width:640px;margin:10px auto 0;color:${ui.muted};font-size:11px;line-height:1.4;">
+        Ha nem te kezdeményezted ezt a folyamatot, hagyd figyelmen kívül ezt az üzenetet.
+      </div>
+    </div>
+  </body>
+</html>`;
+};
+
+const kvRow = (label, value) => `
+  <tr>
+    <td style="padding:10px 12px;border:1px solid ${ui.border};background:${ui.soft};font-weight:700;color:${ui.muted};width:38%;">
+      ${escapeHtml(label)}
+    </td>
+    <td style="padding:10px 12px;border:1px solid ${ui.border};color:${ui.text};">
+      ${value}
+    </td>
+  </tr>
+`;
+
+const cardBox = (innerHtml, tone = "soft") => {
+  let bg = ui.soft;
+  let border = ui.border;
+  if (tone === "ok") {
+    bg = ui.greenBg;
+    border = ui.greenBorder;
   }
-
-  return "Szoba";
+  if (tone === "bad") {
+    bg = ui.redBg;
+    border = ui.redBorder;
+  }
+  if (tone === "warn") {
+    bg = ui.warnBg;
+    border = ui.warnBorder;
+  }
+  return `
+    <div style="margin:14px 0;padding:12px;border:1px solid ${border};border-radius:14px;background:${bg};">
+      ${innerHtml}
+    </div>
+  `;
 };
 
+const primaryButton = (href, label, tone = "brand") => {
+  const bg =
+    tone === "ok" ? "#16a34a" : tone === "bad" ? "#dc2626" : tone === "brand" ? ui.brand : "#111827";
+  return `
+    <a href="${href}"
+       style="display:inline-block;background:${bg};color:#fff;text-decoration:none;padding:11px 14px;border-radius:12px;font-weight:800;font-size:13px;">
+      ${label}
+    </a>
+  `;
+};
+
+// ----------------------
+// ✅ Templates
+// ----------------------
 export function bookingMailTemplates(b, opts = {}) {
-  const lang = b?.customer?.lang || "hu";
+  const lang = (b?.customer?.lang || "hu").toLowerCase();
   const L = tByLang(lang);
 
   const total = b?.price?.total ?? 0;
@@ -377,22 +630,25 @@ export function bookingMailTemplates(b, opts = {}) {
   const payMethod =
     b?.payment?.method ||
     (b?.payment?.transferRequested ? "transfer" : "onsite");
-
   const isTransfer = payMethod === "transfer";
 
   const roomsListText = items
-    .map((i) => ` - ${getRoomName(i.room)} — ${i.guests} fő`)
+    .map((i) => ` - ${getRoomName(i.room, lang)} — ${i.guests} fő`)
     .join("\n");
 
   const roomsListHtml = items
-    .map((i) => `<li>${escapeHtml(getRoomName(i.room))} — ${i.guests} fő</li>`)
+    .map(
+      (i) =>
+        `<li style="margin:4px 0;">${escapeHtml(
+          getRoomName(i.room, lang),
+        )} — <strong>${escapeHtml(String(i.guests))}</strong></li>`,
+    )
     .join("");
 
   const adminToken = String(opts.adminToken || "").trim();
   const canShowActions = !!(APP_URL && adminToken && b?.code);
 
   const makeAdminActionUrl = (action) => {
-    // ha a backend route-od: /api/admin/bookings/action
     const u = new URL("/api/admin/bookings/action", APP_URL);
     u.searchParams.set("code", b.code);
     u.searchParams.set("action", action);
@@ -401,41 +657,9 @@ export function bookingMailTemplates(b, opts = {}) {
   };
 
   const confirmUrl = canShowActions ? makeAdminActionUrl("confirm") : "";
-  const cancelUrl  = canShowActions ? makeAdminActionUrl("cancel") : "";
-  const paidUrl    = canShowActions && isTransfer ? makeAdminActionUrl("paid") : "";
-
-  const actionsHtml = canShowActions
-    ? `
-    <div style="margin:16px 0 6px;font-weight:bold;">${L.adminActions}</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-      <a href="${confirmUrl}"
-         style="display:inline-block;background:#16a34a;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:bold;">
-        ✅ ${L.adminConfirm}
-      </a>
-
-      <a href="${cancelUrl}"
-         style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:bold;">
-        ❌ ${L.adminCancel}
-      </a>
-
-      ${
-        isTransfer
-          ? `<a href="${paidUrl}"
-         style="display:inline-block;background:#0ea5e9;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:bold;">
-        💰 ${L.adminPaid}
-      </a>`
-          : ""
-      }
-    </div>
-    <div style="color:#666;font-size:12px;margin-bottom:6px;">
-      ${L.adminLinkSingleUse}
-    </div>
-  `
-    : `
-    <div style="margin:16px 0 6px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;padding:10px;border-radius:10px;">
-      ⚠️ ${L.adminActionsMissing}
-    </div>
-  `;
+  const cancelUrl = canShowActions ? makeAdminActionUrl("cancel") : "";
+  const paidUrl =
+    canShowActions && isTransfer ? makeAdminActionUrl("paid") : "";
 
   const actionsText = canShowActions
     ? `
@@ -449,59 +673,60 @@ ${L.adminLinkSingleUse}
 ${L.adminActions}: ${L.adminActionsMissing}
 `;
 
-  // ✅ 1) vendég “pending” mail (azonnal)
+  // ---------- Guest: Pending ----------
   const guestText = `${L.titlePending}
-Kód: ${b.code}
-Időszak: ${fmtDate(b.checkIn)} → ${fmtDate(b.checkOut)}
-Vendégek: ${b.guestsTotal} fő
-Végösszeg: ${Number(total).toLocaleString("hu-HU")} Ft
+${L.labelCode}: ${b.code}
+${L.labelPeriod}: ${fmtDate(b.checkIn, lang)} → ${fmtDate(b.checkOut, lang)}
+${L.labelGuests}: ${b.guestsTotal} fő
+${L.labelTotal}: ${Number(total).toLocaleString("hu-HU")} Ft
 
-Szobák:
+${L.labelRooms}:
 ${roomsListText}
 
 ${isTransfer ? L.nextStepsTransfer : L.nextStepsOnsite}
 `;
 
-  const guestHtml = `<!doctype html>
-<html lang="${lang}">
-  <body style="margin:0;padding:0;background:#f6f7f9;font-family:Arial,Helvetica,sans-serif;">
-    <div style="max-width:560px;margin:24px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #eee">
-      <div style="padding:20px 24px;border-bottom:1px solid #f0f0f0">
-        <h2 style="margin:0;font-size:20px;">${L.titlePending}</h2>
-        <div style="color:#666;margin-top:6px">Kód: <strong>${
-          b.code
-        }</strong></div>
-      </div>
+  const guestContentHtml = `
+    <table role="presentation" style="width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;">
+      ${kvRow(
+        L.labelCode,
+        `<strong>${escapeHtml(String(b.code || ""))}</strong>`,
+      )}
+      ${kvRow(
+        L.labelPeriod,
+        `<strong>${escapeHtml(fmtDate(b.checkIn, lang))}</strong> → <strong>${escapeHtml(
+          fmtDate(b.checkOut, lang),
+        )}</strong>`,
+      )}
+      ${kvRow(L.labelGuests, `<strong>${escapeHtml(String(b.guestsTotal || 0))}</strong>`)}
+      ${kvRow(
+        L.labelTotal,
+        `<strong>${escapeHtml(Number(total).toLocaleString("hu-HU"))} Ft</strong>`,
+      )}
+      ${kvRow(
+        L.labelRooms,
+        `<ul style="margin:0;padding-left:18px;">${roomsListHtml}</ul>`,
+      )}
+    </table>
 
-      <div style="padding:20px 24px;line-height:1.5;color:#222;">
-        <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn,
-        )} – ${fmtDate(b.checkOut)}</strong></p>
-        <p style="margin:0 0 10px;">Vendégek: <strong>${
-          b.guestsTotal
-        } fő</strong></p>
-        <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total,
-        ).toLocaleString("hu-HU")} Ft</strong></p>
+    ${cardBox(
+      `<div style="font-weight:800;margin-bottom:6px;">Teendők</div>
+       <div style="color:${ui.text};">${escapeHtml(
+         isTransfer ? L.nextStepsTransfer : L.nextStepsOnsite,
+       )}</div>`,
+      "soft",
+    )}
+  `;
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Szobák:</div>
-        <ul style="margin:4px 0 0 18px;padding:0;">
-          ${roomsListHtml}
-        </ul>
+  const guestHtml = wrapEmail({
+    lang,
+    title: L.titlePending,
+    pillText: L.pillPending,
+    pillTone: "info",
+    contentHtml: guestContentHtml,
+  });
 
-        <div style="margin-top:14px;padding:12px;border:1px solid #eee;border-radius:10px;background:#fafafa;color:#333;">
-          ${isTransfer ? L.nextStepsTransfer : L.nextStepsOnsite}
-        </div>
-      </div>
-
-      <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
-      </div>
-    </div>
-  </body>
-</html>`;
-
-  // ✅ utalási részletek (confirm mailhez)
+  // ---------- Transfer details block ----------
   const reference = buildReference(b);
 
   const transferDetailsText = `${L.transferDetailsTitle}
@@ -514,49 +739,34 @@ ${L.reference}: ${reference}
 ${L.referenceHint}
 `;
 
-  const transferDetailsHtml = `
-  <div style="margin-top:12px;padding:12px;border:1px solid #eee;border-radius:10px;background:#fafafa;">
-    <div style="font-weight:bold;margin-bottom:8px;">${
-      L.transferDetailsTitle
-    }</div>
-    <div style="line-height:1.6;color:#111;">
-      <div><span style="color:#666">${
-        L.beneficiary
-      }:</span> <strong>${escapeHtml(
-        PAYMENT_DETAILS.beneficiary,
-      )}</strong></div>
-      <div><span style="color:#666">${L.bankName}:</span> <strong>${escapeHtml(
-        PAYMENT_DETAILS.bankName,
-      )}</strong></div>
-      <div><span style="color:#666">${
-        L.accountNumber
-      }:</span> <strong>${escapeHtml(
-        PAYMENT_DETAILS.accountNumber,
-      )}</strong></div>
-      <div><span style="color:#666">${L.iban}:</span> <strong>${escapeHtml(
-        PAYMENT_DETAILS.iban,
-      )}</strong></div>
-      <div><span style="color:#666">${L.swift}:</span> <strong>${escapeHtml(
-        PAYMENT_DETAILS.swift,
-      )}</strong></div>
-      <div style="margin-top:8px;"><span style="color:#666">${
-        L.reference
-      }:</span> <strong>${escapeHtml(reference)}</strong></div>
-      <div style="margin-top:6px;color:#666;font-size:12px;">${escapeHtml(
-        L.referenceHint,
-      )}</div>
-    </div>
-  </div>
-`;
+  const transferDetailsHtml = cardBox(
+    `
+    <div style="font-weight:900;margin-bottom:10px;">${escapeHtml(
+      L.transferDetailsTitle,
+    )}</div>
+    <table role="presentation" style="width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;">
+      ${kvRow(L.beneficiary, `<strong>${escapeHtml(PAYMENT_DETAILS.beneficiary)}</strong>`)}
+      ${kvRow(L.bankName, `<strong>${escapeHtml(PAYMENT_DETAILS.bankName)}</strong>`)}
+      ${kvRow(L.accountNumber, `<strong>${escapeHtml(PAYMENT_DETAILS.accountNumber)}</strong>`)}
+      ${kvRow(L.iban, `<strong>${escapeHtml(PAYMENT_DETAILS.iban)}</strong>`)}
+      ${kvRow(L.swift, `<strong>${escapeHtml(PAYMENT_DETAILS.swift)}</strong>`)}
+      ${kvRow(L.reference, `<strong>${escapeHtml(reference)}</strong>`)}
+    </table>
+    <div style="margin-top:8px;color:${ui.muted};font-size:12px;">${escapeHtml(
+      L.referenceHint,
+    )}</div>
+  `,
+    "soft",
+  );
 
-  // ✅ 2) vendég “confirmed” mail (elfogadás után)
+  // ---------- Guest: Confirmed ----------
   const guestConfirmedText = `${L.titleConfirmed}
-Kód: ${b.code}
-Időszak: ${fmtDate(b.checkIn)} → ${fmtDate(b.checkOut)}
-Vendégek: ${b.guestsTotal} fő
-Végösszeg: ${Number(total).toLocaleString("hu-HU")} Ft
+${L.labelCode}: ${b.code}
+${L.labelPeriod}: ${fmtDate(b.checkIn, lang)} → ${fmtDate(b.checkOut, lang)}
+${L.labelGuests}: ${b.guestsTotal} fő
+${L.labelTotal}: ${Number(total).toLocaleString("hu-HU")} Ft
 
-Szobák:
+${L.labelRooms}:
 ${roomsListText}
 
 ${isTransfer ? L.confirmedTransferIntro : L.confirmedOnsite}
@@ -564,146 +774,145 @@ ${isTransfer ? L.confirmedTransferIntro : L.confirmedOnsite}
 ${isTransfer ? transferDetailsText : ""}
 `;
 
-  const guestConfirmedHtml = `<!doctype html>
-<html lang="${lang}">
-  <body style="margin:0;padding:0;background:#f6f7f9;font-family:Arial,Helvetica,sans-serif;">
-    <div style="max-width:560px;margin:24px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #eee">
-      <div style="padding:20px 24px;border-bottom:1px solid #f0f0f0">
-        <h2 style="margin:0;font-size:20px;">${L.titleConfirmed}</h2>
-        <div style="color:#666;margin-top:6px">Kód: <strong>${
-          b.code
-        }</strong></div>
-      </div>
+  const guestConfirmedContentHtml = `
+    <table role="presentation" style="width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;">
+      ${kvRow(
+        L.labelCode,
+        `<strong>${escapeHtml(String(b.code || ""))}</strong>`,
+      )}
+      ${kvRow(
+        L.labelPeriod,
+        `<strong>${escapeHtml(fmtDate(b.checkIn, lang))}</strong> → <strong>${escapeHtml(
+          fmtDate(b.checkOut, lang),
+        )}</strong>`,
+      )}
+      ${kvRow(L.labelGuests, `<strong>${escapeHtml(String(b.guestsTotal || 0))}</strong>`)}
+      ${kvRow(
+        L.labelTotal,
+        `<strong>${escapeHtml(Number(total).toLocaleString("hu-HU"))} Ft</strong>`,
+      )}
+      ${kvRow(
+        L.labelRooms,
+        `<ul style="margin:0;padding-left:18px;">${roomsListHtml}</ul>`,
+      )}
+    </table>
 
-      <div style="padding:20px 24px;line-height:1.5;color:#222;">
-        <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn,
-        )} – ${fmtDate(b.checkOut)}</strong></p>
-        <p style="margin:0 0 10px;">Vendégek: <strong>${
-          b.guestsTotal
-        } fő</strong></p>
-        <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total,
-        ).toLocaleString("hu-HU")} Ft</strong></p>
+    ${cardBox(
+      `<div style="font-weight:900;margin-bottom:6px;">${escapeHtml(
+        isTransfer ? L.titleConfirmed : L.titleConfirmed,
+      )}</div>
+       <div>${escapeHtml(isTransfer ? L.confirmedTransferIntro : L.confirmedOnsite)}</div>`,
+      "ok",
+    )}
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Szobák:</div>
-        <ul style="margin:4px 0 0 18px;padding:0;">
-          ${roomsListHtml}
-        </ul>
+    ${isTransfer ? transferDetailsHtml : ""}
+  `;
 
-        <div style="margin-top:14px;padding:12px;border:1px solid #eee;border-radius:10px;background:#fafafa;color:#333;">
-          ${isTransfer ? L.confirmedTransferIntro : L.confirmedOnsite}
-        </div>
+  const guestConfirmedHtml = wrapEmail({
+    lang,
+    title: L.titleConfirmed,
+    pillText: L.pillConfirmed,
+    pillTone: "ok",
+    contentHtml: guestConfirmedContentHtml,
+  });
 
-        ${isTransfer ? transferDetailsHtml : ""}
-      </div>
-
-      <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
-      </div>
-    </div>
-  </body>
-</html>`;
-
-  // ✅ 3) vendég “paid” mail (paid után)
+  // ---------- Guest: Paid ----------
   const guestPaidText = `${L.titlePaid}
-Kód: ${b.code}
-Időszak: ${fmtDate(b.checkIn)} → ${fmtDate(b.checkOut)}
-Vendégek: ${b.guestsTotal} fő
-Végösszeg: ${Number(total).toLocaleString("hu-HU")} Ft
+${L.labelCode}: ${b.code}
+${L.labelPeriod}: ${fmtDate(b.checkIn, lang)} → ${fmtDate(b.checkOut, lang)}
+${L.labelGuests}: ${b.guestsTotal} fő
+${L.labelTotal}: ${Number(total).toLocaleString("hu-HU")} Ft
 
 ${L.paidMsg}
 
-Szobák:
+${L.labelRooms}:
 ${roomsListText}
 `;
 
-  const guestPaidHtml = `<!doctype html>
-<html lang="${lang}">
-  <body style="margin:0;padding:0;background:#f6f7f9;font-family:Arial,Helvetica,sans-serif;">
-    <div style="max-width:560px;margin:24px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #eee">
-      <div style="padding:20px 24px;border-bottom:1px solid #f0f0f0">
-        <h2 style="margin:0;font-size:20px;">${L.titlePaid}</h2>
-        <div style="color:#666;margin-top:6px">Kód: <strong>${
-          b.code
-        }</strong></div>
-      </div>
+  const guestPaidContentHtml = `
+    ${cardBox(
+      `<div style="font-weight:900;margin-bottom:6px;">✅ ${escapeHtml(
+        L.titlePaid,
+      )}</div>
+       <div>${escapeHtml(L.paidMsg)}</div>`,
+      "ok",
+    )}
 
-      <div style="padding:20px 24px;line-height:1.5;color:#222;">
-        <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn,
-        )} – ${fmtDate(b.checkOut)}</strong></p>
-        <p style="margin:0 0 10px;">Vendégek: <strong>${
-          b.guestsTotal
-        } fő</strong></p>
-        <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total,
-        ).toLocaleString("hu-HU")} Ft</strong></p>
+    <table role="presentation" style="width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;">
+      ${kvRow(L.labelCode, `<strong>${escapeHtml(String(b.code || ""))}</strong>`)}
+      ${kvRow(
+        L.labelPeriod,
+        `<strong>${escapeHtml(fmtDate(b.checkIn, lang))}</strong> → <strong>${escapeHtml(
+          fmtDate(b.checkOut, lang),
+        )}</strong>`,
+      )}
+      ${kvRow(L.labelGuests, `<strong>${escapeHtml(String(b.guestsTotal || 0))}</strong>`)}
+      ${kvRow(
+        L.labelTotal,
+        `<strong>${escapeHtml(Number(total).toLocaleString("hu-HU"))} Ft</strong>`,
+      )}
+      ${kvRow(
+        L.labelRooms,
+        `<ul style="margin:0;padding-left:18px;">${roomsListHtml}</ul>`,
+      )}
+    </table>
+  `;
 
-        <div style="margin:14px 0;padding:12px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;">
-          ${escapeHtml(L.paidMsg)}
-        </div>
+  const guestPaidHtml = wrapEmail({
+    lang,
+    title: L.titlePaid,
+    pillText: L.pillPaid,
+    pillTone: "ok",
+    contentHtml: guestPaidContentHtml,
+  });
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Szobák:</div>
-        <ul style="margin:4px 0 0 18px;padding:0;">
-          ${roomsListHtml}
-        </ul>
-      </div>
-
-      <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
-      </div>
-    </div>
-  </body>
-</html>`;
-
-  // ✅ 4) vendég “cancelled” mail (elutasítás után)
+  // ---------- Guest: Cancelled ----------
   const guestCancelledText = `${L.titleCancelled}
-Kód: ${b.code}
-Időszak: ${fmtDate(b.checkIn)} → ${fmtDate(b.checkOut)}
+${L.labelCode}: ${b.code}
+${L.labelPeriod}: ${fmtDate(b.checkIn, lang)} → ${fmtDate(b.checkOut, lang)}
 
 ${L.cancelledMsg}
 
-Szobák:
+${L.labelRooms}:
 ${roomsListText}
 `;
 
-  const guestCancelledHtml = `<!doctype html>
-<html lang="${lang}">
-  <body style="margin:0;padding:0;background:#f6f7f9;font-family:Arial,Helvetica,sans-serif;">
-    <div style="max-width:560px;margin:24px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #eee">
-      <div style="padding:20px 24px;border-bottom:1px solid #f0f0f0">
-        <h2 style="margin:0;font-size:20px;">${L.titleCancelled}</h2>
-        <div style="color:#666;margin-top:6px">Kód: <strong>${
-          b.code
-        }</strong></div>
-      </div>
+  const guestCancelledContentHtml = `
+    ${cardBox(
+      `<div style="font-weight:900;margin-bottom:6px;">❌ ${escapeHtml(
+        L.titleCancelled,
+      )}</div>
+       <div>${escapeHtml(L.cancelledMsg)}</div>`,
+      "bad",
+    )}
 
-      <div style="padding:20px 24px;line-height:1.5;color:#222;">
-        <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn,
-        )} – ${fmtDate(b.checkOut)}</strong></p>
+    <table role="presentation" style="width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;">
+      ${kvRow(L.labelCode, `<strong>${escapeHtml(String(b.code || ""))}</strong>`)}
+      ${kvRow(
+        L.labelPeriod,
+        `<strong>${escapeHtml(fmtDate(b.checkIn, lang))}</strong> → <strong>${escapeHtml(
+          fmtDate(b.checkOut, lang),
+        )}</strong>`,
+      )}
+      ${kvRow(
+        L.labelRooms,
+        `<ul style="margin:0;padding-left:18px;">${roomsListHtml}</ul>`,
+      )}
+    </table>
+  `;
 
-        <div style="margin:14px 0;padding:12px;border:1px solid #fecaca;border-radius:10px;background:#fef2f2;">
-          ${escapeHtml(L.cancelledMsg)}
-        </div>
+  const guestCancelledHtml = wrapEmail({
+    lang,
+    title: L.titleCancelled,
+    pillText: L.pillCancelled,
+    pillTone: "bad",
+    contentHtml: guestCancelledContentHtml,
+  });
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Szobák:</div>
-        <ul style="margin:4px 0 0 18px;padding:0;">
-          ${roomsListHtml}
-        </ul>
-      </div>
-
-      <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
-      </div>
-    </div>
-  </body>
-</html>`;
-
+  // ---------- Admin ----------
   const adminText = `Új foglalás érkezett
 Kód: ${b.code}
-Időszak: ${fmtDate(b.checkIn)} → ${fmtDate(b.checkOut)}
+Időszak: ${fmtDate(b.checkIn, "hu")} → ${fmtDate(b.checkOut, "hu")}
 Vendégek: ${b.guestsTotal} fő
 Végösszeg: ${Number(total).toLocaleString("hu-HU")} Ft
 
@@ -711,7 +920,7 @@ Foglaló:
 - Név: ${b?.customer?.name || "-"}
 - Email: ${b?.customer?.email || "-"}
 
-Fizetés módja: ${paymentMethodHu(b)}
+Fizetés módja: ${paymentMethodLabel(b, "hu")}
 
 Szobák:
 ${roomsListText}
@@ -722,82 +931,128 @@ ${b?.customer?.note || "-"}
 ${actionsText}
 `;
 
-  const guestReviewText = `${L.reviewGreeting}
-  
-  ${L.reviewThanks}
-  ${L.reviewRequest}
-  
-  ${opts.reviewUrl ? `${L.reviewWebsite} ${opts.reviewUrl}` : ""}
-  ${L.reviewGoogle} ${googleUrl}
-  
-  ${L.reviewThanks2}
-  ${L.reviewSignature}`;
-
   const safeNote = escapeHtml(b?.customer?.note || "-");
 
-  const adminHtml = `<!doctype html>
-<html lang="hu">
-  <body style="margin:0;padding:0;background:#f6f7f9;font-family:Arial,Helvetica,sans-serif;">
-    <div style="max-width:560px;margin:24px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #eee">
-      <div style="padding:20px 24px;border-bottom:1px solid #f0f0f0">
-        <h2 style="margin:0;font-size:20px;">Új foglalás</h2>
-        <div style="color:#666;margin-top:6px">Kód: <strong>${
-          b.code
-        }</strong></div>
-      </div>
+  const adminActionsHtml = canShowActions
+    ? cardBox(
+        `
+        <div style="font-weight:900;margin-bottom:10px;">${escapeHtml(
+          L.adminActions,
+        )}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          ${primaryButton(confirmUrl, `✅ ${escapeHtml(L.adminConfirm)}`, "ok")}
+          ${primaryButton(cancelUrl, `❌ ${escapeHtml(L.adminCancel)}`, "bad")}
+          ${
+            isTransfer
+              ? primaryButton(paidUrl, `💰 ${escapeHtml(L.adminPaid)}`, "brand")
+              : ""
+          }
+        </div>
+        <div style="margin-top:10px;color:${ui.muted};font-size:12px;">
+          ${escapeHtml(L.adminLinkSingleUse)}
+        </div>
+      `,
+        "warn",
+      )
+    : cardBox(
+        `⚠️ <strong>${escapeHtml(L.adminActionsMissing)}</strong>`,
+        "warn",
+      );
 
-      <div style="padding:20px 24px;line-height:1.5;color:#222;">
-        <p style="margin:0 0 8px;">Időszak: <strong>${fmtDate(
-          b.checkIn,
-        )} – ${fmtDate(b.checkOut)}</strong></p>
-        <p style="margin:0 0 8px;">Vendégek: <strong>${
-          b.guestsTotal
-        } fő</strong></p>
-        <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total,
-        ).toLocaleString("hu-HU")} Ft</strong></p>
+  const adminContentHtml = `
+    <table role="presentation" style="width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;">
+      ${kvRow("Kód", `<strong>${escapeHtml(String(b.code || ""))}</strong>`)}
+      ${kvRow(
+        "Időszak",
+        `<strong>${escapeHtml(fmtDate(b.checkIn, "hu"))}</strong> → <strong>${escapeHtml(
+          fmtDate(b.checkOut, "hu"),
+        )}</strong>`,
+      )}
+      ${kvRow("Vendégek", `<strong>${escapeHtml(String(b.guestsTotal || 0))}</strong>`)}
+      ${kvRow(
+        "Végösszeg",
+        `<strong>${escapeHtml(Number(total).toLocaleString("hu-HU"))} Ft</strong>`,
+      )}
+      ${kvRow("Fizetés módja", `<strong>${escapeHtml(paymentMethodLabel(b, "hu"))}</strong>`)}
+      ${kvRow(
+        "Foglaló",
+        `<div><strong>${escapeHtml(b?.customer?.name || "-")}</strong></div>
+         <div style="color:${ui.muted};font-size:12px;margin-top:2px;">${escapeHtml(
+           b?.customer?.email || "-",
+         )}</div>`,
+      )}
+      ${kvRow(
+        "Szobák",
+        `<ul style="margin:0;padding-left:18px;">${roomsListHtml}</ul>`,
+      )}
+      ${kvRow("Megjegyzés", `<div style="white-space:pre-wrap;">${safeNote}</div>`)}
+    </table>
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Foglaló:</div>
-        <ul style="margin:4px 0 0 18px;padding:0;">
-          <li>Név: ${escapeHtml(b?.customer?.name || "-")}</li>
-          <li>Email: ${escapeHtml(b?.customer?.email || "-")}</li>
-        </ul>
+    ${adminActionsHtml}
+  `;
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Fizetés módja:</div>
-        <div><strong>${escapeHtml(paymentMethodHu(b))}</strong></div>
+  const adminHtml = wrapEmail({
+    lang: "hu",
+    title: "Új foglalás",
+    pillText: "ÚJ",
+    pillTone: "warn",
+    contentHtml: adminContentHtml,
+  });
 
-        ${actionsHtml}
+  // ---------- Review request ----------
+  const guestReviewText = `${L.reviewGreeting}
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Szobák:</div>
-        <ul style="margin:4px 0 0 18px;padding:0;">
-          ${roomsListHtml}
-        </ul>
+${L.reviewThanks}
+${L.reviewRequest}
 
-        <div style="margin:12px 0 6px;font-weight:bold;">Megjegyzés:</div>
-        <div style="white-space:pre-wrap">${safeNote}</div>
-      </div>
+${opts.reviewUrl ? `${L.reviewWebsite} ${opts.reviewUrl}` : ""}
+${L.reviewGoogle} ${googleUrl}
 
-      <div style="padding:14px 24px;background:#fafafa;color:#666;font-size:12px;border-top:1px solid #f0f0f0">
-        Bermuda Vendégház • Vése, Zrínyi u. 1, 8721 
-      </div>
+${L.reviewThanks2}
+${L.reviewSignature}
+`;
+
+  const reviewButtons = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+      ${
+        opts.reviewUrl
+          ? primaryButton(
+              opts.reviewUrl,
+              `⭐ ${escapeHtml(L.reviewWebsite.replace(":", ""))}`,
+              "brand",
+            )
+          : ""
+      }
+      ${primaryButton(
+        googleUrl,
+        `⭐ ${escapeHtml(L.reviewGoogle.replace(":", ""))}`,
+        "brand",
+      )}
     </div>
-  </body>
-</html>`;
+  `;
 
-  const guestReviewHtml = `<p>${L.reviewGreeting}</p>
-  <p>${L.reviewThanks.replace("Bermuda Vendégház", "<strong>Bermuda Vendégház</strong>")}<br/>
-  ${L.reviewRequest}</p>
-  
-  <p>
-    ${
-      opts.reviewUrl
-        ? `<a href="${opts.reviewUrl}" target="_blank" rel="noopener noreferrer">⭐ ${L.reviewWebsite.replace(":", "")}</a><br/>`
-        : ""
-    }
-    <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">⭐ ${L.reviewGoogle.replace(":", "")}</a>
-  </p>
-  
-  <p>${L.reviewThanks2}<br/>${L.reviewSignature}</p>`;
+  const guestReviewHtml = wrapEmail({
+    lang,
+    title: L.subjectGuestReview(b.code),
+    pillText: "⭐",
+    pillTone: "info",
+    contentHtml: `
+      <div style="font-size:14px;">
+        <p style="margin:0 0 10px;"><strong>${escapeHtml(L.reviewGreeting)}</strong></p>
+        <p style="margin:0 0 10px;">${escapeHtml(L.reviewThanks)}</p>
+        ${cardBox(
+          `<div style="font-weight:900;margin-bottom:6px;">${escapeHtml(
+            L.reviewRequest,
+          )}</div>
+           ${reviewButtons}`,
+          "soft",
+        )}
+        <p style="margin:12px 0 0;color:${ui.muted};">${escapeHtml(
+          L.reviewThanks2,
+        )}<br/><strong>${escapeHtml(L.reviewSignature)}</strong></p>
+      </div>
+    `,
+  });
 
   return {
     guest: {
@@ -805,25 +1060,21 @@ ${actionsText}
       text: guestText,
       html: guestHtml,
     },
-
     guestConfirmed: {
       subject: L.subjectGuestConfirmed(b.code),
       text: guestConfirmedText,
       html: guestConfirmedHtml,
     },
-
     guestPaid: {
       subject: L.subjectGuestPaid(b.code),
       text: guestPaidText,
       html: guestPaidHtml,
     },
-
     guestCancelled: {
       subject: L.subjectGuestCancelled(b.code),
       text: guestCancelledText,
       html: guestCancelledHtml,
     },
-
     admin: {
       subject: L.subjectAdmin(b.code),
       text: adminText,
