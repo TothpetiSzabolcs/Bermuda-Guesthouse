@@ -74,6 +74,7 @@ export const translations = {
       placeholderDescription: "Kényelmes szoba alapvető felszereltséggel.",
       pricePerNight: "éj/ár",
       privateBathroom: "Saját fürdőszoba",
+      coffeeTea : "Kávé/Tea",
       amenities: "Felszereltség",
       description: "Leírás",
       backToRooms: "Vissza a szobákhoz",
@@ -220,6 +221,16 @@ export const translations = {
       },
     },
 
+    reviews: {
+      hero: {
+        countLabel: "{count} vendég értékelése",
+        countLabel_one: "{count} vendég értékelése",
+        countLabel_other: "{count} vendég értékelése",
+        allReviews: "Összes értékelés",
+        noText: "Szöveges értékelés nélkül",
+      },
+    },
+
     terms: {
       title: "Általános Szerződési Feltételek és Lemondási Feltételek",
       sections: {
@@ -258,7 +269,8 @@ export const translations = {
             "Érkezés előtt 3-6 nappal: 70% az első éjszaka ára",
             "Érkezés előtt 0-2 nappal vagy meg nem jelenés: 100% az első éjszaka ára",
           ],
-          notice: "A lemondást írásban (emailben) kell megtenni a szolgáltató felé.",
+          notice:
+            "A lemondást írásban (emailben) kell megtenni a szolgáltató felé.",
         },
         guestObligations: {
           title: "6. Vendég kötelezettségei",
@@ -330,7 +342,8 @@ export const translations = {
             "Vendégek száma",
             "Esetleges üzenet, különleges kérések",
           ],
-          purpose: "Cél: A szállásfoglalás teljesítése, kapcsolattartás, számlázás.",
+          purpose:
+            "Cél: A szállásfoglalás teljesítése, kapcsolattartás, számlázás.",
         },
         legalBasis: {
           title: "3. Adatkezelés jogalapja",
@@ -350,7 +363,8 @@ export const translations = {
             "Email szolgáltatóknak a kommunikáció céljából",
             "Számlázó szoftvernek a számlázás céljából",
           ],
-          disclaimer: "Adatokat nem adunk át harmadik fél számára marketing célokra.",
+          disclaimer:
+            "Adatokat nem adunk át harmadik fél számára marketing célokra.",
         },
         rights: {
           title: "6. Érintetti jogok",
@@ -545,6 +559,14 @@ export const translations = {
       badge: "Bermuda Guesthouse",
       rating: "4.9 rating (127 reviews)",
     },
+    reviews: {
+      hero: {
+        countLabel_one: "{count} guest review",
+        countLabel_other: "{count} guest reviews",
+        allReviews: "All reviews",
+        noText: "No written review",
+      },
+    },
 
     rooms: {
       title: "Our Rooms",
@@ -554,6 +576,7 @@ export const translations = {
       placeholderDescription: "Comfortable room with essential amenities.",
       pricePerNight: "price/night",
       privateBathroom: "Private bathroom",
+      coffeeTea: "Coffee/Tea",
       amenities: "Amenities",
       description: "Description",
       backToRooms: "Back to rooms",
@@ -738,7 +761,8 @@ export const translations = {
             "3-6 days before arrival: 70% of first night price",
             "0-2 days before arrival or no-show: 100% of first night price",
           ],
-          notice: "Cancellation must be made in writing (email) to the provider.",
+          notice:
+            "Cancellation must be made in writing (email) to the provider.",
         },
         guestObligations: {
           title: "6. Guest obligations",
@@ -787,7 +811,8 @@ export const translations = {
         },
       },
       effectiveDate: "Effective date: January 28, 2026.",
-      disclaimer: "The provider reserves the right to change these terms and conditions.",
+      disclaimer:
+        "The provider reserves the right to change these terms and conditions.",
       backToHome: "Back to homepage",
     },
 
@@ -809,7 +834,8 @@ export const translations = {
             "Number of guests",
             "Optional messages, special requests",
           ],
-          purpose: "Purpose: Fulfillment of accommodation booking, contact, invoicing.",
+          purpose:
+            "Purpose: Fulfillment of accommodation booking, contact, invoicing.",
         },
         legalBasis: {
           title: "3. Legal basis of data processing",
@@ -823,12 +849,14 @@ export const translations = {
         },
         dataTransfer: {
           title: "5. Data transfer",
-          intro: "Your email address and contact data are transferred for the following purposes:",
+          intro:
+            "Your email address and contact data are transferred for the following purposes:",
           items: [
             "To email providers for communication purposes",
             "To invoicing software for invoicing purposes",
           ],
-          disclaimer: "Data is not transferred to third parties for marketing purposes.",
+          disclaimer:
+            "Data is not transferred to third parties for marketing purposes.",
         },
         rights: {
           title: "6. Data subject rights",
@@ -859,7 +887,8 @@ export const translations = {
         },
       },
       effectiveDate: "Effective date: January 28, 2026.",
-      disclaimer: "The controller reserves the right to change this privacy policy.",
+      disclaimer:
+        "The controller reserves the right to change this privacy policy.",
       backToHome: "Back to homepage",
     },
 
@@ -884,7 +913,8 @@ export const translations = {
         selectFile: "Choose file",
         uploading: "Uploading…",
         deleteConfirm: "Are you sure you want to delete this media?",
-        fileTypesHint: "Supported: images and videos (e.g. JPG, PNG, MP4, MOV).",
+        fileTypesHint:
+          "Supported: images and videos (e.g. JPG, PNG, MP4, MOV).",
         uploadSuccess: "Uploaded.",
         deleteSuccess: "Deleted.",
         management: "Gallery Management",
@@ -1022,14 +1052,25 @@ export const translations = {
       rating: "4,9 Bewertung (127 Rezensionen)",
     },
 
+    reviews: {
+      hero: {
+        countLabel_one: "{count} Gästebewertung",
+        countLabel_other: "{count} Gästebewertungen",
+        allReviews: "Alle Bewertungen",
+        noText: "Keine Textbewertung",
+      },
+    },
+
     rooms: {
       title: "Unsere Zimmer",
       lead: "Zuhause, wo Entspannung natürlich ist!",
       guestsLabel: "Gäste",
       bookCta: "Zimmer buchen",
-      placeholderDescription: "Komfortables Zimmer mit grundlegender Ausstattung.",
+      placeholderDescription:
+        "Komfortables Zimmer mit grundlegender Ausstattung.",
       pricePerNight: "Preis/Nacht",
       privateBathroom: "Eigenes Bad",
+      coffeeTea: "Kaffee/Tee",
       amenities: "Ausstattung",
       description: "Beschreibung",
       backToRooms: "Zurück zu den Zimmern",
@@ -1042,7 +1083,7 @@ export const translations = {
         badge: "Aktion",
         original: "Originalpreis",
         discounted: "Aktionspreis",
-      },      
+      },
       carousel: {
         prev: "Vorheriges Bild",
         next: "Nächstes Bild",
@@ -1149,7 +1190,7 @@ export const translations = {
           "Kinder bis einschließlich 6 Jahre übernachten kostenlos.",
           "Zahlung in EUR ist möglich.",
           "Tourismussteuer: kostenlos.",
-        ]
+        ],
       },
       form: {
         name: "Name",
@@ -1214,7 +1255,8 @@ export const translations = {
             "3-6 Tage vor Ankunft: 70% des Preises der ersten Nacht",
             "0-2 Tage vor Ankunft oder Nichterscheinen: 100% des Preises der ersten Nacht",
           ],
-          notice: "Die Stornierung muss schriftlich (E-Mail) beim Anbieter erfolgen.",
+          notice:
+            "Die Stornierung muss schriftlich (E-Mail) beim Anbieter erfolgen.",
         },
         guestObligations: {
           title: "6. Gastpflichten",
@@ -1263,7 +1305,8 @@ export const translations = {
         },
       },
       effectiveDate: "Gültig ab: 28. Januar 2026.",
-      disclaimer: "Der Anbieter behält sich das Recht vor, diese Geschäftsbedingungen zu ändern.",
+      disclaimer:
+        "Der Anbieter behält sich das Recht vor, diese Geschäftsbedingungen zu ändern.",
       backToHome: "Zurück zur Startseite",
     },
 
@@ -1277,7 +1320,8 @@ export const translations = {
         },
         dataScope: {
           title: "2. Umfang und Zweck der verarbeiteten Daten",
-          intro: "Während des Buchungsprozesses verarbeiten wir die folgenden Daten:",
+          intro:
+            "Während des Buchungsprozesses verarbeiten wir die folgenden Daten:",
           items: [
             "Name",
             "E-Mail-Adresse",
@@ -1285,7 +1329,8 @@ export const translations = {
             "Anzahl der Gäste",
             "Optionale Nachrichten, besondere Wünsche",
           ],
-          purpose: "Zweck: Erfüllung der Unterkunftsbuchung, Kontakt, Rechnungsstellung.",
+          purpose:
+            "Zweck: Erfüllung der Unterkunftsbuchung, Kontakt, Rechnungsstellung.",
         },
         legalBasis: {
           title: "3. Rechtsgrundlage der Datenverarbeitung",
@@ -1299,12 +1344,14 @@ export const translations = {
         },
         dataTransfer: {
           title: "5. Datenübertragung",
-          intro: "Ihre E-Mail-Adresse und Kontaktdaten werden für folgende Zwecke übertragen:",
+          intro:
+            "Ihre E-Mail-Adresse und Kontaktdaten werden für folgende Zwecke übertragen:",
           items: [
             "An E-Mail-Anbieter für Kommunikationszwecke",
             "An Abrechnungssoftware für Abrechnungszwecke",
           ],
-          disclaimer: "Daten werden nicht für Marketingzwecke an Dritte übertragen.",
+          disclaimer:
+            "Daten werden nicht für Marketingzwecke an Dritte übertragen.",
         },
         rights: {
           title: "6. Betroffenenrechte",
@@ -1335,7 +1382,8 @@ export const translations = {
         },
       },
       effectiveDate: "Gültig ab: 28. Januar 2026.",
-      disclaimer: "Der Verantwortliche behält sich das Recht vor, diese Datenschutzerklärung zu ändern.",
+      disclaimer:
+        "Der Verantwortliche behält sich das Recht vor, diese Datenschutzerklärung zu ändern.",
       backToHome: "Zurück zur Startseite",
     },
 
@@ -1360,7 +1408,8 @@ export const translations = {
         selectFile: "Datei wählen",
         uploading: "Wird hochgeladen…",
         deleteConfirm: "Möchten Sie dieses Medium wirklich löschen?",
-        fileTypesHint: "Unterstützt: Bilder und Videos (z. B. JPG, PNG, MP4, MOV).",
+        fileTypesHint:
+          "Unterstützt: Bilder und Videos (z. B. JPG, PNG, MP4, MOV).",
         uploadSuccess: "Hochgeladen.",
         deleteSuccess: "Gelöscht.",
         management: "Galerie verwalten",

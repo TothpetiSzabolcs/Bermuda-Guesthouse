@@ -29,7 +29,6 @@ const roomSchema = new mongoose.Schema(
       },
     ],
 
-    // ✅ ÚJ: ár + akció
     price: {
       amount: { type: Number, required: true },
       currency: { type: String, default: "HUF" },

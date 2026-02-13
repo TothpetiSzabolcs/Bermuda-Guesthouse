@@ -22,13 +22,15 @@ export const MAIL_ADMIN =
 
 if (process.env.NODE_ENV === "production" && !ENV_MAIL_ADMIN && !SMTP_USER) {
   console.warn(
-    "⚠️ [mailer] PRODUCTION: MAIL_ADMIN nincs beállítva (MAIL_ADMIN / SMTP_USER hiányzik). Admin emailek nem fognak menni!"
+    "⚠️ [mailer] PRODUCTION: MAIL_ADMIN nincs beállítva (MAIL_ADMIN / SMTP_USER hiányzik). Admin emailek nem fognak menni!",
   );
 }
 
-const APP_URL = String(ENV_APP_URL || "").replace(/\/+/g, "/").replace(/\/$/, "");
+const APP_URL = String(ENV_APP_URL || "")
+  .replace(/\/+/g, "/")
+  .replace(/\/$/, "");
 
-// ✅ FIX utalási adatok
+
 const PAYMENT_DETAILS = {
   beneficiary: "Bermuda Vendégház",
   bankName: "MBH Bank Nyrt.",
@@ -66,7 +68,7 @@ const normalizeRecipients = (to) => {
     .flatMap((x) =>
       String(x || "")
         .split(/[;,]/g)
-        .map((p) => p.trim())
+        .map((p) => p.trim()),
     )
     .filter(Boolean);
 };
@@ -99,7 +101,7 @@ export async function sendMail({
   // ✅ Vendég levélből kivágjuk az admin címeket (akkor is, ha véletlenül bekerültek)
   if (kind === "guest") {
     valid = valid.filter(
-      (addr) => !ADMIN_ADDRESSES.some((a) => emailEq(a, addr))
+      (addr) => !ADMIN_ADDRESSES.some((a) => emailEq(a, addr)),
     );
   }
 
@@ -186,7 +188,7 @@ const tByLang = (lang = "hu") => {
         "Kérjük, a közleményben mindenképp tüntesd fel a foglalási kódot.",
 
       method: { onsite: "Helyszínen", transfer: "Banki előreutalás" },
-      
+
       // Admin actions
       adminActions: "Műveletek:",
       adminConfirm: "Elfogadom",
@@ -194,7 +196,7 @@ const tByLang = (lang = "hu") => {
       adminPaid: "Megjött az utalás",
       adminLinkSingleUse: "(A link egyszer használatos.)",
       adminActionsMissing: "APP_URL vagy token hiányzik (nem készültek linkek)",
-      
+
       // Review request
       reviewGreeting: "Szia!",
       reviewThanks: `Köszönjük, hogy a Bermuda Vendégházat választottad.`,
@@ -245,7 +247,7 @@ const tByLang = (lang = "hu") => {
         "Please make sure to include the booking code in the transfer reference.",
 
       method: { onsite: "On site", transfer: "Bank transfer" },
-      
+
       // Admin actions
       adminActions: "Actions:",
       adminConfirm: "Accept",
@@ -253,11 +255,12 @@ const tByLang = (lang = "hu") => {
       adminPaid: "Payment received",
       adminLinkSingleUse: "(This link is single-use.)",
       adminActionsMissing: "APP_URL or token missing (no links created)",
-      
+
       // Review request
       reviewGreeting: "Hi!",
       reviewThanks: "Thank you for choosing Bermuda Vendégház.",
-      reviewRequest: "If you have a minute, we'd really appreciate a short review:",
+      reviewRequest:
+        "If you have a minute, we'd really appreciate a short review:",
       reviewWebsite: "Website:",
       reviewGoogle: "Google:",
       reviewThanks2: "Thanks a lot!",
@@ -304,7 +307,7 @@ const tByLang = (lang = "hu") => {
         "Bitte geben Sie im Verwendungszweck unbedingt den Buchungscode an.",
 
       method: { onsite: "Vor Ort", transfer: "Überweisung" },
-      
+
       // Admin actions
       adminActions: "Aktionen:",
       adminConfirm: "Akzeptieren",
@@ -312,11 +315,13 @@ const tByLang = (lang = "hu") => {
       adminPaid: "Zahlung erhalten",
       adminLinkSingleUse: "(Dieser Link ist einmalig verwendbar.)",
       adminActionsMissing: "APP_URL oder Token fehlt (keine Links erstellt)",
-      
+
       // Review request
       reviewGreeting: "Hallo!",
-      reviewThanks: "Vielen Dank, dass Sie sich für das Bermuda Vendégház entschieden haben.",
-      reviewRequest: "Wenn Sie eine Minute Zeit haben, würden wir uns über eine kurze Bewertung freuen:",
+      reviewThanks:
+        "Vielen Dank, dass Sie sich für das Bermuda Vendégház entschieden haben.",
+      reviewRequest:
+        "Wenn Sie eine Minute Zeit haben, würden wir uns über eine kurze Bewertung freuen:",
       reviewWebsite: "Webseite:",
       reviewGoogle: "Google:",
       reviewThanks2: "Vielen Dank!",
@@ -385,28 +390,21 @@ export function bookingMailTemplates(b, opts = {}) {
     .map((i) => `<li>${escapeHtml(getRoomName(i.room))} — ${i.guests} fő</li>`)
     .join("");
 
-  // ✅ admin action links (email gombokhoz)
   const adminToken = String(opts.adminToken || "").trim();
   const canShowActions = !!(APP_URL && adminToken && b?.code);
 
-  const confirmUrl = canShowActions
-    ? `${APP_URL}/api/admin/bookings/action?code=${encodeURIComponent(
-        b.code
-      )}&action=confirm&token=${encodeURIComponent(adminToken)}`
-    : "";
+  const makeAdminActionUrl = (action) => {
+    // ha a backend route-od: /api/admin/bookings/action
+    const u = new URL("/api/admin/bookings/action", APP_URL);
+    u.searchParams.set("code", b.code);
+    u.searchParams.set("action", action);
+    u.searchParams.set("token", adminToken);
+    return u.toString();
+  };
 
-  const cancelUrl = canShowActions
-    ? `${APP_URL}/api/admin/bookings/action?code=${encodeURIComponent(
-        b.code
-      )}&action=cancel&token=${encodeURIComponent(adminToken)}`
-    : "";
-
-  const paidUrl =
-    canShowActions && isTransfer
-      ? `${APP_URL}/api/admin/bookings/action?code=${encodeURIComponent(
-          b.code
-        )}&action=paid&token=${encodeURIComponent(adminToken)}`
-      : "";
+  const confirmUrl = canShowActions ? makeAdminActionUrl("confirm") : "";
+  const cancelUrl  = canShowActions ? makeAdminActionUrl("cancel") : "";
+  const paidUrl    = canShowActions && isTransfer ? makeAdminActionUrl("paid") : "";
 
   const actionsHtml = canShowActions
     ? `
@@ -479,13 +477,13 @@ ${isTransfer ? L.nextStepsTransfer : L.nextStepsOnsite}
 
       <div style="padding:20px 24px;line-height:1.5;color:#222;">
         <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn
+          b.checkIn,
         )} – ${fmtDate(b.checkOut)}</strong></p>
         <p style="margin:0 0 10px;">Vendégek: <strong>${
           b.guestsTotal
         } fő</strong></p>
         <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total
+          total,
         ).toLocaleString("hu-HU")} Ft</strong></p>
 
         <div style="margin:12px 0 6px;font-weight:bold;">Szobák:</div>
@@ -527,27 +525,27 @@ ${L.referenceHint}
       <div><span style="color:#666">${
         L.beneficiary
       }:</span> <strong>${escapeHtml(
-    PAYMENT_DETAILS.beneficiary
-  )}</strong></div>
+        PAYMENT_DETAILS.beneficiary,
+      )}</strong></div>
       <div><span style="color:#666">${L.bankName}:</span> <strong>${escapeHtml(
-    PAYMENT_DETAILS.bankName
-  )}</strong></div>
+        PAYMENT_DETAILS.bankName,
+      )}</strong></div>
       <div><span style="color:#666">${
         L.accountNumber
       }:</span> <strong>${escapeHtml(
-    PAYMENT_DETAILS.accountNumber
-  )}</strong></div>
+        PAYMENT_DETAILS.accountNumber,
+      )}</strong></div>
       <div><span style="color:#666">${L.iban}:</span> <strong>${escapeHtml(
-    PAYMENT_DETAILS.iban
-  )}</strong></div>
+        PAYMENT_DETAILS.iban,
+      )}</strong></div>
       <div><span style="color:#666">${L.swift}:</span> <strong>${escapeHtml(
-    PAYMENT_DETAILS.swift
-  )}</strong></div>
+        PAYMENT_DETAILS.swift,
+      )}</strong></div>
       <div style="margin-top:8px;"><span style="color:#666">${
         L.reference
       }:</span> <strong>${escapeHtml(reference)}</strong></div>
       <div style="margin-top:6px;color:#666;font-size:12px;">${escapeHtml(
-        L.referenceHint
+        L.referenceHint,
       )}</div>
     </div>
   </div>
@@ -581,13 +579,13 @@ ${isTransfer ? transferDetailsText : ""}
 
       <div style="padding:20px 24px;line-height:1.5;color:#222;">
         <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn
+          b.checkIn,
         )} – ${fmtDate(b.checkOut)}</strong></p>
         <p style="margin:0 0 10px;">Vendégek: <strong>${
           b.guestsTotal
         } fő</strong></p>
         <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total
+          total,
         ).toLocaleString("hu-HU")} Ft</strong></p>
 
         <div style="margin:12px 0 6px;font-weight:bold;">Szobák:</div>
@@ -635,13 +633,13 @@ ${roomsListText}
 
       <div style="padding:20px 24px;line-height:1.5;color:#222;">
         <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn
+          b.checkIn,
         )} – ${fmtDate(b.checkOut)}</strong></p>
         <p style="margin:0 0 10px;">Vendégek: <strong>${
           b.guestsTotal
         } fő</strong></p>
         <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total
+          total,
         ).toLocaleString("hu-HU")} Ft</strong></p>
 
         <div style="margin:14px 0;padding:12px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;">
@@ -685,7 +683,7 @@ ${roomsListText}
 
       <div style="padding:20px 24px;line-height:1.5;color:#222;">
         <p style="margin:0 0 10px;">Időszak: <strong>${fmtDate(
-          b.checkIn
+          b.checkIn,
         )} – ${fmtDate(b.checkOut)}</strong></p>
 
         <div style="margin:14px 0;padding:12px;border:1px solid #fecaca;border-radius:10px;background:#fef2f2;">
@@ -752,13 +750,13 @@ ${actionsText}
 
       <div style="padding:20px 24px;line-height:1.5;color:#222;">
         <p style="margin:0 0 8px;">Időszak: <strong>${fmtDate(
-          b.checkIn
+          b.checkIn,
         )} – ${fmtDate(b.checkOut)}</strong></p>
         <p style="margin:0 0 8px;">Vendégek: <strong>${
           b.guestsTotal
         } fő</strong></p>
         <p style="margin:0 0 14px;">Végösszeg: <strong>${Number(
-          total
+          total,
         ).toLocaleString("hu-HU")} Ft</strong></p>
 
         <div style="margin:12px 0 6px;font-weight:bold;">Foglaló:</div>

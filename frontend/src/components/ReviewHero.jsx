@@ -1,8 +1,16 @@
 import { FiStar } from "react-icons/fi";
 import { useReviews } from "../hooks/useReviews";
 import { Link } from "react-router-dom";
+import { useI18n } from "../i18n/useI18n";
+
+const LOCALE_BY_LANG = {
+  hu: "hu-HU",
+  en: "en-GB",
+  de: "de-DE",
+};
 
 export default function ReviewsHero() {
+  const { t, lang } = useI18n();
   const { data, loading } = useReviews("bermuda-vendeghaz", 3);
 
   if (loading || !data) return null;
@@ -12,9 +20,11 @@ export default function ReviewsHero() {
     text: r.text || "",
     when: r.createdAt || r.date,
   }));
-  const shouldAnimate = items.length > 2;
 
+  const shouldAnimate = items.length > 2;
   const count = Number(data?.count ?? data?.total ?? items.length ?? 0);
+
+  const locale = LOCALE_BY_LANG[lang] || "hu-HU";
 
   return (
     <section className="bg-gray-50 py-8">
@@ -27,21 +37,23 @@ export default function ReviewsHero() {
 
           <div className="text-gray-700 flex-1">
             <div className="flex items-center justify-between gap-4">
-              <div className="font-semibold">{count} vendég értékelése</div>
+              <div className="font-semibold">
+                {count === 1
+                  ? t("reviews.hero.countLabel_one", { count })
+                  : t("reviews.hero.countLabel_other", { count })}
+              </div>
 
               <Link
                 to="/reviews"
                 className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50"
               >
-                Összes értékelés
+                {t("reviews.hero.allReviews")}
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Futósáv + fade szélek */}
         <div className="relative overflow-hidden reviews-fade">
-          {/* extra padding, hogy ne “vágja le” a shadowt */}
           <div className="py-2">
             <div className="group">
               <div
@@ -60,14 +72,12 @@ export default function ReviewsHero() {
                       </p>
                     ) : (
                       <p className="text-sm text-gray-500 italic">
-                        Szöveges értékelés nélkül
+                        {t("reviews.hero.noText")}
                       </p>
                     )}
 
                     <div className="mt-2 text-xs text-gray-500">
-                      {r.when
-                        ? new Date(r.when).toLocaleDateString("hu-HU")
-                        : ""}
+                      {r.when ? new Date(r.when).toLocaleDateString(locale) : ""}
                     </div>
                   </div>
                 ))}

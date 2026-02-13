@@ -8,7 +8,7 @@ export function useGallery(propertySlug, opts = {}) {
     category = "all",
     page = 1,
     limit = 24,
-    enabled = true,          // <— ÚJ: ha false, nem kérünk le semmit
+    enabled = true,
   } = opts;
 
   const [items, setItems] = useState([]);

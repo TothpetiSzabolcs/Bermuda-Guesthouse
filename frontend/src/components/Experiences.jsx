@@ -9,12 +9,12 @@ const CARDS = [
   {
     key: "offroad",
     icon: FaCarSide,
-    coverId: "bermuda/gallery/egyeb/mhl48bk0ycmaiourn0rg",
+    coverId: "bermuda/gallery/programok/irvqk55rhhxom0khfzlc",
   },
   {
     key: "lakeside",
     icon: FaUmbrellaBeach,
-    coverId: "bermuda/gallery/to/awupqepgi9pfitewhdt2",
+    coverId: "bermuda/gallery/to/vczqjjypchhq49beqc8s",
   },
   {
     key: "village",
@@ -29,7 +29,7 @@ const CARDS = [
   {
     key: "wellness",
     icon: MdHotTub,
-    coverId: "bermuda/gallery/wellness/vbo09fx3mjeyvnsrpqhq",
+    coverId: "bermuda/gallery/wellness/njtk1zcwutooejxvnpzf",
   },
 ];
 

@@ -41,8 +41,7 @@ export default function CookieBanner({ privacyUrl = "/privacy" }) {
         <h3 className="text-lg font-semibold">Cookie tájékoztató</h3>
 
         <p className="mt-2 text-sm text-gray-600">
-          A weboldal a működéshez szükséges cookie-kat használja a megfelelő működés
-          biztosításához.
+        A weboldal kizárólag a működéshez technikailag szükséges cookie-kat alkalmazza, amelyek biztosítják az oldal alapvető funkcióinak zavartalan és biztonságos működését.
         </p>
 
         <div className="mt-3 text-sm">

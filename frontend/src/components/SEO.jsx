@@ -9,7 +9,7 @@ const SEO = ({
   ogImage = "/og-image.jpg",
   type = "website",
   noindex = false,
-  includeHreflang = false, // <- default: false state-es i18n-nél
+  includeHreflang = false,
 }) => {
   const { lang } = useI18n();
 

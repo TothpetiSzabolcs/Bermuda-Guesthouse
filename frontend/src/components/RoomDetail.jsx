@@ -500,7 +500,7 @@ const RoomDetail = () => {
                   </div>
                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
                     <FiCoffee className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                    <span className="truncate">Kávé/Tea</span>
+                    <span className="truncate">{t("rooms.coffeeTea")}</span>
                   </div>
                   <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
                     <MdTv className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
