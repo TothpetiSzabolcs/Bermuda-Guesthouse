@@ -26,7 +26,7 @@ export default function AdminLayout() {
             }}
             className="text-sm px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black"
           >
-            {t("admin.layout.logout")}
+            Kijelentkezés
           </button>
         </div>
       </header>
@@ -43,7 +43,7 @@ export default function AdminLayout() {
                 }`
               }
             >
-              {t("admin.nav.dashboard")}
+              Vezérlőpult
             </NavLink>
             <NavLink
               to="/admin/gallery"
@@ -53,7 +53,7 @@ export default function AdminLayout() {
                 }`
               }
             >
-              {t("admin.nav.gallery")}
+              Galéria
             </NavLink>
             <NavLink
               to="/admin/rooms"
@@ -63,7 +63,7 @@ export default function AdminLayout() {
                 }`
               }
             >
-              {t("admin.nav.rooms")}
+              Szobák
             </NavLink>
             <NavLink
               to="/admin/bookings"
@@ -83,7 +83,7 @@ export default function AdminLayout() {
                 }`
               }
             >
-              {t("privacy.admin.nav.reviews")}
+              Vélemények
             </NavLink>
           </nav>
         </aside>

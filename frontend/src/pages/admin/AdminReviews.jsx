@@ -19,11 +19,13 @@ export default function AdminReviews() {
     if (params) {
       if (params instanceof URLSearchParams) {
         params.forEach((v, k) => {
-          if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
+          if (v !== undefined && v !== null && v !== "")
+            url.searchParams.set(k, String(v));
         });
       } else {
         Object.entries(params).forEach(([k, v]) => {
-          if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
+          if (v !== undefined && v !== null && v !== "")
+            url.searchParams.set(k, String(v));
         });
       }
     }
@@ -101,6 +103,7 @@ export default function AdminReviews() {
       setError(null);
 
       const params = new URLSearchParams({
+        status: statusFilter,
         page: String(currentPage),
         limit: "20",
       });
@@ -144,7 +147,7 @@ export default function AdminReviews() {
       setError(null);
 
       const url = buildAdminUrl(
-        `/api/admin/reviews/${encodeURIComponent(reviewId)}/${action}`
+        `/api/admin/reviews/${encodeURIComponent(reviewId)}/${action}`,
       );
 
       const response = await fetch(url, {
@@ -158,7 +161,7 @@ export default function AdminReviews() {
     } catch (e) {
       console.error(`Error ${action} review:`, e);
       setError(
-        "Nem sikerült végrehajtani a műveletet. (Lehet, hogy lejárt a session?)"
+        "Nem sikerült végrehajtani a műveletet. (Lehet, hogy lejárt a session?)",
       );
     } finally {
       setActionLoading(null);
@@ -247,12 +250,14 @@ export default function AdminReviews() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
-                        <span className="font-medium text-gray-900">{name}</span>
+                        <span className="font-medium text-gray-900">
+                          {name}
+                        </span>
 
                         {review.status && (
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                              review.status
+                              review.status,
                             )}`}
                           >
                             {review.status === "pending" && "Függőben"}
@@ -341,7 +346,9 @@ export default function AdminReviews() {
                 Előző
               </button>
               <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 disabled={currentPage === totalPages}
                 className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
               >
