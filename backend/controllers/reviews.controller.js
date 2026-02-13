@@ -340,15 +340,20 @@ export const listReviews = async (req, res) => {
 
     if (status !== "all") {
       if (status === "approved") {
+        // új + legacy approved
         filter = { $or: [{ status: "approved" }, { approved: true }] };
       } else if (status === "pending") {
-        filter = { status: "pending" };
-      } else if (status === "rejected") {
+        // új pending + legacy "pending" (ha nincs status és nincs approved)
         filter = {
           $or: [
-            { status: "rejected" },
-            { approved: false, status: { $exists: false } },
+            { status: "pending" },
+            { status: { $exists: false }, approved: { $exists: false } },
           ],
+        };
+      } else if (status === "rejected") {
+        // új rejected + legacy approved:false
+        filter = {
+          $or: [{ status: "rejected" }, { approved: false }],
         };
       } else {
         filter = { status };
@@ -372,8 +377,8 @@ export const listReviews = async (req, res) => {
           (r.approved === true
             ? "approved"
             : r.approved === false
-              ? "rejected"
-              : "pending");
+            ? "rejected"
+            : "pending");
 
         return {
           id: r._id,
@@ -383,8 +388,7 @@ export const listReviews = async (req, res) => {
           code: r.bookingId?.code || r.code,
           source: r.source,
           status: inferredStatus,
-          createdAt: r.createdAt,
-          date: r.date,
+          createdAt: r.createdAt || r.date,
           propertyName: r.property?.name,
           propertySlug: r.property?.slug,
         };
@@ -401,6 +405,7 @@ export const listReviews = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const approveReview = async (req, res) => {
   try {
