@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import SEO from "../../components/SEO";
 
+const API = import.meta.env.VITE_API_URL || "";
+
 export default function AdminReviews() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -8,74 +10,89 @@ export default function AdminReviews() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [actionLoading, setActionLoading] = useState(null);
+  const [error, setError] = useState(null);
+
+  const buildAdminUrl = (path, params) => {
+    const base = (API && API.trim()) || window.location.origin;
+    const url = new URL(path, base);
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
+      });
+    }
+    return url.toString();
+  };
 
   const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams({
-        status: statusFilter,
+      setError(null);
+
+      const params = {
         page: currentPage,
         limit: 20,
-      });
-      
-      const response = await fetch(`/api/admin/reviews?${params}`, {
-        credentials: "include",
-      });
-      
-      if (!response.ok) throw new Error("Failed to fetch reviews");
-      
+      };
+
+      // "all" esetén ne küldjünk status paramot (backend gyakran nem szereti)
+      if (statusFilter !== "all") params.status = statusFilter;
+
+      const url = buildAdminUrl("/api/admin/reviews", params);
+
+      const response = await fetch(url, { credentials: "include" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
       const data = await response.json();
-      setReviews(data.reviews);
-      setTotalPages(data.pagination.pages);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
+
+      // backend-függő: legyen toleráns
+      const list = data.reviews || data.items || [];
+      const pages =
+        data?.pagination?.pages ??
+        data?.pages ??
+        Math.max(1, Math.ceil((data?.total ?? list.length) / 20));
+
+      setReviews(Array.isArray(list) ? list : []);
+      setTotalPages(Number(pages) || 1);
+    } catch (e) {
+      console.error("Error fetching reviews:", e);
+      setError("Hálózati hiba / nem sikerült betölteni a véleményeket.");
+      setReviews([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   }, [statusFilter, currentPage]);
 
-  const handleApprove = async (reviewId) => {
+  const mutate = async (reviewId, action) => {
     try {
       setActionLoading(reviewId);
-      const response = await fetch(`/api/admin/reviews/${reviewId}/approve`, {
-        method: "POST",
-        credentials: "include",
-      });
-      
-      if (!response.ok) throw new Error("Failed to approve review");
-      
-      fetchReviews(); // Refresh list
-    } catch (error) {
-      console.error("Error approving review:", error);
+      setError(null);
+
+      const url = buildAdminUrl(`/api/admin/reviews/${encodeURIComponent(reviewId)}/${action}`);
+      const response = await fetch(url, { method: "POST", credentials: "include" });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      await fetchReviews();
+    } catch (e) {
+      console.error(`Error ${action} review:`, e);
+      setError("Nem sikerült végrehajtani a műveletet. (Lehet, hogy lejárt a session?)");
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleReject = async (reviewId) => {
-    try {
-      setActionLoading(reviewId);
-      const response = await fetch(`/api/admin/reviews/${reviewId}/reject`, {
-        method: "POST",
-        credentials: "include",
-      });
-      
-      if (!response.ok) throw new Error("Failed to reject review");
-      
-      fetchReviews(); // Refresh list
-    } catch (error) {
-      console.error("Error rejecting review:", error);
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  const handleApprove = (reviewId) => mutate(reviewId, "approve");
+  const handleReject = (reviewId) => mutate(reviewId, "reject");
 
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("hu-HU", {
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    if (!Number.isFinite(d.getTime())) return "";
+    return d.toLocaleDateString("hu-HU", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -97,28 +114,31 @@ export default function AdminReviews() {
     }
   };
 
+  // nálatok van 10-es skála is → alakítsuk 0..5 csillagra
+  const toStars5 = (rating) => {
+    const r = Number(rating || 0);
+    if (!Number.isFinite(r)) return 0;
+    // ha 0..5 között van, hagyjuk, ha 0..10, felezzük
+    return r <= 5 ? r : Math.round(r / 2);
+  };
+
   const renderStars = (rating) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span key={i} className={i <= rating ? "text-yellow-500" : "text-gray-300"}>
-          ★
-        </span>
-      );
-    }
-    return stars;
+    const stars5 = toStars5(rating);
+    return [...Array(5)].map((_, i) => (
+      <span key={i} className={i + 1 <= stars5 ? "text-yellow-500" : "text-gray-300"}>
+        ★
+      </span>
+    ));
   };
 
   return (
     <>
       <SEO title="Vélemények kezelése – Admin" noindex />
-      
+
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Vélemények kezelése</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Itt moderálhatja a beérkezett véleményeket.
-          </p>
+          <p className="mt-1 text-sm text-gray-600">Itt moderálhatod a beérkezett véleményeket.</p>
         </div>
 
         {/* Filter */}
@@ -142,6 +162,13 @@ export default function AdminReviews() {
           </select>
         </div>
 
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
+
         {/* Reviews list */}
         {loading ? (
           <div className="text-center py-8">
@@ -153,70 +180,79 @@ export default function AdminReviews() {
           </div>
         ) : (
           <div className="space-y-4">
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="border rounded-lg p-4 space-y-3 bg-white"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <span className="font-medium text-gray-900">{review.name || "Névtelen"}</span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(review.status)}`}>
-                        {review.status === "pending" && "Függőben"}
-                        {review.status === "approved" && "Jóváhagyott"}
-                        {review.status === "rejected" && "Elutasított"}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4 mt-1">
-                      <div className="flex items-center">
-                        {renderStars(review.rating)}
-                        <span className="ml-2 text-sm text-gray-600">({review.rating}/5)</span>
+            {reviews.map((review) => {
+              const id = review.id || review._id; // <- fontos
+              const created = review.createdAt || review.date;
+              const name = review.name || review.author || "Névtelen";
+              const text = (review.text || "").trim();
+
+              return (
+                <div key={id} className="border rounded-lg p-4 space-y-3 bg-white">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <span className="font-medium text-gray-900">{name}</span>
+
+                        {review.status && (
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                              review.status
+                            )}`}
+                          >
+                            {review.status === "pending" && "Függőben"}
+                            {review.status === "approved" && "Jóváhagyott"}
+                            {review.status === "rejected" && "Elutasított"}
+                          </span>
+                        )}
                       </div>
-                      <span className="text-sm text-gray-500">
-                        {formatDate(review.createdAt)}
-                      </span>
-                      {review.propertyName && (
-                        <span className="text-sm text-gray-500">
-                          {review.propertyName}
-                        </span>
-                      )}
+
+                      <div className="flex items-center space-x-4 mt-1">
+                        <div className="flex items-center">
+                          {renderStars(review.rating)}
+                          <span className="ml-2 text-sm text-gray-600">
+                            ({Number(review.rating || 0).toString()}/10)
+                          </span>
+                        </div>
+
+                        <span className="text-sm text-gray-500">{formatDate(created)}</span>
+
+                        {(review.propertyName || review.propertySlug) && (
+                          <span className="text-sm text-gray-500">
+                            {review.propertyName || review.propertySlug}
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Actions */}
+                    {review.status === "pending" && (
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleApprove(id)}
+                          disabled={actionLoading === id}
+                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                        >
+                          {actionLoading === id ? "Folyamatban..." : "Jóváhagyás"}
+                        </button>
+                        <button
+                          onClick={() => handleReject(id)}
+                          disabled={actionLoading === id}
+                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+                        >
+                          {actionLoading === id ? "Folyamatban..." : "Elutasítás"}
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Actions */}
-                  {review.status === "pending" && (
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleApprove(review.id)}
-                        disabled={actionLoading === review.id}
-                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-                      >
-                        {actionLoading === review.id ? "Folyamatban..." : "Jóváhagyás"}
-                      </button>
-                      <button
-                        onClick={() => handleReject(review.id)}
-                        disabled={actionLoading === review.id}
-                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
-                      >
-                        {actionLoading === review.id ? "Folyamatban..." : "Elutasítás"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="text-gray-700 text-sm leading-relaxed">
-                  {review.text}
-                </div>
-
-                {review.source && (
-                  <div className="text-xs text-gray-500">
-                    Forrás: {review.source}
+                  <div className="text-gray-700 text-sm leading-relaxed">
+                    {text || <span className="italic text-gray-500">Nincs szöveges értékelés.</span>}
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {review.source && <div className="text-xs text-gray-500">Forrás: {review.source}</div>}
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -230,14 +266,14 @@ export default function AdminReviews() {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
               >
                 Előző
               </button>
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
               >
                 Következő
               </button>
