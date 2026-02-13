@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import bg from "../assets/welcome_screen_bg.jpg";
+import bg from "../assets/welcome_screen_bg.JPG";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useI18n } from "../i18n/useI18n";
 import { HiOutlineLocationMarker } from "react-icons/hi";
