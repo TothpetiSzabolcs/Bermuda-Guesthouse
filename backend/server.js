@@ -3,7 +3,6 @@ import "dotenv/config";
 
 import express from "express";
 
-
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
@@ -24,13 +23,18 @@ import reviewsRoutes from "./routes/reviews.routes.js";
 import adminReviewsRouter from "./routes/adminReviews.routes.js";
 import { startReviewRequestJob } from "./jobs/reviewRequest.job.js";
 
-
-
 const app = express();
+app.set("etag", false);
+app.use("/api", (_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
 const PORT = process.env.PORT || 5555;
 
 app.set("trust proxy", 1);
-const ORIGINS = (process.env.CORS_ORIGINS || "http://localhost:5173").split(",");
+const ORIGINS = (process.env.CORS_ORIGINS || "http://localhost:5173").split(
+  ",",
+);
 app.use(cors({ origin: ORIGINS, credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
@@ -83,10 +87,9 @@ async function bootstrap() {
     }
 
     const reviewJobInterval = startReviewRequestJob({
-      intervalMs: 60 * 60 * 1000, 
-      daysAfterCheckout: 1,       
+      intervalMs: 60 * 60 * 1000,
+      daysAfterCheckout: 1,
     });
-    
 
     const server = app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
