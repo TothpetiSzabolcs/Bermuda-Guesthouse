@@ -33,8 +33,18 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
-        <Route path="/reviews/write" element={<Navigate to="/review/write" replace />} />
+
+        {/* ✅ EZ HIÁNYZOTT */}
+        <Route path="/review/write" element={<ReviewWrite />} />
+
+        {/* opcionális: régi link támogatás */}
+        <Route
+          path="/reviews/write"
+          element={<Navigate to="/review/write" replace />}
+        />
+
         <Route path="/reviews" element={<Reviews />} />
+
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin"
@@ -51,6 +61,7 @@ export default function App() {
           <Route path="rooms" element={<AdminRooms />} />
           <Route path="reviews" element={<AdminReviews />} />
         </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
