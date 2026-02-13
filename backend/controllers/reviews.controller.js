@@ -63,7 +63,7 @@ export const validateReviewToken = async (req, res) => {
     }
 
     const tokenHash = hashAdminToken(token);
-    
+
     const booking = await Booking.findOne({
       reviewToken: tokenHash,
       reviewSubmittedAt: null,
@@ -100,19 +100,25 @@ export const submitReview = async (req, res) => {
     }
 
     if (!rating || rating < 1 || rating > 5) {
-      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+      return res
+        .status(400)
+        .json({ message: "Rating must be between 1 and 5" });
     }
 
     if (!text || text.trim().length < 20) {
-      return res.status(400).json({ message: "Review text must be at least 20 characters" });
+      return res
+        .status(400)
+        .json({ message: "Review text must be at least 20 characters" });
     }
 
     if (text.trim().length > 1000) {
-      return res.status(400).json({ message: "Review text must not exceed 1000 characters" });
+      return res
+        .status(400)
+        .json({ message: "Review text must not exceed 1000 characters" });
     }
 
     const tokenHash = hashAdminToken(token);
-    
+
     const booking = await Booking.findOne({
       reviewToken: tokenHash,
       reviewSubmittedAt: null,
@@ -125,13 +131,13 @@ export const submitReview = async (req, res) => {
 
     await Booking.updateOne(
       { _id: booking._id },
-      { 
-        $set: { 
+      {
+        $set: {
           reviewSubmittedAt: new Date(),
-          reviewToken: null, 
-          reviewTokenExpiresAt: null 
-        } 
-      }
+          reviewToken: null,
+          reviewTokenExpiresAt: null,
+        },
+      },
     );
 
     const property = await Property.findById(booking.property);
@@ -142,11 +148,11 @@ export const submitReview = async (req, res) => {
     const review = new Review({
       property: booking.property,
       author: author?.trim() || "",
-      rating: rating * 2, 
+      rating: rating * 2,
       text: text.trim(),
       date: new Date(),
       source: "email",
-      approved: false, 
+      approved: false,
     });
 
     await review.save();
@@ -164,7 +170,9 @@ export const listApprovedReviews = async (req, res) => {
 
     let propertyId = null;
     if (propertySlug) {
-      const prop = await Property.findOne({ slug: propertySlug }).select("_id").lean();
+      const prop = await Property.findOne({ slug: propertySlug })
+        .select("_id")
+        .lean();
       if (!prop) return res.status(404).json({ message: "Property not found" });
       propertyId = prop._id;
     }
@@ -173,10 +181,7 @@ export const listApprovedReviews = async (req, res) => {
       $and: [
         propertyId ? { property: propertyId } : {},
         {
-          $or: [
-            { status: "approved" },   
-            { approved: true },       
-          ],
+          $or: [{ status: "approved" }, { approved: true }],
         },
       ],
     };
@@ -190,7 +195,10 @@ export const listApprovedReviews = async (req, res) => {
 
     const avg =
       reviews.length > 0
-        ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length).toFixed(1)
+        ? (
+            reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
+            reviews.length
+          ).toFixed(1)
         : null;
 
     res.json({
@@ -212,7 +220,6 @@ export const listApprovedReviews = async (req, res) => {
   }
 };
 
-
 // New web validation endpoint
 export const validateWebReviewToken = async (req, res) => {
   try {
@@ -223,7 +230,7 @@ export const validateWebReviewToken = async (req, res) => {
     }
 
     const tokenHash = hashAdminToken(token);
-    
+
     const booking = await Booking.findOne({
       reviewToken: tokenHash,
       reviewWebSubmittedAt: null,
@@ -260,19 +267,25 @@ export const submitWebReview = async (req, res) => {
     }
 
     if (!rating || rating < 1 || rating > 5) {
-      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+      return res
+        .status(400)
+        .json({ message: "Rating must be between 1 and 5" });
     }
 
     if (!text || text.trim().length < 20) {
-      return res.status(400).json({ message: "Review text must be at least 20 characters" });
+      return res
+        .status(400)
+        .json({ message: "Review text must be at least 20 characters" });
     }
 
     if (text.trim().length > 1000) {
-      return res.status(400).json({ message: "Review text must not exceed 1000 characters" });
+      return res
+        .status(400)
+        .json({ message: "Review text must not exceed 1000 characters" });
     }
 
     const tokenHash = hashAdminToken(token);
-    
+
     const booking = await Booking.findOne({
       reviewToken: tokenHash,
       reviewWebSubmittedAt: null,
@@ -286,13 +299,13 @@ export const submitWebReview = async (req, res) => {
     // Mark token as used
     await Booking.updateOne(
       { _id: booking._id },
-      { 
-        $set: { 
+      {
+        $set: {
           reviewWebSubmittedAt: new Date(),
-          reviewToken: null, 
-          reviewTokenExpiresAt: null 
-        } 
-      }
+          reviewToken: null,
+          reviewTokenExpiresAt: null,
+        },
+      },
     );
 
     const review = new Review({
@@ -302,10 +315,11 @@ export const submitWebReview = async (req, res) => {
       text: text.trim(),
       name: name?.trim() || "",
       source: "web",
-      status: "pending",      property: booking.property,
+      status: "pending",
+      property: booking.property,
       author: name?.trim() || "",
       date: new Date(),
-      approved: false, 
+      approved: false,
     });
 
     await review.save();
@@ -323,22 +337,17 @@ export const listReviews = async (req, res) => {
     const { status = "pending", page = 1, limit = 20 } = req.query;
 
     let filter = {};
-    if (status && status !== "all") {
+
+    if (status !== "all") {
       if (status === "approved") {
-        filter = {
-          $or: [{ status: "approved" }, { approved: true }],
-        };
+        filter = { $or: [{ status: "approved" }, { approved: true }] };
       } else if (status === "pending") {
-        filter = {
-          $or: [
-            { status: "pending" },
-            { status: { $exists: false }, approved: { $ne: true } },
-          ],
-        };
+        filter = { status: "pending" };
       } else if (status === "rejected") {
         filter = {
           $or: [
             { status: "rejected" },
+            { approved: false, status: { $exists: false } },
           ],
         };
       } else {
@@ -346,45 +355,45 @@ export const listReviews = async (req, res) => {
       }
     }
 
-    const pageNum = Number(page);
-    const limitNum = Number(limit);
-
     const reviews = await Review.find(filter)
       .populate("bookingId", "code")
       .populate("property", "name slug")
       .sort({ createdAt: -1, date: -1 })
-      .limit(limitNum)
-      .skip((pageNum - 1) * limitNum)
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit))
       .lean();
 
     const total = await Review.countDocuments(filter);
 
-    const normalized = reviews.map((r) => {
-      const derivedStatus =
-        r.status ||
-        (r.approved === true ? "approved" : r.approved === false ? "pending" : "pending");
-
-      return {
-        id: r._id,
-        rating: r.rating,
-        text: r.text,
-        name: r.name || r.author || "",
-        code: r.bookingId?.code || r.code,
-        source: r.source,
-        status: derivedStatus,
-        createdAt: r.createdAt || r.date,
-        propertyName: r.property?.name,
-        propertySlug: r.property?.slug,
-      };
-    });
-
     res.json({
-      reviews: normalized,
+      reviews: reviews.map((r) => {
+        const inferredStatus =
+          r.status ||
+          (r.approved === true
+            ? "approved"
+            : r.approved === false
+              ? "rejected"
+              : "pending");
+
+        return {
+          id: r._id,
+          rating: r.rating,
+          text: r.text,
+          name: r.name || r.author || "",
+          code: r.bookingId?.code || r.code,
+          source: r.source,
+          status: inferredStatus,
+          createdAt: r.createdAt,
+          date: r.date,
+          propertyName: r.property?.name,
+          propertySlug: r.property?.slug,
+        };
+      }),
       pagination: {
-        page: pageNum,
-        limit: limitNum,
+        page: Number(page),
+        limit: Number(limit),
         total,
-        pages: Math.ceil(total / limitNum),
+        pages: Math.ceil(total / Number(limit)),
       },
     });
   } catch (e) {
@@ -396,14 +405,14 @@ export const listReviews = async (req, res) => {
 export const approveReview = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const review = await Review.findByIdAndUpdate(
       id,
-      { 
+      {
         status: "approved",
-        approved: true
+        approved: true,
       },
-      { new: true }
+      { new: true },
     );
 
     if (!review) {
@@ -420,14 +429,14 @@ export const approveReview = async (req, res) => {
 export const rejectReview = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const review = await Review.findByIdAndUpdate(
       id,
-      { 
+      {
         status: "rejected",
-        approved: false
+        approved: false,
       },
-      { new: true }
+      { new: true },
     );
 
     if (!review) {

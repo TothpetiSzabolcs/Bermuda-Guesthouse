@@ -4,10 +4,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "vitest",
-    "lint": "eslint .",
-    "dev": "nodemon server.js"
-  },
+  "dev": "nodemon server.js",
+  "start": "node server.js",
+  "test": "vitest",
+  "lint": "eslint ."
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

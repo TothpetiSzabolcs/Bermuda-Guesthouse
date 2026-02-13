@@ -26,9 +26,7 @@ if (process.env.NODE_ENV === "production" && !ENV_MAIL_ADMIN && !SMTP_USER) {
   );
 }
 
-const APP_URL = String(ENV_APP_URL || "")
-  .replace(/\/+/g, "/")
-  .replace(/\/$/, "");
+const APP_URL = String(ENV_APP_URL || "").replace(/\/$/, "");
 
 
 const PAYMENT_DETAILS = {
