@@ -83,7 +83,7 @@ export default function AdminLayout() {
                 }`
               }
             >
-              {t("admin.nav.reviews")}
+              {t("privacy.admin.nav.reviews")}
             </NavLink>
           </nav>
         </aside>

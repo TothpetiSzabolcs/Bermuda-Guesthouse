@@ -26,7 +26,6 @@ export default function App() {
       <HashScroller />
       <CookieBanner privacyUrl="/privacy" />
       <Routes>
-        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/gallery/:category" element={<GalleryPage />} />
@@ -51,12 +50,8 @@ export default function App() {
           <Route path="gallery" element={<AdminGallery />} />
           <Route path="rooms" element={<AdminRooms />} />
           <Route path="reviews" element={<AdminReviews />} />
-          <Route index element={<AdminDashboard />} />
-          <Route path="gallery" element={<AdminGallery />} />
-          <Route path="rooms" element={<AdminRooms />} />
-          <Route path="reviews" element={<AdminReviews />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
