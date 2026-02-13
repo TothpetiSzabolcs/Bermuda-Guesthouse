@@ -13,6 +13,8 @@ export default function ReviewsHero() {
   const { t, lang } = useI18n();
   const { data, loading } = useReviews("bermuda-vendeghaz", 3);
 
+  if (error) console.log("reviews error:", error);
+
   if (loading || !data) return null;
 
   const items = (data?.reviews ?? []).map((r, i) => ({
