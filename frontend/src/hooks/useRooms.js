@@ -22,7 +22,6 @@ export function useRooms(propertySlug = "bermuda-vendeghaz", opts = {}) {
 
   
   useEffect(() => {
-    console.log("useRooms FETCH, lang =", lang);
     const controller = new AbortController();
     setL(true);
     setErr(null);

@@ -1,6 +1,66 @@
-import React from "react";
-import { Helmet } from "react-helmet-async";
+import { useEffect } from "react";
 import { useI18n } from "../i18n/useI18n";
+
+const ensureMeta = (selector, createFn) => {
+  let el = document.head.querySelector(selector);
+  if (!el) {
+    el = createFn();
+    document.head.appendChild(el);
+  }
+  return el;
+};
+
+const setMetaName = (name, content) => {
+  if (content == null) return;
+  const el = ensureMeta(`meta[name="${name}"]`, () => {
+    const m = document.createElement("meta");
+    m.setAttribute("name", name);
+    return m;
+  });
+  el.setAttribute("content", content);
+};
+
+const setMetaProperty = (property, content) => {
+  if (content == null) return;
+  const el = ensureMeta(`meta[property="${property}"]`, () => {
+    const m = document.createElement("meta");
+    m.setAttribute("property", property);
+    return m;
+  });
+  el.setAttribute("content", content);
+};
+
+const setLinkRel = (rel, href) => {
+  if (!href) return;
+  const el = ensureMeta(`link[rel="${rel}"]`, () => {
+    const l = document.createElement("link");
+    l.setAttribute("rel", rel);
+    return l;
+  });
+  el.setAttribute("href", href);
+};
+
+const upsertAlternate = (hrefLang, href) => {
+  if (!href) return;
+  const selector = `link[rel="alternate"][hreflang="${hrefLang}"]`;
+  const el = ensureMeta(selector, () => {
+    const l = document.createElement("link");
+    l.setAttribute("rel", "alternate");
+    l.setAttribute("hreflang", hrefLang);
+    return l;
+  });
+  el.setAttribute("href", href);
+};
+
+const removeAlternates = () => {
+  document.head
+    .querySelectorAll('link[rel="alternate"][hreflang]')
+    .forEach((n) => n.remove());
+};
+
+const removeMetaName = (name) => {
+  document.head.querySelectorAll(`meta[name="${name}"]`).forEach((n) => n.remove());
+};
 
 const SEO = ({
   title,
@@ -25,45 +85,62 @@ const SEO = ({
     de: "Bermuda Gästehaus - Ob Freundestreffen, Familienurlaub oder besondere Programme - bei uns finden Sie alles. Badeteich, Grill, Offroad-Touren und traditionelle Dorferlebnisse.",
   };
 
-  const finalTitle = title || defaultTitles[lang];
-  const finalDescription = description || defaultDescriptions[lang];
-  const baseUrl = "https://bermuda-vendeghaz.hu";
-  const finalCanonicalUrl = canonicalUrl || baseUrl;
+  useEffect(() => {
+    const finalTitle = title || defaultTitles[lang] || defaultTitles.hu;
+    const finalDescription =
+      description || defaultDescriptions[lang] || defaultDescriptions.hu;
 
-  return (
-    <Helmet>
-      <title>{finalTitle}</title>
-      <meta name="description" content={finalDescription} />
-      <link rel="canonical" href={finalCanonicalUrl} />
+    const baseUrl = "https://bermuda-vendeghaz.hu";
+    const finalCanonicalUrl = canonicalUrl || baseUrl;
+    const ogImageAbs = ogImage.startsWith("http") ? ogImage : `${baseUrl}${ogImage}`;
 
-      {noindex && <meta name="robots" content="noindex,nofollow" />}
+    // Title + description + canonical
+    document.title = finalTitle;
+    setMetaName("description", finalDescription);
+    setLinkRel("canonical", finalCanonicalUrl);
 
-      <meta property="og:title" content={finalTitle} />
-      <meta property="og:description" content={finalDescription} />
-      <meta property="og:type" content={type} />
-      <meta property="og:url" content={finalCanonicalUrl} />
-      <meta property="og:image" content={`${baseUrl}${ogImage}`} />
-      <meta
-        property="og:locale"
-        content={lang === "hu" ? "hu_HU" : lang === "de" ? "de_DE" : "en_US"}
-      />
+    // Robots
+    if (noindex) setMetaName("robots", "noindex,nofollow");
+    else removeMetaName("robots");
 
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={finalTitle} />
-      <meta name="twitter:description" content={finalDescription} />
-      <meta name="twitter:image" content={`${baseUrl}${ogImage}`} />
+    // Open Graph
+    setMetaProperty("og:title", finalTitle);
+    setMetaProperty("og:description", finalDescription);
+    setMetaProperty("og:type", type);
+    setMetaProperty("og:url", finalCanonicalUrl);
+    setMetaProperty("og:image", ogImageAbs);
+    setMetaProperty(
+      "og:locale",
+      lang === "hu" ? "hu_HU" : lang === "de" ? "de_DE" : "en_US"
+    );
 
-      {/* Hreflang csak akkor, ha tényleg van külön URL nyelvenként */}
-      {includeHreflang ? (
-        <>
-          <link rel="alternate" hrefLang="hu" href={finalCanonicalUrl} />
-          <link rel="alternate" hrefLang="en" href={finalCanonicalUrl} />
-          <link rel="alternate" hrefLang="de" href={finalCanonicalUrl} />
-          <link rel="alternate" hrefLang="x-default" href={finalCanonicalUrl} />
-        </>
-      ) : null}
-    </Helmet>
-  );
+    // Twitter
+    setMetaName("twitter:card", "summary_large_image");
+    setMetaName("twitter:title", finalTitle);
+    setMetaName("twitter:description", finalDescription);
+    setMetaName("twitter:image", ogImageAbs);
+
+    // Hreflang (csak ha tényleg kell)
+    if (includeHreflang) {
+      upsertAlternate("hu", finalCanonicalUrl);
+      upsertAlternate("en", finalCanonicalUrl);
+      upsertAlternate("de", finalCanonicalUrl);
+      upsertAlternate("x-default", finalCanonicalUrl);
+    } else {
+      removeAlternates();
+    }
+  }, [
+    lang,
+    title,
+    description,
+    canonicalUrl,
+    ogImage,
+    type,
+    noindex,
+    includeHreflang,
+  ]);
+
+  return null;
 };
 
 export default SEO;
