@@ -1,12 +1,80 @@
 import express from "express";
+import mongoose from "mongoose";
 import Booking from "../models/booking.model.js";
 import { createBooking } from "../controllers/bookings.controller.js";
 import { bookingLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
+// ── Create booking ───────────────────────────────────────
 router.post("/", bookingLimiter, createBooking);
 
+// ── Booked dates for a room (calendar) ───────────────────
+// MUST be before /:code, otherwise Express treats "booked-dates" as a code param!
+//
+// GET /api/bookings/booked-dates?room=ROOM_ID&months=6
+// → { room: "...", dates: ["2026-02-20", "2026-02-21", ...] }
+router.get("/booked-dates", async (req, res) => {
+  try {
+    const { room, months = "6" } = req.query;
+
+    if (!room || !mongoose.Types.ObjectId.isValid(room)) {
+      return res.status(400).json({ error: "INVALID_ROOM_ID" });
+    }
+
+    const roomId = new mongoose.Types.ObjectId(room);
+
+    // Date range: today → N months ahead
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const maxDate = new Date(today);
+    maxDate.setMonth(maxDate.getMonth() + Math.min(Number(months) || 6, 12));
+
+    // Find all active bookings that overlap [today, maxDate] for this room
+    const bookings = await Booking.find({
+      "items.room": roomId,
+      status: { $in: ["pending", "confirmed", "paid"] },
+      checkIn: { $lt: maxDate },
+      checkOut: { $gt: today },
+    })
+      .select("checkIn checkOut")
+      .lean();
+
+    // Expand each booking into individual date strings
+    const dateSet = new Set();
+
+    for (const b of bookings) {
+      const ci = new Date(b.checkIn);
+      const co = new Date(b.checkOut);
+      ci.setHours(0, 0, 0, 0);
+      co.setHours(0, 0, 0, 0);
+
+      // Mark every night from checkIn to checkOut - 1
+      // (checkOut day is free for new check-in)
+      const d = new Date(ci);
+      while (d < co) {
+        if (d >= today && d < maxDate) {
+          const str =
+            d.getFullYear() +
+            "-" +
+            String(d.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(d.getDate()).padStart(2, "0");
+          dateSet.add(str);
+        }
+        d.setDate(d.getDate() + 1);
+      }
+    }
+
+    res.json({ room, dates: [...dateSet].sort() });
+  } catch (e) {
+    console.error("booked-dates error:", e);
+    res.status(500).json({ error: "INTERNAL_ERROR" });
+  }
+});
+
+// ── Get booking by code ──────────────────────────────────
 router.get("/:code", async (req, res) => {
   try {
     const code = String(req.params.code || "").toUpperCase();
