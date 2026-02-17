@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { FiUsers, FiWifi, FiCoffee, FiTag } from "react-icons/fi";
 import { MdTv, MdChevronLeft, MdChevronRight } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineBathroom } from "react-icons/md";
 import { useI18n } from "../i18n/useI18n";
 import { cld } from "../utils/cloudinary";
@@ -10,6 +10,13 @@ import { getDisplayPrice } from "../utils/price";
 const RoomCard = React.memo(({ room, onBookingClick }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { t } = useI18n();
+  const navigate = useNavigate();
+
+  // ── Touch / swipe state ──────────────────────────────
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+  const touchMoved = useRef(false);
+  const MIN_SWIPE = 40;
 
   const p = getDisplayPrice(room);
 
@@ -30,7 +37,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
 
   const handlePrevImage = useCallback(
     (e) => {
-      e.stopPropagation();
+      e?.stopPropagation?.();
       setCurrentImageIndex((prev) =>
         prev === 0 ? images.length - 1 : prev - 1,
       );
@@ -40,7 +47,7 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
 
   const handleNextImage = useCallback(
     (e) => {
-      e.stopPropagation();
+      e?.stopPropagation?.();
       setCurrentImageIndex((prev) =>
         prev === images.length - 1 ? 0 : prev + 1,
       );
@@ -48,9 +55,51 @@ const RoomCard = React.memo(({ room, onBookingClick }) => {
     [images.length],
   );
 
+  // ── Touch handlers ───────────────────────────────────
+  const onTouchStart = useCallback((e) => {
+    touchEndX.current = null;
+    touchMoved.current = false;
+    touchStartX.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const onTouchMove = useCallback((e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+    if (touchStartX.current && Math.abs(touchStartX.current - e.targetTouches[0].clientX) > 10) {
+      touchMoved.current = true;
+    }
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    if (!touchStartX.current || !touchEndX.current || !hasMultipleImages) return;
+
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (distance > MIN_SWIPE) handleNextImage();
+    if (distance < -MIN_SWIPE) handlePrevImage();
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  }, [hasMultipleImages, handleNextImage, handlePrevImage]);
+
+  // ── Image click → navigate to room detail ────────────
+  const handleImageClick = useCallback(() => {
+    // Don't navigate if user just swiped
+    if (touchMoved.current) {
+      touchMoved.current = false;
+      return;
+    }
+    navigate(`/rooms/${room.slug}?img=${currentImageIndex}`);
+  }, [navigate, room.slug, currentImageIndex]);
+
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 max-w-full">
-      <div className="relative aspect-[4/3] bg-gray-100">
+      <div
+        className="relative aspect-[4/3] bg-gray-100 cursor-pointer"
+        onClick={handleImageClick}
+        onTouchStart={hasMultipleImages ? onTouchStart : undefined}
+        onTouchMove={hasMultipleImages ? onTouchMove : undefined}
+        onTouchEnd={hasMultipleImages ? onTouchEnd : undefined}
+      >
         {imgSrcRaw ? (
           <>
             <img

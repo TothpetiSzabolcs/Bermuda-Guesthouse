@@ -24,8 +24,9 @@ import SEO from "../components/SEO";
 import Header from "../components/header";
 import Footer from "../components/Footer";
 import { getDisplayPrice } from "../utils/price";
+import ImageLightbox from "./ImageLightbox";
 
-// Autoplay interval constant (5 seconds)
+
 const AUTOPLAY_INTERVAL = 5000;
 
 const RoomDetail = () => {
@@ -40,6 +41,7 @@ const RoomDetail = () => {
   const [queryParamApplied, setQueryParamApplied] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Image loading states
   const [imageLoading, setImageLoading] = useState(true);
@@ -79,7 +81,6 @@ const RoomDetail = () => {
 
   const hasMany = images.length > 1;
 
-  // Apply query parameter for initial image index (only once, before user interaction)
   useEffect(() => {
     if (queryParamApplied || loading || images.length === 0) return;
 
@@ -99,7 +100,6 @@ const RoomDetail = () => {
     setQueryParamApplied(true);
   }, [images.length, loading, queryParamApplied, searchParams]);
 
-  // Initialize image loading states when room data loads
   useEffect(() => {
     if (!loading && room && images.length > 0) {
       setImageLoading(true);
@@ -107,7 +107,6 @@ const RoomDetail = () => {
     }
   }, [loading, room, images.length]);
 
-  // slug váltáskor vissza az első képre és reset query param state
   useEffect(() => {
     setActiveImg(0);
     setQueryParamApplied(false);
@@ -201,14 +200,19 @@ const RoomDetail = () => {
 
   // Swipe gesture handlers
   const minSwipeDistance = 40;
+  const touchMoved = useRef(false);
 
   const onTouchStart = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
+    touchMoved.current = false;
   };
 
   const onTouchMove = (e) => {
     setTouchEnd(e.targetTouches[0].clientX);
+    if (touchStart && Math.abs(touchStart - e.targetTouches[0].clientX) > 10) {
+      touchMoved.current = true;
+    }
   };
 
   const onTouchEnd = () => {
@@ -223,6 +227,15 @@ const RoomDetail = () => {
 
     resetAutoplay();
   };
+
+  const handleImageClick = useCallback(() => {
+    if (touchMoved.current) {
+      touchMoved.current = false;
+      return;
+    }
+    stopAutoplay();
+    setLightboxOpen(true);
+  }, [stopAutoplay]);
 
   // Lazy preload functionality
   const preloadImage = useCallback((imageUrl) => {
@@ -251,9 +264,8 @@ const RoomDetail = () => {
     setImageError(true);
   }, []);
 
-  // Billentyű lapozás (← →)
   useEffect(() => {
-    if (!hasMany) return;
+    if (!hasMany || lightboxOpen) return;
 
     const onKey = (e) => {
       if (e.key === "ArrowLeft") goPrev();
@@ -262,10 +274,16 @@ const RoomDetail = () => {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [hasMany, goPrev, goNext]);
+  }, [hasMany, goPrev, goNext, lightboxOpen]);
 
   const handleBookingClick = () => setSelectedRoom(room);
   const handleBookingClose = () => setSelectedRoom(null);
+
+  // ── Lightbox close handler
+  const handleLightboxClose = useCallback(() => {
+    setLightboxOpen(false);
+    resetAutoplay();
+  }, [resetAutoplay]);
 
   if (loading) {
     return (
@@ -319,9 +337,7 @@ const RoomDetail = () => {
       <Header />
 
       <section className="scroll-mt-24 py-30 bg-white overflow-x-hidden">
-        {/* container: mobilon kisebb padding, desktopon nagyobb */}
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12 w-full overflow-x-hidden">
-          {/* Back button: mobilon kisebb margó */}
           <Link
             to="/#rooms"
             className="inline-flex items-center text-gray-600 hover:text-green-600 font-medium mb-4 sm:mb-6 lg:mb-8 transition-colors"
@@ -331,7 +347,7 @@ const RoomDetail = () => {
           </Link>
 
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden w-full overflow-x-hidden">
-            {/* Image section (CAROUSEL) */}
+            {/* Image section (carousel) */}
             <div
               className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] 2xl:h-[520px] w-full"
               onTouchStart={onTouchStart}
@@ -356,9 +372,10 @@ const RoomDetail = () => {
                       index: activeImg + 1,
                       total: images.length,
                     })}
-                    className={`w-full h-full object-cover transition-opacity duration-300 ${
+                    className={`w-full h-full object-cover transition-opacity duration-300 cursor-pointer ${
                       imageLoading ? "opacity-0" : "opacity-100"
                     }`}
+                    onClick={handleImageClick}
                     onLoad={handleImageLoad}
                     onError={handleImageError}
                   />
@@ -519,6 +536,15 @@ const RoomDetail = () => {
           {/* end card */}
         </div>
       </section>
+
+      {/* Fullscreen image lightbox */}
+      {lightboxOpen && (
+        <ImageLightbox
+          images={images}
+          initialIndex={activeImg}
+          onClose={handleLightboxClose}
+        />
+      )}
 
       <BookingModal
         isOpen={!!selectedRoom}
