@@ -8,6 +8,7 @@ import MapPanel from "./MapPanel";
 const HeroSection = () => {
   const { t } = useI18n();
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,11 +30,17 @@ const HeroSection = () => {
   };
 
   return (
-    <div id="hero" className="relative h-screen w-full overflow-hidden">
+    <div id="hero" className="relative h-screen w-full overflow-hidden bg-gray-900">
+      {/* Hero background image – starts invisible, fades in when loaded */}
       <img
         src={bg}
-        alt={t("hero.bgAlt") || "Bermanda Vendégház - háttérkép"}
-        className="absolute inset-0 h-full w-full object-cover"
+        alt={t("hero.bgAlt") || "Bermuda Vendégház - háttérkép"}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
+          imgLoaded ? "opacity-100" : "opacity-0"
+        }`}
+        onLoad={() => setImgLoaded(true)}
+        fetchPriority="high"
+        decoding="async"
       />
       <div className="absolute inset-0 bg-black/50" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/70 via-black/30 to-transparent" />
