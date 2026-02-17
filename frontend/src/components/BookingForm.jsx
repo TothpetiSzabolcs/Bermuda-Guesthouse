@@ -607,7 +607,7 @@ const BookingForm = ({ room, onClose, bookedDates: bookedDatesProp }) => {
 
     if (!formData.email.trim()) {
       newErrors.email = COPY.required;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(formData.email)) {
       newErrors.email = COPY.invalidEmail;
     }
 
@@ -888,13 +888,6 @@ const BookingForm = ({ room, onClose, bookedDates: bookedDatesProp }) => {
           )}
         </div>
       </div>
-
-      {/* Error Message */}
-      {submitStatus?.type === "error" && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-          {submitStatus.message}
-        </div>
-      )}
 
       {/* ──────────────── CALENDAR ──────────────── */}
       <div className="mb-6 rounded-lg border border-gray-200 p-4">
@@ -1388,6 +1381,13 @@ const BookingForm = ({ room, onClose, bookedDates: bookedDatesProp }) => {
             <p className="mt-1 text-sm text-red-600">{errors.acceptTerms}</p>
           )}
         </div>
+
+        {/* ──────────────── ERROR MESSAGE ──────────────── */}
+        {submitStatus?.type === "error" && (
+          <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            {submitStatus.message}
+          </div>
+        )}
 
         {/* ──────────────── SUBMIT BUTTON ──────────────── */}
         <div className="flex gap-3 pt-2">
