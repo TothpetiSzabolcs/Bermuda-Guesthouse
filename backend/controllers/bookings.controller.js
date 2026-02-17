@@ -4,9 +4,10 @@ import { sendMail, bookingMailTemplates, MAIL_ADMIN } from "../lib/mailer.js";
 import mongoose from "mongoose";
 import Property from "../models/property.model.js";
 import { makeAdminToken, hashAdminToken } from "../lib/adminActionToken.js";
+import { validateEmailDomain } from "../lib/emailValidator.js";
 
 const isValidEmail = (s = "") =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
+  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(s).trim());
 
 export async function createBooking(req, res) {
   const reqLang = req?.body?.customer?.lang || "hu";
@@ -32,6 +33,34 @@ export async function createBooking(req, res) {
       return res.status(400).json({ error: "MISSING_FIELDS" });
     }
 
+    // ── Email validation (format + MX) ───────────────────
+    const email = customer?.email?.trim();
+    if (!email || !isValidEmail(email)) {
+      return res.status(400).json({
+        error: "INVALID_EMAIL",
+        message:
+          reqLang === "hu"
+            ? "Érvényes email címet adj meg."
+            : reqLang === "de"
+            ? "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+            : "Please enter a valid email address.",
+      });
+    }
+
+    const domainCheck = await validateEmailDomain(email);
+    if (!domainCheck.valid) {
+      return res.status(400).json({
+        error: "INVALID_EMAIL_DOMAIN",
+        message:
+          reqLang === "hu"
+            ? "Ez az email szolgáltató nem létezik. Kérjük, ellenőrizd az email címet."
+            : reqLang === "de"
+            ? "Dieser E-Mail-Anbieter existiert nicht. Bitte überprüfen Sie Ihre E-Mail-Adresse."
+            : "This email provider does not exist. Please check your email address.",
+      });
+    }
+
+    // ── Property lookup ──────────────────────────────────
     let propertyId = property;
 
     if (!mongoose.Types.ObjectId.isValid(String(property))) {
@@ -107,92 +136,34 @@ export async function createBooking(req, res) {
           tasks.push(
             sendMail({
               to: guestEmail,
-              subject: tpl.guest.subject,
-              text: tpl.guest.text,
-              html: tpl.guest.html,
+              subject: tpl.guestNew.subject,
+              text: tpl.guestNew.text,
+              html: tpl.guestNew.html,
               replyTo: MAIL_ADMIN,
               kind: "guest",
             })
           );
-        } else if (guestEmail) {
-          console.warn("⚠️ Invalid guest email, skipping:", guestEmail);
         }
 
-        const adminEmail = (process.env.MAIL_ADMIN || "").trim();
-        if (isValidEmail(adminEmail)) {
+        if (MAIL_ADMIN) {
           tasks.push(
             sendMail({
-              to: adminEmail,
-              subject: tpl.admin.subject,
-              text: tpl.admin.text,
-              html: tpl.admin.html,
+              to: MAIL_ADMIN,
+              subject: tpl.adminNew.subject,
+              text: tpl.adminNew.text,
+              html: tpl.adminNew.html,
               kind: "admin",
             })
-          );
-        } else {
-          console.warn(
-            "⚠️ Invalid MAIL_ADMIN, admin email skipped:",
-            adminEmail || "(empty)"
           );
         }
 
         await Promise.allSettled(tasks);
       } catch (e) {
-        console.error("mail send failed:", e?.message || e);
+        console.error("booking mail send failed:", e?.message || e);
       }
     });
   } catch (e) {
-    const lang = reqLang;
-    const code = e?.message || "INTERNAL_ERROR";
-
-    const ERR_MSG = {
-      DATES_NOT_AVAILABLE: {
-        hu: "A kiválasztott dátumokra a szoba nem elérhető.",
-        en: "The room is not available for the selected dates.",
-        de: "Für die ausgewählten Daten ist das Zimmer nicht verfügbar.",
-      },
-      ROOM_NOT_FOUND: {
-        hu: "A kiválasztott szoba nem található.",
-        en: "Selected room was not found.",
-        de: "Das ausgewählte Zimmer wurde nicht gefunden.",
-      },
-      CAPACITY_EXCEEDED: {
-        hu: "A vendégek száma meghaladja a szoba kapacitását.",
-        en: "Number of guests exceeds the room capacity.",
-        de: "Die Gästezahl überschreitet die Zimmerkapazität.",
-      },
-      INVALID_DATE_FORMAT: {
-        hu: "Hibás dátum formátum.",
-        en: "Invalid date format.",
-        de: "Ungültiges Datumsformat.",
-      },
-      MISSING_FIELDS: {
-        hu: "Hiányzó kötelező mezők.",
-        en: "Missing required fields.",
-        de: "Pflichtfelder fehlen.",
-      },
-      PROPERTY_NOT_FOUND: {
-        hu: "A szállás nem található.",
-        en: "Property not found.",
-        de: "Unterkunft nicht gefunden.",
-      },
-    };
-
-    const map = {
-      PROPERTY_NOT_FOUND: 404,
-      INVALID_DATE_RANGE: 400,
-      INVALID_ITEMS: 400,
-      INVALID_DATE_FORMAT: 400,
-      DUPLICATE_ROOM_IN_ITEMS: 400,
-      CAPACITY_EXCEEDED: 400,
-      ROOM_NOT_FOUND: 404,
-      DATES_NOT_AVAILABLE: 409,
-      CODE_GENERATION_FAILED: 500,
-    };
-
-    return res.status(map[code] || 500).json({
-      error: code,
-      message: ERR_MSG[code]?.[lang] || ERR_MSG[code]?.hu || undefined,
-    });
+    console.error("createBooking error:", e?.message || e);
+    res.status(500).json({ error: "INTERNAL_ERROR" });
   }
 }
