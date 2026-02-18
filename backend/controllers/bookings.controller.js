@@ -42,8 +42,8 @@ export async function createBooking(req, res) {
           reqLang === "hu"
             ? "Érvényes email címet adj meg."
             : reqLang === "de"
-            ? "Bitte geben Sie eine gültige E-Mail-Adresse ein."
-            : "Please enter a valid email address.",
+              ? "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+              : "Please enter a valid email address.",
       });
     }
 
@@ -55,8 +55,8 @@ export async function createBooking(req, res) {
           reqLang === "hu"
             ? "Ez az email szolgáltató nem létezik. Kérjük, ellenőrizd az email címet."
             : reqLang === "de"
-            ? "Dieser E-Mail-Anbieter existiert nicht. Bitte überprüfen Sie Ihre E-Mail-Adresse."
-            : "This email provider does not exist. Please check your email address.",
+              ? "Dieser E-Mail-Anbieter existiert nicht. Bitte überprüfen Sie Ihre E-Mail-Adresse."
+              : "This email provider does not exist. Please check your email address.",
       });
     }
 
@@ -136,12 +136,12 @@ export async function createBooking(req, res) {
           tasks.push(
             sendMail({
               to: guestEmail,
-              subject: tpl.guestNew.subject,
-              text: tpl.guestNew.text,
-              html: tpl.guestNew.html,
+              subject: tpl.guest.subject,
+              text: tpl.guest.text,
+              html: tpl.guest.html,
               replyTo: MAIL_ADMIN,
               kind: "guest",
-            })
+            }),
           );
         }
 
@@ -149,11 +149,11 @@ export async function createBooking(req, res) {
           tasks.push(
             sendMail({
               to: MAIL_ADMIN,
-              subject: tpl.adminNew.subject,
-              text: tpl.adminNew.text,
-              html: tpl.adminNew.html,
+              subject: tpl.admin.subject,
+              text: tpl.admin.text,
+              html: tpl.admin.html,
               kind: "admin",
-            })
+            }),
           );
         }
 
