@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Booking from "../models/booking.model.js";
+import BlockedDate from "../models/blockedDate.model.js";
 import { createBooking } from "../controllers/bookings.controller.js";
 import { bookingLimiter } from "../middleware/rateLimit.js";
 
@@ -65,6 +66,24 @@ router.get("/booked-dates", async (req, res) => {
         }
         d.setDate(d.getDate() + 1);
       }
+    }
+
+    // ── Also include admin-blocked dates ─────────────────
+    const blockedDocs = await BlockedDate.find({
+      room: roomId,
+      date: { $gte: today, $lt: maxDate },
+    }).select("date").lean();
+
+    for (const bd of blockedDocs) {
+      const d = new Date(bd.date);
+      d.setHours(0, 0, 0, 0);
+      const str =
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0");
+      dateSet.add(str);
     }
 
     res.json({ room, dates: [...dateSet].sort() });

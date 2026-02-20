@@ -10,6 +10,7 @@ import availabilityRouter from "./routes/availability.routes.js";
 import Booking from "./models/booking.model.js";
 import Room from "./models/rooms.model.js";
 import Property from "./models/property.model.js";
+import BlockedDate from "./models/blockedDate.model.js";
 import bookingsRouter from "./routes/bookings.routes.js";
 import adminBookingsRoutes from "./routes/adminBookings.routes.js";
 import adminAuthRouter from "./routes/admin.routes.js";
@@ -21,6 +22,7 @@ import adminGalleryRouter from "./routes/adminGallery.routes.js";
 import publicGalleryRouter from "./routes/publicGallery.routes.js";
 import reviewsRoutes from "./routes/reviews.routes.js";
 import adminReviewsRouter from "./routes/adminReviews.routes.js";
+import adminBlockedDatesRouter from "./routes/adminBlockedDates.routes.js";
 import { startReviewRequestJob } from "./jobs/reviewRequest.job.js";
 
 const app = express();
@@ -53,6 +55,7 @@ app.use("/api/admin/gallery", adminGalleryRouter);
 app.use("/api/public/gallery", publicGalleryRouter);
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/admin/reviews", adminReviewsRouter);
+app.use("/api/admin/blocked-dates", adminBlockedDatesRouter);
 
 app.set("etag", false);
 
@@ -75,6 +78,7 @@ async function bootstrap() {
         Booking.syncIndexes(),
         Room.syncIndexes(),
         Property.syncIndexes(),
+        BlockedDate.syncIndexes(),
       ]);
       console.log("✅ Indexek szinkronizálva (dev)");
     } else {
@@ -82,6 +86,7 @@ async function bootstrap() {
         Booking.createIndexes(),
         Room.createIndexes(),
         Property.createIndexes(),
+        BlockedDate.createIndexes(),
       ]);
       console.log("✅ Indexek ellenőrizve/létrehozva (prod)");
     }

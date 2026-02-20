@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Booking from "../models/booking.model.js";
+import BlockedDate from "../models/blockedDate.model.js";
 import Room from "../models/rooms.model.js";
 import Property from "../models/property.model.js";
 import { generateBookingCode } from "../lib/generateCode.js";
@@ -29,6 +30,8 @@ async function ensureNoOverlap(session, items, checkIn, checkOut) {
   if (ids.some((id) => !mongoose.Types.ObjectId.isValid(id))) {
     throw new Error("ROOM_NOT_FOUND");
   }
+
+  // Check existing bookings
   const overlap = await Booking.findOne({
     "items.room": { $in: ids },
     status: { $in: ["pending", "paid"] },
@@ -38,6 +41,15 @@ async function ensureNoOverlap(session, items, checkIn, checkOut) {
     .session(session)
     .select("_id");
   if (overlap) throw new Error("DATES_NOT_AVAILABLE");
+
+  // Check admin-blocked dates
+  const blocked = await BlockedDate.findOne({
+    room: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    date: { $gte: checkIn, $lt: checkOut },
+  })
+    .session(session)
+    .select("_id");
+  if (blocked) throw new Error("DATES_NOT_AVAILABLE");
 }
 
 export async function createBookingAtomic(payload) {
