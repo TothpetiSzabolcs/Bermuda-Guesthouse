@@ -167,12 +167,12 @@ export default function AdminCalendarWidget() {
   // ── Load rooms for dropdown ──────────────────────────────
   const loadRooms = async () => {
     try {
-      const res = await fetch(`${API}/api/admin/rooms`, { credentials: "include" });
+      const res = await fetch(`${API}/api/rooms?propertySlug=bermuda-vendeghaz&active=all`, { credentials: "include" });
       if (!res.ok) return;
       const data = await res.json();
       const list = Array.isArray(data) ? data : data.rooms || [];
       setRooms(list);
-      if (list.length && !blockRoom) setBlockRoom(list[0]._id);
+      if (list.length && !blockRoom) setBlockRoom(list[0].id || list[0]._id);
     } catch {}
   };
 
@@ -648,9 +648,10 @@ export default function AdminCalendarWidget() {
                   onChange={(e) => setBlockRoom(e.target.value)}
                 >
                   {rooms.map((r) => {
+                    const rid = r.id || r._id;
                     const label = typeof r.name === "string" ? r.name : r.name?.hu || r.name?.en || r.name?.de || "Szoba";
                     return (
-                      <option key={r._id} value={r._id}>
+                      <option key={rid} value={rid}>
                         {label}
                       </option>
                     );
@@ -725,7 +726,7 @@ export default function AdminCalendarWidget() {
               <div className="mt-2">
                 <div className="text-xs font-medium text-gray-700 mb-2">
                   Aktív blokkolások ({(() => {
-                    const r = rooms.find((r) => r._id === blockRoom);
+                    const r = rooms.find((r) => (r.id || r._id) === blockRoom);
                     if (!r) return "Szoba";
                     return typeof r.name === "string" ? r.name : r.name?.hu || r.name?.en || "Szoba";
                   })()}):
