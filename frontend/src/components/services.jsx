@@ -8,18 +8,16 @@ import { FaPlay } from "react-icons/fa";
 
 const SERVICE_CATS = [
   "konyha",
-  "etkezo",
   "nappali",
   "nagyterem",
-  "kavezo-teazo",
+  "csarda",
   "terasz",
 ];
 const CAT_LABEL_KEY = {
   konyha: "konyha",
-  etkezo: "etkezo",
   nappali: "nappali",
   nagyterem: "nagyterem",
-  "kavezo-teazo": "kavezoteazo",
+  csarda: "csarda",
   terasz: "terasz",
 };
 
@@ -106,13 +104,11 @@ export default function Services() {
     const placeholderImages = {
       konyha:
         "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200&h=700&fit=crop&crop=center",
-      etkezo:
-        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&h=700&fit=crop&crop=center",
       nappali:
         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&h=700&fit=crop&crop=center",
       nagyterem:
         "https://images.unsplash.com/photo-1519167758481-91532716981d?w=1200&h=700&fit=crop&crop=center",
-      'kavezo-teazo':
+      csarda:
         "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&h=700&fit=crop&crop=center",
       terasz:
         "https://images.unsplash.com/photo-1560185127-cd55a6ce8ae2?w=1200&h=700&fit=crop&crop=center",

@@ -11,9 +11,9 @@ const CATS = [
   { value: "programok", label: "Programok" },
   { value: "egyeb", label: "Egyéb" },
   { value: "konyha", label: "Konyha" },
-  { value: "etkezo", label: "Étkező" },
+  { value: "etkezo", label: "Kávézó/Teázó" },
   { value: "nappali", label: "Nappali" },
-  { value: "nagyterem", label: "Nagyterem" },
+  { value: "nagyterem", label: "Rendezvényterem" },
   { value: "kavezo-teazo", label: "Kávézó/Teázó" },
   { value: "terasz", label: "Terasz" },
 ];
