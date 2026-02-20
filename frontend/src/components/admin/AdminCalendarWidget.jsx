@@ -85,7 +85,7 @@ function statusBadgeClass(status) {
     case "paid":
       return `${base} bg-green-100 text-green-800`;
     case "cancelled":
-      return `${base} bg-red-100 text-red-800`; // ✅ PIROS
+      return `${base} bg-red-100 text-red-800`;
     default:
       return `${base} bg-gray-100 text-gray-700`;
   }
@@ -102,6 +102,8 @@ function dotClass(status) {
       return `${base} bg-green-500`;
     case "cancelled":
       return `${base} bg-red-500`;
+    case "blocked":
+      return `${base} bg-purple-500`;
     default:
       return `${base} bg-gray-400`;
   }
@@ -134,6 +136,17 @@ export default function AdminCalendarWidget() {
   const [err, setErr] = useState("");
   const [selectedDay, setSelectedDay] = useState(() => ymd(new Date()));
 
+  // ── Blocked dates state ──────────────────────────────────
+  const [rooms, setRooms] = useState([]);
+  const [blockedDates, setBlockedDates] = useState([]); // [{date, note, room:{_id,name}}]
+  const [blockRoom, setBlockRoom] = useState("");
+  const [blockStart, setBlockStart] = useState("");
+  const [blockEnd, setBlockEnd] = useState("");
+  const [blockNote, setBlockNote] = useState("");
+  const [blockBusy, setBlockBusy] = useState(false);
+  const [showBlockPanel, setShowBlockPanel] = useState(false);
+
+  // ── Load bookings ────────────────────────────────────────
   const load = async () => {
     setErr("");
     setLoading(true);
@@ -151,33 +164,118 @@ export default function AdminCalendarWidget() {
     }
   };
 
+  // ── Load rooms for dropdown ──────────────────────────────
+  const loadRooms = async () => {
+    try {
+      const res = await fetch(`${API}/api/admin/rooms`, { credentials: "include" });
+      if (!res.ok) return;
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : data.rooms || [];
+      setRooms(list);
+      if (list.length && !blockRoom) setBlockRoom(list[0]._id);
+    } catch {}
+  };
+
+  // ── Load blocked dates ───────────────────────────────────
+  const loadBlocked = async () => {
+    try {
+      // Fetch all blocked dates (no room filter – we want all for calendar display)
+      const res = await fetch(`${API}/api/admin/blocked-dates`, { credentials: "include" });
+      if (!res.ok) return;
+      const data = await res.json();
+      setBlockedDates(Array.isArray(data) ? data : []);
+    } catch {}
+  };
+
+  // ── Block dates ──────────────────────────────────────────
+  const handleBlock = async () => {
+    if (!blockRoom || !blockStart || !blockEnd) return;
+    setBlockBusy(true);
+    try {
+      const res = await fetch(`${API}/api/admin/blocked-dates`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ room: blockRoom, startDate: blockStart, endDate: blockEnd, note: blockNote }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Block failed");
+      }
+      setBlockNote("");
+      await loadBlocked();
+    } catch (e) {
+      alert("Hiba a blokkoláskor: " + (e?.message || ""));
+    } finally {
+      setBlockBusy(false);
+    }
+  };
+
+  // ── Unblock dates ────────────────────────────────────────
+  const handleUnblock = async () => {
+    if (!blockRoom || !blockStart || !blockEnd) return;
+    if (!confirm("Biztosan feloldod a blokkolást erre az időszakra?")) return;
+    setBlockBusy(true);
+    try {
+      const res = await fetch(`${API}/api/admin/blocked-dates`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ room: blockRoom, startDate: blockStart, endDate: blockEnd }),
+      });
+      if (!res.ok) throw new Error("Unblock failed");
+      await loadBlocked();
+    } catch (e) {
+      alert("Hiba a feloldáskor: " + (e?.message || ""));
+    } finally {
+      setBlockBusy(false);
+    }
+  };
+
   useEffect(() => {
     load();
+    loadRooms();
+    loadBlocked();
   }, []);
 
+  // ── Blocked dates by day (ymd → [{note, roomName}]) ─────
+  const blockedByDay = useMemo(() => {
+    const map = new Map();
+    for (const bd of blockedDates) {
+      const d = new Date(bd.date);
+      d.setHours(0, 0, 0, 0);
+      const key = ymd(d);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push({
+        note: bd.note || "",
+        roomName: getRoomName(bd.room),
+        roomId: bd.room?._id || bd.room,
+      });
+    }
+    return map;
+  }, [blockedDates]);
+
+  // ── Bookings by day ──────────────────────────────────────
   const byDay = useMemo(() => {
-    const map = new Map(); // ymd -> booking[]
+    const map = new Map();
     for (const b of bookings) {
       for (const day of bookingDays(b)) {
         if (!map.has(day)) map.set(day, []);
         map.get(day).push(b);
       }
     }
-    // stabil rendezés a napi listában
-    for (const [k, arr] of map.entries()) {
+    for (const [, arr] of map.entries()) {
       arr.sort(
         (a, b) =>
           String(a.status).localeCompare(String(b.status)) ||
           String(a.code).localeCompare(String(b.code))
       );
-      map.set(k, arr);
     }
     return map;
   }, [bookings]);
 
-  // napi “összesítő” a pöttyökhöz (pending/confirmed/paid/cancelled db)
   const daySummary = useMemo(() => {
-    const sum = new Map(); // ymd -> {pending, confirmed, paid, cancelled, total}
+    const sum = new Map();
     for (const [day, arr] of byDay.entries()) {
       const s = {
         pending: 0,
@@ -208,8 +306,8 @@ export default function AdminCalendarWidget() {
   const monthEnd = endOfMonth(month);
 
   const selectedList = byDay.get(selectedDay) || [];
+  const selectedBlocked = blockedByDay.get(selectedDay) || [];
 
-  // kiválasztott nap rövid összegzése (jobb oldali fejlécben)
   const selectedSum = daySummary.get(selectedDay) || {
     pending: 0,
     confirmed: 0,
@@ -240,6 +338,9 @@ export default function AdminCalendarWidget() {
             </span>
             <span className="inline-flex items-center gap-2">
               <span className={dotClass("cancelled")} /> Törölve
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span className={dotClass("blocked")} /> Blokkolt
             </span>
           </div>
         </div>
@@ -273,7 +374,7 @@ export default function AdminCalendarWidget() {
 
           <button
             className="ml-2 rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
-            onClick={load}
+            onClick={() => { load(); loadBlocked(); }}
             disabled={loading}
           >
             Frissítés
@@ -304,6 +405,8 @@ export default function AdminCalendarWidget() {
               const inMonth = d >= monthStart && d <= monthEnd;
               const sum = daySummary.get(key);
               const count = sum?.total || 0;
+              const blocked = blockedByDay.get(key);
+              const hasBlocked = blocked && blocked.length > 0;
               const isSelected = key === selectedDay;
 
               return (
@@ -311,24 +414,33 @@ export default function AdminCalendarWidget() {
                   key={key}
                   onClick={() => setSelectedDay(key)}
                   className={[
-                    "h-20 rounded-lg border text-left px-2 py-2 hover:bg-gray-50 transition",
+                    "h-20 rounded-lg border text-left px-2 py-2 hover:bg-gray-50 transition relative",
                     inMonth ? "bg-white" : "bg-gray-50 text-gray-500",
                     isSelected
                       ? "border-gray-900 ring-1 ring-gray-900"
+                      : hasBlocked && !count
+                      ? "border-purple-300 bg-purple-50"
                       : "border-gray-200",
                   ].join(" ")}
                 >
                   <div className="flex items-start justify-between">
                     <div className="text-sm font-medium">{d.getDate()}</div>
-                    {count > 0 ? (
-                      <span className="text-xs rounded-full bg-gray-900 text-white px-2 py-0.5">
-                        {count}
-                      </span>
-                    ) : null}
+                    <div className="flex items-center gap-1">
+                      {hasBlocked ? (
+                        <span className="text-xs rounded-full bg-purple-600 text-white px-1.5 py-0.5" title="Blokkolt">
+                          🔒
+                        </span>
+                      ) : null}
+                      {count > 0 ? (
+                        <span className="text-xs rounded-full bg-gray-900 text-white px-2 py-0.5">
+                          {count}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
 
                   {/* pöttyök + rövid összegzés */}
-                  {count > 0 ? (
+                  {count > 0 || hasBlocked ? (
                     <div className="mt-2 space-y-1">
                       <div className="flex items-center gap-1.5">
                         {sum?.pending ? (
@@ -343,13 +455,17 @@ export default function AdminCalendarWidget() {
                         {sum?.cancelled ? (
                           <span className={dotClass("cancelled")} />
                         ) : null}
+                        {hasBlocked ? (
+                          <span className={dotClass("blocked")} />
+                        ) : null}
                       </div>
 
                       <div className="text-[11px] text-gray-700 leading-tight">
                         {sum?.pending ? `Vár: ${sum.pending} ` : ""}
                         {sum?.confirmed ? `Elf: ${sum.confirmed} ` : ""}
                         {sum?.paid ? `Fiz: ${sum.paid} ` : ""}
-                        {sum?.cancelled ? `Tör: ${sum.cancelled}` : ""}
+                        {sum?.cancelled ? `Tör: ${sum.cancelled} ` : ""}
+                        {hasBlocked ? `🔒${blocked.length}` : ""}
                       </div>
                     </div>
                   ) : (
@@ -390,7 +506,12 @@ export default function AdminCalendarWidget() {
                     Törölve: {selectedSum.cancelled}
                   </span>
                 ) : null}
-                {!selectedSum.total ? (
+                {selectedBlocked.length > 0 ? (
+                  <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-800">
+                    🔒 Blokkolt: {selectedBlocked.length}
+                  </span>
+                ) : null}
+                {!selectedSum.total && !selectedBlocked.length ? (
                   <span className="text-sm text-gray-600">Nincs foglalás</span>
                 ) : null}
               </div>
@@ -401,10 +522,34 @@ export default function AdminCalendarWidget() {
             </div>
           </div>
 
+          {/* Blokkolt napok a kiválasztott napon */}
+          {selectedBlocked.length > 0 ? (
+            <div className="mt-3 space-y-2">
+              {selectedBlocked.map((bd, i) => (
+                <div
+                  key={`blocked-${i}`}
+                  className="rounded-lg border border-purple-200 bg-purple-50 p-3"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-sm font-semibold text-purple-800">
+                        🔒 Blokkolt – {bd.roomName}
+                      </div>
+                      {bd.note ? (
+                        <div className="text-xs text-purple-700 mt-1">{bd.note}</div>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {/* Foglalások */}
           <div className="mt-3 space-y-2">
             {loading ? (
               <p className="text-sm text-gray-600">Betöltés…</p>
-            ) : selectedList.length === 0 ? (
+            ) : selectedList.length === 0 && selectedBlocked.length === 0 ? (
               <p className="text-sm text-gray-600">
                 Erre a napra nincs foglalás.
               </p>
@@ -464,6 +609,147 @@ export default function AdminCalendarWidget() {
             A foglalás több naphoz is hozzászámolódik (ott-tartózkodás napjai).
           </div>
         </div>
+      </div>
+
+      {/* ── Dátum blokkolás panel ───────────────────────────── */}
+      <div className="rounded-xl border border-gray-200">
+        <button
+          className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition"
+          onClick={() => setShowBlockPanel((v) => !v)}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🔒</span>
+            <span className="font-semibold text-sm">Dátum blokkolás</span>
+            <span className="text-xs text-gray-500">
+              (napok manuális lezárása foglalás nélkül)
+            </span>
+          </div>
+          <span className="text-gray-400 text-sm">
+            {showBlockPanel ? "▲" : "▼"}
+          </span>
+        </button>
+
+        {showBlockPanel ? (
+          <div className="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
+            <p className="text-sm text-gray-600">
+              Válaszd ki a szobát, dátumtartományt és adj hozzá megjegyzést.
+              A blokkolt napok a nyilvános naptárban is foglaltként jelennek meg.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              {/* Szoba */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Szoba
+                </label>
+                <select
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  value={blockRoom}
+                  onChange={(e) => setBlockRoom(e.target.value)}
+                >
+                  {rooms.map((r) => {
+                    const label = typeof r.name === "string" ? r.name : r.name?.hu || r.name?.en || r.name?.de || "Szoba";
+                    return (
+                      <option key={r._id} value={r._id}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Dátumtól */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Dátumtól
+                </label>
+                <input
+                  type="date"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  value={blockStart}
+                  onChange={(e) => setBlockStart(e.target.value)}
+                />
+              </div>
+
+              {/* Dátumig */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Dátumig
+                </label>
+                <input
+                  type="date"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  value={blockEnd}
+                  onChange={(e) => setBlockEnd(e.target.value)}
+                />
+              </div>
+
+              {/* Megjegyzés */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Megjegyzés
+                </label>
+                <input
+                  type="text"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  placeholder="pl. Ház vendégei"
+                  value={blockNote}
+                  onChange={(e) => setBlockNote(e.target.value)}
+                />
+              </div>
+
+              {/* Gombok */}
+              <div className="flex items-end gap-2">
+                <button
+                  className="rounded-lg bg-purple-600 text-white px-4 py-2 text-sm font-medium hover:bg-purple-700 disabled:opacity-50"
+                  onClick={handleBlock}
+                  disabled={blockBusy || !blockRoom || !blockStart || !blockEnd}
+                >
+                  {blockBusy ? "…" : "Blokkol"}
+                </button>
+                <button
+                  className="rounded-lg border border-red-300 text-red-700 px-4 py-2 text-sm font-medium hover:bg-red-50 disabled:opacity-50"
+                  onClick={handleUnblock}
+                  disabled={blockBusy || !blockRoom || !blockStart || !blockEnd}
+                >
+                  {blockBusy ? "…" : "Felold"}
+                </button>
+              </div>
+            </div>
+
+            {/* Aktív blokkolások listája az adott szobára */}
+            {blockedDates.filter((bd) => {
+              const rid = bd.room?._id || bd.room;
+              return String(rid) === String(blockRoom);
+            }).length > 0 ? (
+              <div className="mt-2">
+                <div className="text-xs font-medium text-gray-700 mb-2">
+                  Aktív blokkolások ({(() => {
+                    const r = rooms.find((r) => r._id === blockRoom);
+                    if (!r) return "Szoba";
+                    return typeof r.name === "string" ? r.name : r.name?.hu || r.name?.en || "Szoba";
+                  })()}):
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {blockedDates
+                    .filter((bd) => {
+                      const rid = bd.room?._id || bd.room;
+                      return String(rid) === String(blockRoom);
+                    })
+                    .map((bd) => (
+                      <span
+                        key={bd._id}
+                        className="inline-flex items-center gap-1 rounded-full bg-purple-100 text-purple-800 px-2 py-0.5 text-xs"
+                      >
+                        {ymd(new Date(bd.date))}
+                        {bd.note ? ` – ${bd.note}` : ""}
+                      </span>
+                    ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );
