@@ -10,7 +10,77 @@ export default function AdminRooms() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [toggling, setToggling] = useState(null); // room id being toggled
+  const [toggling, setToggling] = useState(null);
+
+  // Képkezelés
+  const [imageRoom, setImageRoom] = useState(null); // { slug, name }
+  const [roomImages, setRoomImages] = useState([]);
+  const [imgLoading, setImgLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const openImages = async (room) => {
+    setImageRoom({ slug: room.slug, name: room.name });
+    setImgLoading(true);
+    try {
+      const res = await fetch(`${API}/api/admin/rooms/${room.slug}/images`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setRoomImages(data.images || []);
+    } catch {
+      setRoomImages([]);
+    } finally {
+      setImgLoading(false);
+    }
+  };
+
+  const uploadImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !imageRoom) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch(
+        `${API}/api/admin/rooms/${imageRoom.slug}/images/upload`,
+        { method: "POST", credentials: "include", body: fd }
+      );
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setRoomImages((prev) => [...prev, data.image]);
+      await reload();
+    } catch {
+      alert("Feltöltési hiba.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const setCover = async (publicId) => {
+    if (!imageRoom) return;
+    await fetch(`${API}/api/admin/rooms/${imageRoom.slug}/images/cover`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicId }),
+    });
+    await openImages(imageRoom);
+    await reload();
+  };
+
+  const deleteImage = async (publicId) => {
+    if (!imageRoom || !window.confirm("Biztosan törlöd ezt a képet?")) return;
+    await fetch(`${API}/api/admin/rooms/${imageRoom.slug}/images`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicId }),
+    });
+    setRoomImages((prev) => prev.filter((i) => i.publicId !== publicId));
+    await reload();
+  };
 
   const reload = async () => {
     try {
@@ -69,7 +139,7 @@ export default function AdminRooms() {
       <div className="mb-6">
         <h2 className="text-xl font-semibold">Szobák</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Árak és akciók kezelése
+          Árak, akciók és képek kezelése
         </p>
       </div>
 
@@ -188,39 +258,54 @@ export default function AdminRooms() {
                   )}
 
                   {/* Gombok */}
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={() => {
-                        setEditing(r);
-                        setForm(
-                          r.price ?? {
-                            amount: 9000,
-                            currency: "HUF",
-                            unit: "person_night",
-                            promo: { enabled: false },
-                          },
-                        );
-                      }}
-                      className="flex-1 text-sm font-medium bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
-                    >
-                      Ár / Akció
-                    </button>
+                  <div className="mt-3 space-y-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditing(r);
+                          setForm(
+                            r.price ?? {
+                              amount: 9000,
+                              currency: "HUF",
+                              unit: "person_night",
+                              promo: { enabled: false },
+                            },
+                          );
+                        }}
+                        className="flex-1 text-sm font-medium bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
+                      >
+                        Ár / Akció
+                      </button>
+
+                      <button
+                        onClick={() => toggleActive(r)}
+                        disabled={toggling === (r.id || r._id)}
+                        className={`text-sm font-medium px-4 py-2.5 rounded-lg border transition-colors disabled:opacity-50 ${
+                          r.active
+                            ? "border-red-200 text-red-600 hover:bg-red-50"
+                            : "border-green-200 text-green-600 hover:bg-green-50"
+                        }`}
+                        title={r.active ? "Szoba szüneteltetése" : "Szoba aktiválása"}
+                      >
+                        {toggling === (r.id || r._id)
+                          ? "…"
+                          : r.active
+                          ? "Szüneteltetés"
+                          : "Aktiválás"}
+                      </button>
+                    </div>
 
                     <button
-                      onClick={() => toggleActive(r)}
-                      disabled={toggling === (r.id || r._id)}
-                      className={`text-sm font-medium px-4 py-2.5 rounded-lg border transition-colors disabled:opacity-50 ${
-                        r.active
-                          ? "border-red-200 text-red-600 hover:bg-red-50"
-                          : "border-green-200 text-green-600 hover:bg-green-50"
-                      }`}
-                      title={r.active ? "Szoba szüneteltetése" : "Szoba aktiválása"}
+                      onClick={() => openImages(r)}
+                      className="w-full text-sm font-medium px-4 py-2.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors inline-flex items-center justify-center gap-2"
                     >
-                      {toggling === (r.id || r._id)
-                        ? "…"
-                        : r.active
-                        ? "Szüneteltetés"
-                        : "Aktiválás"}
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Képek kezelése
+                      <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
+                        {r.images?.length || 0}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -383,6 +468,139 @@ export default function AdminRooms() {
                 className="px-5 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
               >
                 {saving ? "Mentés…" : "Mentés"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Képkezelő modal */}
+      {imageRoom && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            {/* Fejléc */}
+            <div className="px-6 py-4 border-b bg-gray-50 flex items-center justify-between shrink-0">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {typeof imageRoom.name === "object"
+                    ? imageRoom.name.hu || imageRoom.name.en || "Szoba"
+                    : imageRoom.name}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Képek kezelése • {roomImages.length} kép
+                </p>
+              </div>
+              <button
+                onClick={() => setImageRoom(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Tartalom – scrollolható */}
+            <div className="px-6 py-5 overflow-y-auto flex-1">
+              {/* Feltöltés */}
+              <label
+                className={`mb-5 flex items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer transition-colors ${
+                  uploading
+                    ? "border-gray-200 bg-gray-50 cursor-wait"
+                    : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                }`}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={uploadImage}
+                  disabled={uploading}
+                  className="hidden"
+                />
+                {uploading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span className="text-sm text-gray-500">Feltöltés…</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span className="text-sm text-gray-600 font-medium">
+                      Kép feltöltése
+                    </span>
+                    <span className="text-xs text-gray-400">(JPG, PNG – max 15MB)</span>
+                  </>
+                )}
+              </label>
+
+              {/* Képek grid */}
+              {imgLoading ? (
+                <div className="text-sm text-gray-500 text-center py-8">
+                  Betöltés…
+                </div>
+              ) : roomImages.length === 0 ? (
+                <div className="text-sm text-gray-400 text-center py-8">
+                  Még nincs kép ehhez a szobához.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {roomImages.map((img, i) => (
+                    <div
+                      key={img.publicId || i}
+                      className={`relative group rounded-lg overflow-hidden border-2 transition-colors ${
+                        i === 0 ? "border-amber-400" : "border-transparent hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="aspect-video bg-gray-100">
+                        <img
+                          src={img.url}
+                          alt={img.alt || ""}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Borító badge */}
+                      {i === 0 && (
+                        <div className="absolute top-1.5 left-1.5 text-xs font-medium bg-amber-400 text-amber-900 px-2 py-0.5 rounded-full">
+                          Borító
+                        </div>
+                      )}
+
+                      {/* Hover gombok */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-end justify-center pb-2 gap-1.5 opacity-0 group-hover:opacity-100">
+                        {i !== 0 && (
+                          <button
+                            onClick={() => setCover(img.publicId)}
+                            className="text-xs bg-white/90 text-gray-800 px-2.5 py-1.5 rounded-md font-medium hover:bg-white transition-colors"
+                          >
+                            Borítónak
+                          </button>
+                        )}
+                        <button
+                          onClick={() => deleteImage(img.publicId)}
+                          className="text-xs bg-red-500/90 text-white px-2.5 py-1.5 rounded-md font-medium hover:bg-red-600 transition-colors"
+                        >
+                          Törlés
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Lábléc */}
+            <div className="px-6 py-4 border-t bg-gray-50 flex justify-end shrink-0">
+              <button
+                onClick={() => setImageRoom(null)}
+                className="px-5 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                Bezárás
               </button>
             </div>
           </div>
