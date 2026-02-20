@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { cld } from "../../utils/cloudinary.js"; // ha máshol van, igazítsd az importot
 
 const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
@@ -48,6 +48,7 @@ export default function AdminGallery() {
   const [altEn, setAltEn] = useState("");
   const [altDe, setAltDe] = useState("");
   const [busy, setBusy] = useState(false);
+  const fileRef = useRef(null);
 
   // admin lista betöltése (admin endpoint!)
   const load = async () => {
@@ -115,6 +116,7 @@ export default function AdminGallery() {
       }
       // clean
       setFile(null); setAltHu(""); setAltEn(""); setAltDe("");
+      if (fileRef.current) fileRef.current.value = "";
       // vissza első oldalra, hogy biztosan lásd az újat felül
       setPage(1);
       await load();
@@ -184,24 +186,40 @@ export default function AdminGallery() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Fájl (kép vagy videó)</label>
+            <label className="block text-sm font-medium mb-1">Fájl (kép vagy videó)</label>
             <input
+              ref={fileRef}
               type="file"
               accept="image/*,video/*"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="mt-1 w-full"
-              required
+              className="hidden"
             />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="inline-flex items-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-3 text-sm text-gray-600 hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition w-full justify-center"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              {file ? "Másik fájl választása" : "Fájl kiválasztása"}
+            </button>
             {file && (
-              <p className="mt-1 text-xs text-gray-500">
-                {file.name} — {(file.size / (1024 * 1024)).toFixed(1)} MB
-              </p>
+              <div className="mt-2 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+                <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="truncate">{file.name}</span>
+                <span className="flex-shrink-0 text-xs text-emerald-500">
+                  ({(file.size / (1024 * 1024)).toFixed(1)} MB)
+                </span>
+              </div>
             )}
           </div>
 
           <button
-            disabled={busy}
-            className="rounded bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2"
+            disabled={busy || !file}
+            className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 font-medium disabled:opacity-50 transition"
           >
             {busy ? "Feltöltés…" : "Feltöltés"}
           </button>
