@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 
     // Csak a mai naptól előre
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
     filter.date = { $gte: today };
 
     const docs = await BlockedDate.find(filter)
@@ -54,8 +54,8 @@ router.post("/", async (req, res) => {
 
     const start = new Date(startDate);
     const end = new Date(endDate);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(0, 0, 0, 0);
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(0, 0, 0, 0);
 
     if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start > end) {
       return res.status(400).json({ error: "INVALID_DATE_RANGE" });
@@ -107,8 +107,8 @@ router.delete("/", async (req, res) => {
 
     const start = new Date(startDate);
     const end = new Date(endDate);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(0, 0, 0, 0);
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(0, 0, 0, 0);
 
     if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start > end) {
       return res.status(400).json({ error: "INVALID_DATE_RANGE" });
