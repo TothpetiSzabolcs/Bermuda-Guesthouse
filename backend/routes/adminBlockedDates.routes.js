@@ -78,7 +78,7 @@ router.post("/", async (req, res) => {
           upsert: true,
         },
       });
-      d.setDate(d.getDate() + 1);
+      d.setUTCDate(d.getUTCDate() + 1);
     }
 
     const result = await BlockedDate.bulkWrite(ops, { ordered: false });
@@ -116,7 +116,7 @@ router.delete("/", async (req, res) => {
 
     // endDate + 1 nap (hogy inclusive legyen)
     const endPlusOne = new Date(end);
-    endPlusOne.setDate(endPlusOne.getDate() + 1);
+    endPlusOne.setUTCDate(endPlusOne.getUTCDate() + 1);
 
     const result = await BlockedDate.deleteMany({
       room: new mongoose.Types.ObjectId(room),
