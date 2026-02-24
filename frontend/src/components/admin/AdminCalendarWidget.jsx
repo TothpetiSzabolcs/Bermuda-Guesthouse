@@ -140,7 +140,7 @@ export default function AdminCalendarWidget() {
 
   // ── Blocked dates state ──────────────────────────────────
   const [rooms, setRooms] = useState([]);
-  const [blockedDates, setBlockedDates] = useState([]); // [{date, note, room:{_id,name}}]
+  const [blockedDates, setBlockedDates] = useState([]);
   const [blockRoom, setBlockRoom] = useState("");
   const [blockStart, setBlockStart] = useState("");
   const [blockEnd, setBlockEnd] = useState("");
@@ -184,7 +184,6 @@ export default function AdminCalendarWidget() {
   // ── Load blocked dates ───────────────────────────────────
   const loadBlocked = async () => {
     try {
-      // Fetch all blocked dates (no room filter – we want all for calendar display)
       const res = await fetch(`${API}/api/admin/blocked-dates`, {
         credentials: "include",
       });
@@ -259,7 +258,6 @@ export default function AdminCalendarWidget() {
     const map = new Map();
     for (const bd of blockedDates) {
       const d = new Date(bd.date);
-      d.setHours(0, 0, 0, 0);
       const key = ymd(d);
       if (!map.has(key)) map.set(key, []);
       map.get(key).push({
@@ -333,34 +331,36 @@ export default function AdminCalendarWidget() {
   };
 
   return (
-    <div className="rounded-xl border bg-white p-4 space-y-4">
-      <div className="flex items-start justify-between gap-3">
+    <div className="rounded-xl border bg-white p-3 sm:p-4 space-y-4">
+      {/* ── Fejléc: cím + navigáció (responsive) ── */}
+      <div className="space-y-3">
         <div>
           <h3 className="text-lg font-semibold">Foglalási naptár</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 hidden sm:block">
             Kattints egy napra, és jobb oldalt látod az aznapi foglalásokat.
           </p>
 
           {/* jelmagyarázat */}
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-700">
-            <span className="inline-flex items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-gray-700">
+            <span className="inline-flex items-center gap-1.5">
               <span className={dotClass("pending")} /> Várakozik
             </span>
-            <span className="inline-flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5">
               <span className={dotClass("confirmed")} /> Elfogadva
             </span>
-            <span className="inline-flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5">
               <span className={dotClass("paid")} /> Fizetve
             </span>
-            <span className="inline-flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5">
               <span className={dotClass("cancelled")} /> Törölve
             </span>
-            <span className="inline-flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5">
               <span className={dotClass("blocked")} /> Blokkolt
             </span>
           </div>
         </div>
 
+        {/* Hónap navigáció – mobilon is elfér */}
         <div className="flex items-center gap-2">
           <button
             className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
@@ -373,7 +373,7 @@ export default function AdminCalendarWidget() {
             ◀
           </button>
 
-          <div className="min-w-[180px] text-center font-medium">
+          <div className="flex-1 text-center font-medium">
             {fmtMonthHu(month)}
           </div>
 
@@ -389,7 +389,7 @@ export default function AdminCalendarWidget() {
           </button>
 
           <button
-            className="ml-2 rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
+            className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
             onClick={() => {
               load();
               loadBlocked();
@@ -407,18 +407,19 @@ export default function AdminCalendarWidget() {
         </div>
       ) : null}
 
+      {/* ── Naptár + napi lista (mobilon egymás alatt) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Naptár */}
         <div className="lg:col-span-8">
           <div className="grid grid-cols-7 text-xs text-gray-600 mb-2">
             {["H", "K", "Sze", "Cs", "P", "Szo", "V"].map((d) => (
-              <div key={d} className="py-2 px-2 font-semibold">
+              <div key={d} className="py-1 sm:py-2 px-1 sm:px-2 font-semibold text-center">
                 {d}
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {days.map((d) => {
               const key = ymd(d);
               const inMonth = d >= monthStart && d <= monthEnd;
@@ -433,7 +434,7 @@ export default function AdminCalendarWidget() {
                   key={key}
                   onClick={() => setSelectedDay(key)}
                   className={[
-                    "h-20 rounded-lg border text-left px-2 py-2 hover:bg-gray-50 transition relative",
+                    "h-12 sm:h-20 rounded-lg border text-left px-1 sm:px-2 py-1 sm:py-2 hover:bg-gray-50 transition relative",
                     inMonth ? "bg-white" : "bg-gray-50 text-gray-500",
                     isSelected
                       ? "border-gray-900 ring-1 ring-gray-900"
@@ -443,28 +444,28 @@ export default function AdminCalendarWidget() {
                   ].join(" ")}
                 >
                   <div className="flex items-start justify-between">
-                    <div className="text-sm font-medium">{d.getDate()}</div>
-                    <div className="flex items-center gap-1">
+                    <div className="text-xs sm:text-sm font-medium">{d.getDate()}</div>
+                    <div className="flex items-center gap-0.5">
                       {hasBlocked ? (
                         <span
-                          className="text-xs rounded-full bg-purple-600 text-white px-1.5 py-0.5"
+                          className="text-[9px] sm:text-xs rounded-full bg-purple-600 text-white px-1 sm:px-1.5 py-0.5 leading-none"
                           title="Blokkolt"
                         >
                           🔒
                         </span>
                       ) : null}
                       {count > 0 ? (
-                        <span className="text-xs rounded-full bg-gray-900 text-white px-2 py-0.5">
+                        <span className="text-[9px] sm:text-xs rounded-full bg-gray-900 text-white px-1 sm:px-1.5 py-0.5 leading-none">
                           {count}
                         </span>
                       ) : null}
                     </div>
                   </div>
 
-                  {/* pöttyök + rövid összegzés */}
+                  {/* pöttyök (mobilon csak pöttyök, desktopon szöveggel is) */}
                   {count > 0 || hasBlocked ? (
-                    <div className="mt-2 space-y-1">
-                      <div className="flex items-center gap-1.5">
+                    <div className="mt-0.5 sm:mt-2 space-y-0.5 sm:space-y-1">
+                      <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
                         {sum?.pending ? (
                           <span className={dotClass("pending")} />
                         ) : null}
@@ -482,7 +483,8 @@ export default function AdminCalendarWidget() {
                         ) : null}
                       </div>
 
-                      <div className="text-[11px] text-gray-700 leading-tight">
+                      {/* Szöveges összegzés csak desktopon */}
+                      <div className="hidden sm:block text-[11px] text-gray-700 leading-tight">
                         {sum?.pending ? `Vár: ${sum.pending} ` : ""}
                         {sum?.confirmed ? `Elf: ${sum.confirmed} ` : ""}
                         {sum?.paid ? `Fiz: ${sum.paid} ` : ""}
@@ -491,7 +493,7 @@ export default function AdminCalendarWidget() {
                       </div>
                     </div>
                   ) : (
-                    <div className="mt-2 text-xs text-gray-400">—</div>
+                    <div className="hidden sm:block mt-2 text-xs text-gray-400">—</div>
                   )}
                 </button>
               );
@@ -644,7 +646,7 @@ export default function AdminCalendarWidget() {
           <div className="flex items-center gap-2">
             <span className="text-lg">🔒</span>
             <span className="font-semibold text-sm">Dátum blokkolás</span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 hidden sm:inline">
               (napok manuális lezárása foglalás nélkül)
             </span>
           </div>
