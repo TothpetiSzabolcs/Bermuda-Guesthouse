@@ -24,8 +24,10 @@ function addDays(d, n) {
 }
 function ymd(d) {
   const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x.toISOString().slice(0, 10);
+  const y = x.getFullYear();
+  const m = String(x.getMonth() + 1).padStart(2, "0");
+  const day = String(x.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 function fmtMonthHu(d) {
   return d.toLocaleDateString("hu-HU", { year: "numeric", month: "long" });
@@ -167,7 +169,10 @@ export default function AdminCalendarWidget() {
   // ── Load rooms for dropdown ──────────────────────────────
   const loadRooms = async () => {
     try {
-      const res = await fetch(`${API}/api/rooms?propertySlug=bermuda-vendeghaz&active=all`, { credentials: "include" });
+      const res = await fetch(
+        `${API}/api/rooms?propertySlug=bermuda-vendeghaz&active=all`,
+        { credentials: "include" },
+      );
       if (!res.ok) return;
       const data = await res.json();
       const list = Array.isArray(data) ? data : data.rooms || [];
@@ -180,7 +185,9 @@ export default function AdminCalendarWidget() {
   const loadBlocked = async () => {
     try {
       // Fetch all blocked dates (no room filter – we want all for calendar display)
-      const res = await fetch(`${API}/api/admin/blocked-dates`, { credentials: "include" });
+      const res = await fetch(`${API}/api/admin/blocked-dates`, {
+        credentials: "include",
+      });
       if (!res.ok) return;
       const data = await res.json();
       setBlockedDates(Array.isArray(data) ? data : []);
@@ -196,7 +203,12 @@ export default function AdminCalendarWidget() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ room: blockRoom, startDate: blockStart, endDate: blockEnd, note: blockNote }),
+        body: JSON.stringify({
+          room: blockRoom,
+          startDate: blockStart,
+          endDate: blockEnd,
+          note: blockNote,
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -221,7 +233,11 @@ export default function AdminCalendarWidget() {
         method: "DELETE",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ room: blockRoom, startDate: blockStart, endDate: blockEnd }),
+        body: JSON.stringify({
+          room: blockRoom,
+          startDate: blockStart,
+          endDate: blockEnd,
+        }),
       });
       if (!res.ok) throw new Error("Unblock failed");
       await loadBlocked();
@@ -268,7 +284,7 @@ export default function AdminCalendarWidget() {
       arr.sort(
         (a, b) =>
           String(a.status).localeCompare(String(b.status)) ||
-          String(a.code).localeCompare(String(b.code))
+          String(a.code).localeCompare(String(b.code)),
       );
     }
     return map;
@@ -299,7 +315,7 @@ export default function AdminCalendarWidget() {
   const gridStart = useMemo(() => startOfCalendarGrid(month), [month]);
   const days = useMemo(
     () => Array.from({ length: 42 }, (_, i) => addDays(gridStart, i)),
-    [gridStart]
+    [gridStart],
   );
 
   const monthStart = startOfMonth(month);
@@ -350,7 +366,7 @@ export default function AdminCalendarWidget() {
             className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
             onClick={() =>
               setMonth((m) =>
-                startOfMonth(new Date(m.getFullYear(), m.getMonth() - 1, 1))
+                startOfMonth(new Date(m.getFullYear(), m.getMonth() - 1, 1)),
               )
             }
           >
@@ -365,7 +381,7 @@ export default function AdminCalendarWidget() {
             className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
             onClick={() =>
               setMonth((m) =>
-                startOfMonth(new Date(m.getFullYear(), m.getMonth() + 1, 1))
+                startOfMonth(new Date(m.getFullYear(), m.getMonth() + 1, 1)),
               )
             }
           >
@@ -374,7 +390,10 @@ export default function AdminCalendarWidget() {
 
           <button
             className="ml-2 rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
-            onClick={() => { load(); loadBlocked(); }}
+            onClick={() => {
+              load();
+              loadBlocked();
+            }}
             disabled={loading}
           >
             Frissítés
@@ -419,15 +438,18 @@ export default function AdminCalendarWidget() {
                     isSelected
                       ? "border-gray-900 ring-1 ring-gray-900"
                       : hasBlocked && !count
-                      ? "border-purple-300 bg-purple-50"
-                      : "border-gray-200",
+                        ? "border-purple-300 bg-purple-50"
+                        : "border-gray-200",
                   ].join(" ")}
                 >
                   <div className="flex items-start justify-between">
                     <div className="text-sm font-medium">{d.getDate()}</div>
                     <div className="flex items-center gap-1">
                       {hasBlocked ? (
-                        <span className="text-xs rounded-full bg-purple-600 text-white px-1.5 py-0.5" title="Blokkolt">
+                        <span
+                          className="text-xs rounded-full bg-purple-600 text-white px-1.5 py-0.5"
+                          title="Blokkolt"
+                        >
                           🔒
                         </span>
                       ) : null}
@@ -536,7 +558,9 @@ export default function AdminCalendarWidget() {
                         🔒 Blokkolt – {bd.roomName}
                       </div>
                       {bd.note ? (
-                        <div className="text-xs text-purple-700 mt-1">{bd.note}</div>
+                        <div className="text-xs text-purple-700 mt-1">
+                          {bd.note}
+                        </div>
                       ) : null}
                     </div>
                   </div>
@@ -632,8 +656,8 @@ export default function AdminCalendarWidget() {
         {showBlockPanel ? (
           <div className="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
             <p className="text-sm text-gray-600">
-              Válaszd ki a szobát, dátumtartományt és adj hozzá megjegyzést.
-              A blokkolt napok a nyilvános naptárban is foglaltként jelennek meg.
+              Válaszd ki a szobát, dátumtartományt és adj hozzá megjegyzést. A
+              blokkolt napok a nyilvános naptárban is foglaltként jelennek meg.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -649,7 +673,10 @@ export default function AdminCalendarWidget() {
                 >
                   {rooms.map((r) => {
                     const rid = r.id || r._id;
-                    const label = typeof r.name === "string" ? r.name : r.name?.hu || r.name?.en || r.name?.de || "Szoba";
+                    const label =
+                      typeof r.name === "string"
+                        ? r.name
+                        : r.name?.hu || r.name?.en || r.name?.de || "Szoba";
                     return (
                       <option key={rid} value={rid}>
                         {label}
@@ -725,11 +752,15 @@ export default function AdminCalendarWidget() {
             }).length > 0 ? (
               <div className="mt-2">
                 <div className="text-xs font-medium text-gray-700 mb-2">
-                  Aktív blokkolások ({(() => {
+                  Aktív blokkolások (
+                  {(() => {
                     const r = rooms.find((r) => (r.id || r._id) === blockRoom);
                     if (!r) return "Szoba";
-                    return typeof r.name === "string" ? r.name : r.name?.hu || r.name?.en || "Szoba";
-                  })()}):
+                    return typeof r.name === "string"
+                      ? r.name
+                      : r.name?.hu || r.name?.en || "Szoba";
+                  })()}
+                  ):
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {blockedDates
