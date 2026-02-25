@@ -24,6 +24,38 @@
     overflow-wrap: break-word;
   }
 
+  /* Kompakt review sáv */
+@keyframes reviews-marquee-compact {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-reviews-compact {
+  animation: reviews-marquee-compact 35s linear infinite;
+}
+.group:hover .animate-reviews-compact {
+  animation-play-state: paused;
+}
+
+.reviews-fade-compact::before,
+.reviews-fade-compact::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  pointer-events: none;
+  z-index: 10;
+}
+.reviews-fade-compact::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(249,250,251,1), rgba(249,250,251,0));
+}
+.reviews-fade-compact::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(249,250,251,1), rgba(249,250,251,0));
+}
+
   /* Prevent horizontal scroll for specific elements */
   img, picture, video, canvas, svg {
     max-width: 100%;
