@@ -10,6 +10,7 @@ const SERVICE_CATS = [
   "konyha",
   "nappali",
   "nagyterem",
+  "etkezo",
   "csarda",
   "terasz",
 ];
@@ -19,6 +20,7 @@ const CAT_LABEL_KEY = {
   nagyterem: "nagyterem",
   csarda: "csarda",
   terasz: "terasz",
+  etkezo: "kavezoteazo",
 };
 
 const PROPERTY_SLUG = "bermuda-vendeghaz";
