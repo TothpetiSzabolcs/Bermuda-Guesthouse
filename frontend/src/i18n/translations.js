@@ -127,6 +127,7 @@ export const translations = {
         nagyterem: "Rendezvényterem",
         csarda: "Csárda",
         terasz: "Terasz",
+        kavezoteazo:"Kávézó/Teázó"
       },
     },
 
@@ -628,6 +629,7 @@ export const translations = {
         nagyterem: "Event Hall",
         csarda: "Tavern",
         terasz: "Terrace",
+        kavezoteazo: "Café/Tea Room"
       },
     },
 
@@ -1121,6 +1123,7 @@ export const translations = {
         nagyterem: "Veranstaltungssaal",
         csarda: "Taverne",
         terasz: "Terrasse",
+        kavezoteazo: "Café/Teezimmer"
       },
     },
 
