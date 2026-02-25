@@ -29,12 +29,14 @@ export const listReviewsByProperty = async (req, res) => {
     });
 
     const avg =
-      reviews.length > 0
-        ? (
-            reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
-            reviews.length
-          ).toFixed(1)
-        : null;
+  reviews.length > 0
+    ? (
+        reviews.reduce((sum, r) => {
+          const raw = r.rating || 0;
+          return sum + (r.source === "legacy" ? raw / 2 : raw);
+        }, 0) / reviews.length
+      ).toFixed(1)
+    : null;
 
     res.json({
       count,
@@ -148,7 +150,7 @@ export const submitReview = async (req, res) => {
     const review = new Review({
       property: booking.property,
       author: author?.trim() || "",
-      rating: rating * 2,
+      rating: rating,
       text: text.trim(),
       date: new Date(),
       source: "email",
@@ -194,12 +196,14 @@ export const listApprovedReviews = async (req, res) => {
     const count = await Review.countDocuments(filter);
 
     const avg =
-      reviews.length > 0
-        ? (
-            reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
-            reviews.length
-          ).toFixed(1)
-        : null;
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => {
+            const raw = r.rating || 0;
+            return sum + (r.source === "legacy" ? raw / 2 : raw);
+          }, 0) / reviews.length
+        ).toFixed(1)
+      : null;
 
     res.json({
       count,
