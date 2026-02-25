@@ -6,13 +6,13 @@
     overflow-x: hidden;
     scroll-behavior: smooth;
   }
-  
+
   body {
     overflow-x: hidden;
     min-height: 100vh;
     text-rendering: optimizeSpeed;
   }
-  
+
   #root {
     overflow-x: hidden;
     min-height: 100vh;
@@ -25,39 +25,55 @@
   }
 
   /* Kompakt review sáv */
-@keyframes reviews-marquee-compact {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
+  @keyframes reviews-marquee-compact {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
 
-.animate-reviews-compact {
-  animation: reviews-marquee-compact 35s linear infinite;
-}
-.group:hover .animate-reviews-compact {
-  animation-play-state: paused;
-}
+  .animate-reviews-compact {
+    animation: reviews-marquee-compact 35s linear infinite;
+  }
+  .group:hover .animate-reviews-compact {
+    animation-play-state: paused;
+  }
 
-.reviews-fade-compact::before,
-.reviews-fade-compact::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 32px;
-  pointer-events: none;
-  z-index: 10;
-}
-.reviews-fade-compact::before {
-  left: 0;
-  background: linear-gradient(to right, rgba(249,250,251,1), rgba(249,250,251,0));
-}
-.reviews-fade-compact::after {
-  right: 0;
-  background: linear-gradient(to left, rgba(249,250,251,1), rgba(249,250,251,0));
-}
+  .reviews-fade-compact::before,
+  .reviews-fade-compact::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 32px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .reviews-fade-compact::before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 1),
+      rgba(255, 255, 255, 0)
+    );
+  }
+  .reviews-fade-compact::after {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      rgba(255, 255, 255, 1),
+      rgba(255, 255, 255, 0)
+    );
+  }
 
   /* Prevent horizontal scroll for specific elements */
-  img, picture, video, canvas, svg {
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
     max-width: 100%;
     height: auto;
   }
@@ -74,12 +90,19 @@
   }
 
   /* Safe min-width for clickable elements */
-  button, a {
+  button,
+  a {
     min-width: 0;
   }
 
   /* Better text rendering */
-  p, h1, h2, h3, h4, h5, h6 {
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     overflow-wrap: break-word;
     word-wrap: break-word;
     hyphens: auto;
@@ -96,70 +119,77 @@
   .container-responsive {
     @apply w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8;
   }
-  
+
   .text-wrap-balance {
     text-wrap: balance;
   }
-  
+
   .text-wrap-pretty {
     text-wrap: pretty;
   }
-  
+
   /* Hide scrollbar for horizontal scroll containers */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   /* Enhanced prose for legal content - custom implementation */
   .prose-legal {
     @apply max-w-none space-y-6 sm:space-y-8;
   }
-  
+
   .prose-legal h1,
   .prose-legal h2,
   .prose-legal h3 {
     @apply text-gray-900 font-semibold tracking-tight scroll-mt-24 leading-snug;
   }
-  
+
   .prose-legal p {
     @apply text-gray-700 leading-relaxed text-sm sm:text-base;
   }
-  
+
   .prose-legal ul,
   .prose-legal ol {
     @apply text-gray-700 space-y-2 sm:space-y-1.5 text-sm sm:text-base;
   }
-  
+
   .prose-legal ul {
     @apply list-disc;
   }
-  
+
   .prose-legal ol {
     @apply list-decimal;
   }
-  
+
   .prose-legal li {
     @apply leading-relaxed pl-5 sm:pl-6 lg:pl-8;
   }
-  
+
   .prose-legal strong {
     @apply font-semibold text-gray-900;
   }
 }
 
 @keyframes reviews-marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.animate-reviews { animation: reviews-marquee 55s linear infinite; }
-.group:hover .animate-reviews { animation-play-state: paused; }
-
+.animate-reviews {
+  animation: reviews-marquee 55s linear infinite;
+}
+.group:hover .animate-reviews {
+  animation-play-state: paused;
+}
 
 .reviews-fade::before,
 .reviews-fade::after {
@@ -174,12 +204,20 @@
 
 .reviews-fade::before {
   left: 0;
-  background: linear-gradient(to right, rgba(249,250,251,1), rgba(249,250,251,0));
+  background: linear-gradient(
+    to right,
+    rgba(249, 250, 251, 1),
+    rgba(249, 250, 251, 0)
+  );
 }
 
 .reviews-fade::after {
   right: 0;
-  background: linear-gradient(to left, rgba(249,250,251,1), rgba(249,250,251,0));
+  background: linear-gradient(
+    to left,
+    rgba(249, 250, 251, 1),
+    rgba(249, 250, 251, 0)
+  );
 }
 
 @media (max-width: 640px) {
@@ -188,4 +226,3 @@
     width: 32px;
   }
 }
-
